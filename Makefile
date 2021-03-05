@@ -17,8 +17,7 @@ parser.c: runoff.yacc
 parser.h: parser.c
 
 lexer.c: runoff.lex parser.h
-	flex runoff.lex
-	mv lex.yy.c lexer.c
+	flex -o lexer.c runoff.lex
 
 lexer.o: lexer.c parser.h
 	cc -c lexer.c
