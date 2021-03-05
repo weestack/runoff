@@ -6,4 +6,5 @@ main(void)
 {
 	printf("Runoff compiler version: 0\n");
 	yyparse(); /* call the parser from yacc */
+	return 0;
 }
