@@ -4,7 +4,7 @@ GENFILES=parser.c parser.h lexer.c
 
 PROG=runoff
 
-CFLAGS=-ansi -pedantic -Wall -Werror
+CFLAGS=-ansi -pedantic -Wall -Wextra -Werror
 LDFLAGS=-lfl
 
 $(PROG): $(OBJECTS)
