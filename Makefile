@@ -11,9 +11,7 @@ $(PROG): $(OBJECTS)
 	cc $(CFLAGS) $(OBJECTS) $(LDFLAGS) -o $(PROG)
 
 parser.c: runoff.yacc
-	bison -d -t runoff.yacc
-	mv runoff.tab.cacc parser.c
-	mv runoff.tab.hacc parser.h
+	bison --defines=parser.h -o parser.c -t runoff.yacc
 
 parser.h: parser.c
 
