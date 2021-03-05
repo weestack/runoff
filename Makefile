@@ -20,11 +20,14 @@ LDFLAGS=-lfl
 
 # Rule for combining all the objects into our binary
 $(PROG): $(OBJECTS)
-	cc $(CFLAGS) $(OBJECTS) $(LDFLAGS) -o $(PROG)
+	@cc $(CFLAGS) $(OBJECTS) $(LDFLAGS) -o $(PROG)
+	@echo [CC] $(OBJECTS)
+	@echo "There you go $(shell whoami), I have compiled $(PROG) for you :)" 
 
 # How to generate parser.c from our yacc file
 parser.c: runoff.yacc
-	bison --defines=parser.h -o parser.c -t runoff.yacc
+	@bison --defines=parser.h -o parser.c -t runoff.yacc
+	@echo [BISON] $<
 
 # parser.h is generated at the same time as parser.c so
 # this empty rule will force make to generate parser.c if
@@ -33,20 +36,25 @@ parser.h: parser.c
 
 # Generate lexer.c from our lex file
 lexer.c: runoff.lex 
-	flex -o lexer.c runoff.lex
+	@flex -o lexer.c runoff.lex
+	@echo [FLEX] $<
 
 # Compile lexer.c into lexer.o
 lexer.o: lexer.c parser.h
-	cc -c lexer.c
+	@cc -c lexer.c
+	@echo [CC] lexer.c
 
 # Compile parser.c into parer.h
 parser.o: parser.c parser.h
-	cc -c parser.c
+	@cc -c parser.c
+	@echo [CC] parser.c
 
 # Generic rule to compile c files into o files using our CFLAGS
 %.o: %.c
-	cc $(CFLAGS) -c $<
+	@cc $(CFLAGS) -c $<
+	@echo [CC] $<
 
 # Clean just removes the generated filed, the objects, and the binary
 clean:
-	rm -rf $(GENFILES) $(OBJECTS) $(PROG)
+	@rm -rf $(GENFILES) $(OBJECTS) $(PROG)
+	@echo [RM] $(GENFILES) $(OBJECTS) $(PROG)
