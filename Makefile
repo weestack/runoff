@@ -1,3 +1,4 @@
+# todo comment whats happening in this file
 SOURCES=lexer.c parser.c runoff.c
 OBJECTS=$(SOURCES:.c=.o)
 GENFILES=parser.c parser.h lexer.c
