@@ -9,6 +9,8 @@ int yyerror(const char*);
 /* Give me the good errors please */
 %define parse.error verbose
 
+%union {char *str;}
+
 %token a b c
 
 %%
