@@ -18,9 +18,6 @@ ID [a-zA-Z][a-zA-Z0-9]*
 
 print {return print;}
 [ \t\n\r] ;
-a {return a;}
-b {return b;}
-c {return c;}
 
 
 %%
