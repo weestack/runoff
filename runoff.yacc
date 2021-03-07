@@ -22,6 +22,9 @@ int yyerror(const char*);
 %token print
 /* datatypes */
 %token int_8 int_16 int_32 bool
+%token int_literal
+
+%type <int_8> int_literal
 
 
 %%
@@ -35,7 +38,7 @@ STRING_LITERAL: IDENTIFIER;
 
 CONST: "const" IDENTIFIER int_8;
 
-TYPE: TYPE[int_8]
+TYPE: TYPE'[' int_literal ']'
 		| int_8
 		| int_16
 		| int_32
