@@ -31,6 +31,10 @@ int yyerror(const char*);
 	OPEN_BRACKET
 	CLOSE_BRACKET
 	EQUAL
+	STAR
+	SLASH
+	PLUS
+	MINUS
 /* datatypes */
 
 %token int_literal string_literal string
@@ -40,24 +44,43 @@ int yyerror(const char*);
 %%
 
 Program: Decleration
-
 			 ;
 
-Decleration: Decleration_const Decleration
-					 | Decleration_variable Decleration
+Decleration: Decleration_const END Decleration
+					 | Decleration_variable END Decleration
 					 | %empty
 					 ;
 
-Decleration_const: CONST string_literal int_literal END
+Decleration_const: CONST string_literal int_literal
 								 ;
 
-Decleration_variable: Type string_literal END
-										| Type string_literal EQUAL int_literal END
+Decleration_variable: Type string_literal
+										| Type string_literal EQUAL Expr
 										;
+
+
+Expr: Term
+		| Term '+' Expr
+		| Term '-' Expr
+		| Term '/' Expr
+		| Term '*' Expr
+		| %empty
+		;
+
+Term: string_literal
+		| int_literal
+		;
+
+Operator: PLUS
+				| MINUS
+				| SLASH
+				| STAR
+				;
 
 Type: int_8
 		| int_16
 		| int_32
+		;
 
 
 

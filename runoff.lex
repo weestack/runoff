@@ -39,6 +39,11 @@ int_8 {return int_8;}
 int_16 {return int_16;}
 int_32 {return int_32;}
 
+'+' {return PLUS;}
+'-' {return MINUS;}
+\\ {return SLASH;}
+'*' {return STAR;}
+
 [ \t\n\r\v\f]+ {} /* skip whitespce, tab, newline and repr */
 . {printf("\n");} /* Skip bad chars */
 
