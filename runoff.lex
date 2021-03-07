@@ -4,18 +4,23 @@
 
 %option yylineno
 
+
+DIGIT [0-9]
+ID [a-zA-Z][a-zA-Z0-9]*
+
 %%
 "#".*\n {
   // should something happen with the comment?
-  printf("comment was entered \n");
+  printf("comment was entered \n"); }
 
-  }
+{ID}+ { return IDENTIFIER;}
 
 
-
-a	{ return a; }
-b	{ return b; }
-c	{ return c; }
+print {return print;}
+[ \t\n\r] ;
+a {return a;}
+b {return b;}
+c {return c;}
 
 
 %%
