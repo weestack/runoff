@@ -11,15 +11,18 @@ int yyerror(const char*);
 
 %union {
 				int int_8;
-				char *str;
+				char *id;
 				}
 
 %start Start
 
+/* string identifier */
 %token <id> IDENTIFIER
+/* Reserved keywords */
 %token print
-%token int_8 int_16 int_32 float signed unsigned struct
-%token bool char void
+/* datatypes */
+%token int_8 int_16 int_32 float signed unsigned struct bool char void
+
 
 %%
 
