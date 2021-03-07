@@ -1,0 +1,30 @@
+# SUper nice comment :angrysad:
+const abc 123;
+
+const loses 321; #comment test
+
+int_8 a = 321;
+int_16 b = 123;
+int_32 c = 32123;
+int_32 c = 123 + 321;
+
+if  (1 > 2) {
+  print("Hello World");
+} else {
+ print("Damm");
+ if (true) {
+ bool z = false;
+ }
+}
+
+function a(int_8 t) -> int_8 {
+  print("hello world");
+  return int_8 5;
+}
+
+task a(int m) {
+  print("once again hello world");
+  forever {
+    print("How is this going?");
+  }
+}
