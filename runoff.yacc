@@ -10,66 +10,61 @@ int yyerror(const char*);
 %define parse.error verbose
 
 %union {
-				int int_8;
 				char *id;
 				}
 
-%start START
-
-/* string identifier */
-%token <id> IDENTIFIER
+%start Program
 /* Reserved keywords */
-%token print
+%token
+	CONST
+ 	RIGHT_ARROW
+	IF
+	TASK
+	FOREVER
+	WHILE
+	FOR
+	END
+	COMMA
+	THEN
+	OPEN_PARENTHESIS
+	CLOSE_PARENTHESIS
+	OPEN_BRACKET
+	CLOSE_BRACKET
+	EQUAL
 /* datatypes */
-%token int_8 int_16 int_32 bool
-%token int_literal
 
-%type <int_8> int_literal
+%token int_literal string_literal string
+%token int_8 int_16 int_32 bool
 
 
 %%
 
-START: STRING_LITERAL
-		 | CONST
-		 | STATEMENTS
-		 ;
+Program: Decleration
 
-STRING_LITERAL: IDENTIFIER;
+			 ;
 
-CONST: "const" IDENTIFIER int_8;
+Decleration: Decleration_const Decleration
+					 | Decleration_variable Decleration
+					 | %empty
+					 ;
 
-TYPE: TYPE'[' int_literal ']'
-		| int_8
+Decleration_const: CONST string_literal int_literal END
+								 ;
+
+Decleration_variable: Type string_literal END
+										| Type string_literal EQUAL int_literal END
+										;
+
+Type: int_8
 		| int_16
 		| int_32
-		| bool
-		; /* HEHE ingen enum :sunglasses */
 
 
-OPERATOR: '+'
-				 | '-'
-				 | '/'
-				 | '*'
-				 | "||"
-				 | "&&"
-				 ;
 
-
-ASSIGNMENT: TYPE STRING_LITERAL '=' EXPRESSION
-					;
-
-EXPRESSION: IDENTIFIER
-					| IDENTIFIER OPERATOR EXPRESSION /* a '+' b '-' c, a, a+b */
-
-STATEMENTS: STATEMENT STATEMENTS | ;
-STATEMENT: print '(' STRING_LITERAL ')' ';' /* Add support for code line here.... what to do... :Angrsad: */
-				 | ASSIGNMENT
-				 ;
 
 %%
 
 int
-yyerror(const char *err)
-{
-	printf("Parse error at line %d: %s\n", yylineno, err);
+yyerror(const char *err) {
+		printf("Parse error at line %d: %s\n", yylineno, err);
 }

@@ -14,40 +14,37 @@ int yyerror(const char*);
 				char *id;
 				}
 
-%start Start
+%start START
 
 /* string identifier */
 %token <id> IDENTIFIER
 /* Reserved keywords */
 %token print
 /* datatypes */
-%token int_8 int_16 int_32 float signed unsigned struct bool char void
+%token int_8 int_16 int_32 bool
+%token int_literal
+
+%type <int_8> int_literal
 
 
 %%
 
-Start: STRING_LITERAL
-     | CONST
-		 | '(' EXPRESSION ')'
+START: STRING_LITERAL
+		 | CONST
 		 | STATEMENTS
 		 ;
 
-STRING_LITERAL: string /* perhaps add function name here? */
-							;
-CONST: string int_8 ';'
-TYPE: TYPE[int_8]
+STRING_LITERAL: IDENTIFIER;
+
+CONST: "const" IDENTIFIER int_8;
+
+TYPE: TYPE'[' int_literal ']'
 		| int_8
 		| int_16
 		| int_32
-		| float
-		| CONST
-		| struct
-		| signed
-		| unsigned
-		| void
-		| char
 		| bool
 		; /* HEHE ingen enum :sunglasses */
+
 
 OPERATOR: '+'
 				 | '-'
@@ -57,31 +54,61 @@ OPERATOR: '+'
 				 | "&&"
 				 ;
 
-ASSIGNMENT: string_literal '=' EXPRESSION
-					;
 
-TYPECASTING: '(' TYPE ')' EXPRESSION ';'
-					 ;
+ASSIGNMENT: TYPE STRING_LITERAL '=' EXPRESSION
+					;
 
 EXPRESSION: IDENTIFIER
 					| IDENTIFIER OPERATOR EXPRESSION /* a '+' b '-' c, a, a+b */
 
 STATEMENTS: STATEMENT STATEMENTS | ;
 STATEMENT: print '(' STRING_LITERAL ')' ';' /* Add support for code line here.... what to do... :Angrsad: */
-				 | /* Lambda */
-
+				 | ASSIGNMENT
 				 ;
 
-FUNCTION: STRING_LITERAL '(' EXPRESSION ')' FUNCTION_TYPE COMPOUNT_STATEMENT
-				;
-
-FUNCTION_TYPE: '->' TYPE
-				;
-
-COMPOUNT_STATEMENT:'{' STATEMENT '}'
- 									| '{' COMPOUNT_STATEMENT '}'
+COMPOUND_STATEMENT: '{' STATEMENTS '}'
+									|  '{' COMPOUND_STATEMENT '}'
+									;
 
 
+FUNCTION: STRING_LITERAL '(' terms ')' ';'
+
+FUNCTION_DEFINE: 'function' STRING_LITERAL '(' terms ')' COMPOUND_STATEMENT
+
+
+
+
+/*
+START: DECLERATIVE
+		 ;
+
+
+DECLERATIVE: DECLERATIVE_CONSTS
+					 ;
+
+DECLERATIVE_CONSTS: DECLERATIVE_CONST DECLERATIVE_CONSTS
+                  | %empty
+									;
+
+DECLERATIVE_CONST: CONST string_literal int_literal END
+								 ;
+
+TERMS: TERM TERMS
+
+TERM: int_literal
+		| int_literal '+' TERM
+		| int_literal '-' TERM
+		| int_literal '/' TERM
+		| int_literal '*' TERM
+		;
+
+TYPE: int_8
+		| int_16
+		| int_32
+		| bool
+		; /* HEHE ingen enum :sunglasses */
+
+*/
 
 %%
 
