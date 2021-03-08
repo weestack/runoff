@@ -92,7 +92,7 @@ Statement: Assignment ';'
 				 | Declaration ';'
 				 | Expression ';'
 				 | while_keyword '(' Expression ')' Codeblock
-				 
+
 				 ;
 
 
@@ -117,6 +117,7 @@ Expression: identifier
 					| Expression '/' Expression
 					| Expression and_op Expression
 					| Expression or_op Expression
+					| '!' Expression
 					| identifier '(' ArgsList ')'
 					;
 

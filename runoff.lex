@@ -11,7 +11,7 @@ digit [0-9]
 integer (0|[1-9]{digit}*)
 float {integer}\.{digit}*
 identifier [a-zA-Z][a-zA-Z0-9_]*
-punctuation [\(\)\{\};:=]
+punctuation [\(\)\{\};:=,]
 
 
 %%
@@ -32,12 +32,16 @@ punctuation [\(\)\{\};:=]
 
 (u?int(8|16|32|64)?|float|bool|void|msg) {return builtin_type;}
 
+
+
 "&&" {return and_op;}
 "||" {return or_op;}
-(\+|-|\*|\/) {return yytext[0];}
+(\+|-|\*|\/|!) {return yytext[0];}
+
+
 
 {identifier} {return identifier;}
 [ \t\n]+ /* skip whitespce, tab and newline */
-. {yyerror("Unexpected input");} /* Skip bad chars */
+. {yyerror("Unexpected input LEXIS");} /* Skip bad chars */
 
 %%
