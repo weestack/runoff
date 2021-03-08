@@ -115,8 +115,8 @@ Args: Args ',' Expression
 		;
 
 Type: builtin_type
-		/*| struct identifier */
-		;
+    | struct_keyword identifier
+    ;
 
 
 Codeblock: '{' Statements '}'

@@ -40,4 +40,6 @@ function ad() -> void {
   float ff = 1000;
   float ff1 = 1.00;
   float ff2 = -1.00;
+
+  struct peter123 peter1234;
 }
