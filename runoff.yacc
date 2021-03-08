@@ -25,6 +25,7 @@ int yyerror(const char*);
 
 			identifier
 			function
+			task
 			while_keyword
 			builtin_type
 			right_arrow
@@ -33,6 +34,7 @@ int yyerror(const char*);
 %left '+' '-'
 %left '*' '/'
 
+%right '!'
 %%
 
 Program: Toplevels
@@ -45,10 +47,11 @@ Toplevels: Toplevel
 
 Toplevel: DefineConst
 				| DefineFunction
+				| DefineTask
 				/*| DefineMessageBlock
 				| DefineStruct
+					*/
 
-				| DefineTask*/
 				;
 
 DefineConst: const_keyword identifier int_literal ';'
@@ -56,6 +59,9 @@ DefineConst: const_keyword identifier int_literal ';'
 
 DefineFunction: function identifier '(' ParametersList ')' right_arrow Type Codeblock
 							;
+
+DefineTask: task identifier '(' ParametersList ')' Codeblock
+					;
 
 ParametersList: Parameters
  				| %empty
@@ -92,7 +98,6 @@ Statement: Assignment ';'
 				 | Declaration ';'
 				 | Expression ';'
 				 | while_keyword '(' Expression ')' Codeblock
-
 				 ;
 
 
