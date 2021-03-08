@@ -9,20 +9,39 @@ int yyerror(const char*);
 
 digit [0-9]
 integer (0|[1-9]{digit}*)
-identifier [a-zA-Z][a-zA-Z0-9]*
+float {integer}\.{digit}*
+identifier [a-zA-Z][a-zA-Z0-9_]*
+punctuation [\(\)\{\};:=]
+
 
 %%
 "#".*\n {
     // should something happen with the comment?
     printf("comment was entered \n");
 }
+"->" {return right_arrow;}
+
+
 
 "const" {return const_keyword;}
-; {return ';';}
+"function" {return function;}
+
+
+{punctuation} {return yytext[0];}
+
 
 {integer} {return int_literal;}
+{float} {return float_literal;}
+("true"|"false") {return bool_literal;}
+
+(u?int(8|16|32|64)?|float|bool|void|msg) {return builtin_type;}
+
+"&&" {return and_op;}
+"||" {return or_op;}
+(\+|-|\*|\/) {return yytext[0];}
+
 {identifier} {return identifier;}
-[ \t\n]+ /* skip whitespce, tab, newline and repr */
+[ \t\n]+ /* skip whitespce, tab and newline */
 . {yyerror("Unexpected input");} /* Skip bad chars */
 
 %%

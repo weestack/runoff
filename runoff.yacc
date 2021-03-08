@@ -17,9 +17,25 @@ int yyerror(const char*);
 %token
 			const_keyword
 			int_literal
+			float_literal
+			bool_literal
+
+			and_op
+			or_op
+
 			identifier
+			function
+			builtin_type
+			right_arrow
 
-
+%left
+			'-'
+			'+'
+			'/'
+			'*'
+			and_op
+			or_op
+			
 %%
 
 Program: Toplevels
@@ -31,14 +47,70 @@ Toplevels: Toplevel
 				 ;
 
 Toplevel: DefineConst
+				| DefineFunction
 				/*| DefineMessageBlock
 				| DefineStruct
-				| DefineFunction
+
 				| DefineTask*/
 				;
 
 DefineConst: const_keyword identifier int_literal ';'
+					 ;
 
+DefineFunction: function identifier '(' ArgsList ')' right_arrow Type Codeblock
+							;
+ArgsList: Args
+ 				| %empty
+				;
+
+Args: Arg
+		| Args ',' Arg
+		;
+
+Arg: Type identifier
+	 ;
+
+
+Type: builtin_type
+		/*| struct identifier */
+		;
+
+
+Codeblock: '{' Statements '}'
+				 ;
+
+Statements: Statements Statement
+				 | %empty
+				 ;
+Statement: Assignment ';'
+				 | Declaration ';'
+				 ;
+
+Assignment: identifier '=' Expression
+					;
+
+Declaration: Type identifier
+					 | Type identifier '=' Expression
+					 ;
+
+Literal: int_literal
+			 | float_literal
+			 | bool_literal
+			 ;
+
+Expression: identifier
+					| Literal
+					/*| Expression BinaryOperator Expression*/
+					;
+/*
+BinaryOperator: '+'
+							| '/'
+							| '-'
+							| '*'
+							| or_op
+							| and_op
+							;
+*/
 %%
 
 int
