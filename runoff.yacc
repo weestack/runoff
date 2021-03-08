@@ -22,19 +22,24 @@ int yyerror(const char*);
 
 			and_op
 			or_op
+			greater_equal
+			less_equal
+			equal
 
 			identifier
 			function
 			task
 			while_keyword
+			for_keyword
 			builtin_type
 			right_arrow
 
 %left and_op or_op
+%left equal less_equal greater_equal '<' '>'
 %left '+' '-'
 %left '*' '/'
 
-%right '!'
+%right '!' '='
 %%
 
 Program: Toplevels
@@ -94,16 +99,18 @@ Codeblock: '{' Statements '}'
 Statements: Statements Statement
 				 | %empty
 				 ;
-Statement: Assignment ';'
-				 | Declaration ';'
-				 | Expression ';'
+Statement: Expression ';'
 				 | while_keyword '(' Expression ')' Codeblock
+				 | for_keyword '(' MaybeStatement ';' MaybeExpression ';' MaybeStatement ')' Codeblock
 				 ;
 
+MaybeExpression: Expression
+							 | %empty
+							 ;
 
-
-Assignment: identifier '=' Expression
-					;
+MaybeStatement: Statement
+							| %empty
+							;
 
 Declaration: Type identifier
 					 | Type identifier '=' Expression
@@ -122,8 +129,13 @@ Expression: identifier
 					| Expression '/' Expression
 					| Expression and_op Expression
 					| Expression or_op Expression
+					| Expression equal Expression
+					| Expression greater_equal Expression
+					| Expression less_equal Expression
 					| '!' Expression
 					| identifier '(' ArgsList ')'
+					| identifier '=' Expression
+					| Declaration
 					;
 
 

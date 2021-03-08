@@ -23,6 +23,7 @@ punctuation [\(\)\{\};:=,]
 "function" {return function;}
 "task" {return task;}
 "while" {return while_keyword;}
+"for" {return for_keyword;}
 
 {punctuation} {return yytext[0];}
 
@@ -37,7 +38,10 @@ punctuation [\(\)\{\};:=,]
 
 "&&" {return and_op;}
 "||" {return or_op;}
-(\+|-|\*|\/|!) {return yytext[0];}
+">=" {return greater_equal;}
+"<=" {return less_equal;}
+"==" {return equal;}
+(\+|-|\*|\/|!|<|>) {return yytext[0];}
 
 
 
