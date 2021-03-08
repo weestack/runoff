@@ -9,7 +9,7 @@ function setup() -> void {
   int32 c = 123 + 321;
 }
 
-function dummy(int a) ->  {
+function dummy(int a) -> int {
   print(a);
   bool state = true;
   while(true) {

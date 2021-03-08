@@ -25,6 +25,7 @@ int yyerror(const char*);
 
 			identifier
 			function
+			while_keyword
 			builtin_type
 			right_arrow
 
@@ -53,19 +54,28 @@ Toplevel: DefineConst
 DefineConst: const_keyword identifier int_literal ';'
 					 ;
 
-DefineFunction: function identifier '(' ArgsList ')' right_arrow Type Codeblock
+DefineFunction: function identifier '(' ParametersList ')' right_arrow Type Codeblock
 							;
-ArgsList: Args
+
+ParametersList: Parameters
  				| %empty
 				;
 
-Args: Arg
-		| Args ',' Arg
+Parameters: Parameter
+		| Parameters ',' Parameter
 		;
 
-Arg: Type identifier
+Parameter: Type identifier
 	 ;
 
+
+ArgsList: Args
+				| %empty
+				;
+
+Args: Args ',' Expression
+		| Expression
+		;
 
 Type: builtin_type
 		/*| struct identifier */
@@ -80,6 +90,8 @@ Statements: Statements Statement
 				 ;
 Statement: Assignment ';'
 				 | Declaration ';'
+				 | Expression ';'
+				 | while_keyword '(' Expression ')' Codeblock
 				 ;
 
 Assignment: identifier '=' Expression
@@ -102,7 +114,10 @@ Expression: identifier
 					| Expression '/' Expression
 					| Expression and_op Expression
 					| Expression or_op Expression
+					| identifier '(' ArgsList ')'
 					;
+
+
 
 %%
 

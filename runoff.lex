@@ -15,17 +15,13 @@ punctuation [\(\)\{\};:=]
 
 
 %%
-"#".*\n {
-    // should something happen with the comment?
-    printf("comment was entered \n");
-}
+"#".*\n
 "->" {return right_arrow;}
-
 
 
 "const" {return const_keyword;}
 "function" {return function;}
-
+"while" {return while_keyword;}
 
 {punctuation} {return yytext[0];}
 
