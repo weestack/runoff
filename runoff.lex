@@ -21,6 +21,7 @@ punctuation [\(\)\{\};:=,]
 
 "const" {return const_keyword;}
 "struct" {return struct_keyword;}
+"messages" {return messages;}
 "function" {return function;}
 "task" {return task;}
 "while" {return while_keyword;}

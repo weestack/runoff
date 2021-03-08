@@ -17,6 +17,7 @@ int yyerror(const char*);
 %token
 			const_keyword
 			struct_keyword
+            messages
 			int_literal
 			float_literal
 			bool_literal
@@ -59,7 +60,7 @@ Toplevel: DefineConst
 		| DefineFunction
 		| DefineTask
 		| DefineStruct
-	  /*| DefineMessageBlock */
+	    | DefineMessage
 		;
 
 DefineConst: const_keyword identifier int_literal ';'
@@ -69,23 +70,33 @@ DefineFunction: function identifier '(' ParametersList ')' right_arrow Type Code
 			  ;
 
 DefineTask: task identifier '(' ParametersList ')' Codeblock
-					;
+		  ;
 
 
 DefineStruct: struct_keyword identifier '{' StructMembers '}'
-						;
+			;
+
+DefineMessage: messages '{' MessageIdentifiers '}'
+             ;
+MessageIdentifiers: MessageIdentifiers MessageIdentifier
+                  | MessageIdentifier
+                  ;
+
+MessageIdentifier: identifier '(' Parameters ')' ';'
+                 | identifier ';'
+                 ;
 
 StructMembers: StructMembers StructMember
-						 | StructMember
-						 ;
+			 | StructMember
+			 ;
 
 StructMember: Type identifier ';'
-						;
+			;
 
 
 ParametersList: Parameters
- 				| %empty
-				;
+			  | %empty
+			  ;
 
 Parameters: Parameter
 		| Parameters ',' Parameter
