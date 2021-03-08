@@ -2,8 +2,7 @@
 const abc 123;
 const loses 321; #comment test
 
-function setup() -> void
-{
+function setup() -> void {
   int8 a = 321;
   int16 b = 123;
   int32 c = 32123;

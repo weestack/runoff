@@ -94,22 +94,15 @@ Literal: int_literal
 			 | bool_literal
 			 ;
 
-Expression: Term
-					| Expression BinaryOperator Term
+Expression: identifier
+					| Literal
+					| Expression '+' Expression
+					| Expression '-' Expression
+					| Expression '*' Expression
+					| Expression '/' Expression
+					| Expression and_op Expression
+					| Expression or_op Expression
 					;
-
-Term: identifier
-		| Literal
-		;
-
-
-BinaryOperator: '+'
-							| '/'
-							| '-'
-							| '*'
-							| or_op
-							| and_op
-							;
 
 %%
 
