@@ -22,7 +22,7 @@ LDFLAGS=-lfl
 $(PROG): $(OBJECTS)
 	@cc $(CFLAGS) $(OBJECTS) $(LDFLAGS) -o $(PROG)
 	@echo [CC] $(OBJECTS)
-	@echo "There you go $(shell whoami), I have compiled $(PROG) for you :)" 
+	@echo "There you go $(shell whoami), I have compiled $(PROG) for you :)"
 
 # How to generate parser.c from our yacc file
 parser.c: runoff.yacc
@@ -35,7 +35,7 @@ parser.c: runoff.yacc
 parser.h: parser.c
 
 # Generate lexer.c from our lex file
-lexer.c: runoff.lex 
+lexer.c: runoff.lex
 	@flex -o lexer.c runoff.lex
 	@echo [FLEX] $<
 

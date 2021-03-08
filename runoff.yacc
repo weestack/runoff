@@ -10,80 +10,34 @@ int yyerror(const char*);
 %define parse.error verbose
 
 %union {
-				char *id;
-				}
+				char *string;
+}
 
-%start Program
-/* Reserved keywords */
+
 %token
-	CONST
- 	RIGHT_ARROW
-	IF
-	TASK
-	FOREVER
-	WHILE
-	FOR
-	END
-	COMMA
-	THEN
-	OPEN_PARENTHESIS
-	CLOSE_PARENTHESIS
-	OPEN_BRACKET
-	CLOSE_BRACKET
-	EQUAL
-	STAR
-	SLASH
-	PLUS
-	MINUS
-/* datatypes */
-
-%token int_literal string_literal string
-%token int_8 int_16 int_32 bool
+			const_keyword
+			int_literal
+			identifier
 
 
 %%
 
-Program: Decleration
+Program: Toplevels
 			 ;
 
-Decleration: Decleration_const END Decleration
-					 | Decleration_variable END Decleration
-					 | %empty
-					 ;
 
-Decleration_const: CONST string_literal int_literal
-								 ;
+Toplevels: Toplevel
+				 | Toplevels Toplevel
+				 ;
 
-Decleration_variable: Type string_literal
-										| Type string_literal EQUAL Expr
-										;
-
-
-Expr: Term
-		| Term '+' Expr
-		| Term '-' Expr
-		| Term '/' Expr
-		| Term '*' Expr
-		| %empty
-		;
-
-Term: string_literal
-		| int_literal
-		;
-
-Operator: PLUS
-				| MINUS
-				| SLASH
-				| STAR
+Toplevel: DefineConst
+				/*| DefineMessageBlock
+				| DefineStruct
+				| DefineFunction
+				| DefineTask*/
 				;
 
-Type: int_8
-		| int_16
-		| int_32
-		;
-
-
-
+DefineConst: const_keyword identifier int_literal ';'
 
 %%
 
