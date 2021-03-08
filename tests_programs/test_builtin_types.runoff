@@ -9,11 +9,14 @@ messages {
   ledPin;
   puuuhaa;
 }
+
+
 function ad() -> void {
   # bool
   bool p = true;
+  p = false;
   # int
-  int c = 123;
+  int c = -123;
   # int8
   int8 t = 123;
   # int16
@@ -21,7 +24,7 @@ function ad() -> void {
   # int32
   int32 m = 321343214321;
   # int64
-  int64 = 4831482134324321;
+  int64 z= 4831482134324321;
 
 
   uint y = 123;
@@ -34,5 +37,7 @@ function ad() -> void {
   # int64
   uint64 l = 4831482134324321;
 
-
+  float ff = 1000;
+  float ff1 = 1.00;
+  float ff2 = -1.00;
 }
