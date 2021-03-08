@@ -48,25 +48,25 @@ int yyerror(const char*);
 %%
 
 Program: Toplevels
-			 ;
+	   ;
 
 
 Toplevels: Toplevel
-				 | Toplevels Toplevel
-				 ;
+		 | Toplevels Toplevel
+		 ;
 
 Toplevel: DefineConst
-				| DefineFunction
-				| DefineTask
-				| DefineStruct
-				/*| DefineMessageBlock */
-				;
+		| DefineFunction
+		| DefineTask
+		| DefineStruct
+	  /*| DefineMessageBlock */
+		;
 
 DefineConst: const_keyword identifier int_literal ';'
-					 ;
+		   ;
 
 DefineFunction: function identifier '(' ParametersList ')' right_arrow Type Codeblock
-							;
+			  ;
 
 DefineTask: task identifier '(' ParametersList ')' Codeblock
 					;
@@ -74,8 +74,9 @@ DefineTask: task identifier '(' ParametersList ')' Codeblock
 
 DefineStruct: struct_keyword identifier '{' StructMembers '}'
 						;
-						
+
 StructMembers: StructMembers StructMember
+						 | StructMember
 						 ;
 
 StructMember: Type identifier ';'
