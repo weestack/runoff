@@ -28,14 +28,10 @@ int yyerror(const char*);
 			builtin_type
 			right_arrow
 
-%left
-			'-'
-			'+'
-			'/'
-			'*'
-			and_op
-			or_op
-			
+%left and_op or_op
+%left '+' '-'
+%left '*' '/'
+
 %%
 
 Program: Toplevels
@@ -98,11 +94,15 @@ Literal: int_literal
 			 | bool_literal
 			 ;
 
-Expression: identifier
-					| Literal
-					/*| Expression BinaryOperator Expression*/
+Expression: Term
+					| Expression BinaryOperator Term
 					;
-/*
+
+Term: identifier
+		| Literal
+		;
+
+
 BinaryOperator: '+'
 							| '/'
 							| '-'
@@ -110,7 +110,7 @@ BinaryOperator: '+'
 							| or_op
 							| and_op
 							;
-*/
+
 %%
 
 int
