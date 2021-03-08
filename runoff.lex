@@ -20,6 +20,7 @@ punctuation [\(\)\{\};:=,]
 
 
 "const" {return const_keyword;}
+"struct" {return struct_keyword;}
 "function" {return function;}
 "task" {return task;}
 "while" {return while_keyword;}
