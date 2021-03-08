@@ -1,0 +1,38 @@
+# Struct
+struct test {
+  int a;
+  int64 b;
+  bool c;
+}
+# Messages
+messages {
+  ledPin;
+  puuuhaa;
+}
+function ad() -> void {
+  # bool
+  bool p = true;
+  # int
+  int c = 123;
+  # int8
+  int8 t = 123;
+  # int16
+  int16 v = 3213213;
+  # int32
+  int32 m = 321343214321;
+  # int64
+  int64 = 4831482134324321;
+
+
+  uint y = 123;
+  # int8
+  uint8 u = 123;
+  # int16
+  uint16 i = 3213213;
+  # int32
+  uint32 o = 321343214321;
+  # int64
+  uint64 l = 4831482134324321;
+
+
+}

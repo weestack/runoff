@@ -1,0 +1,18 @@
+
+function setup() -> void {
+  int8 a = 321;
+  int16 b = 123;
+  int32 c = 32123;
+  int32 c = 123 + 321;
+}
+
+function dummy(int a) -> int {
+  print(a);
+  bool state = true;
+  while(true) {
+    int ledPin = 5;
+    setoutput(ledPin, state);
+    state = !state;
+    delay(1000);
+  }
+}
