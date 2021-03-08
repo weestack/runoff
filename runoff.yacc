@@ -26,6 +26,9 @@ int yyerror(const char*);
 			less_equal
 			equal
 
+			increment
+			decrement
+
 			identifier
 			function
 			task
@@ -38,6 +41,7 @@ int yyerror(const char*);
 %left equal less_equal greater_equal '<' '>'
 %left '+' '-'
 %left '*' '/'
+%left increment decrement
 
 %right '!' '='
 %%
@@ -101,16 +105,12 @@ Statements: Statements Statement
 				 ;
 Statement: Expression ';'
 				 | while_keyword '(' Expression ')' Codeblock
-				 | for_keyword '(' MaybeStatement ';' MaybeExpression ';' MaybeStatement ')' Codeblock
+				 | for_keyword '(' MaybeExpression ';' MaybeExpression ';' MaybeExpression ')' Codeblock
 				 ;
 
 MaybeExpression: Expression
 							 | %empty
 							 ;
-
-MaybeStatement: Statement
-							| %empty
-							;
 
 Declaration: Type identifier
 					 | Type identifier '=' Expression
@@ -135,6 +135,8 @@ Expression: identifier
 					| '!' Expression
 					| identifier '(' ArgsList ')'
 					| identifier '=' Expression
+					| identifier increment
+					| identifier decrement
 					| Declaration
 					;
 

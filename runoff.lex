@@ -32,6 +32,7 @@ punctuation [\(\)\{\};:=,]
 {float} {return float_literal;}
 ("true"|"false") {return bool_literal;}
 
+
 (u?int(8|16|32|64)?|float|bool|void|msg) {return builtin_type;}
 
 
@@ -41,6 +42,8 @@ punctuation [\(\)\{\};:=,]
 ">=" {return greater_equal;}
 "<=" {return less_equal;}
 "==" {return equal;}
+"++" {return increment;}
+"--" {return decrement;}
 (\+|-|\*|\/|!|<|>) {return yytext[0];}
 
 
