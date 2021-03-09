@@ -37,6 +37,7 @@ int yyerror(const char*);
 			while_keyword
 			for_keyword
             switch_keyword
+            receive
             case_keyword
             default_keyword
 			builtin_type
@@ -131,8 +132,9 @@ Statement: Expression ';'
 				 | while_keyword '(' Expression ')' Codeblock
 				 | for_keyword '(' MaybeExpression ';' MaybeExpression ';' MaybeExpression ')' Codeblock
                  | switch_keyword '(' Expression ')' '{' SwitchCases '}'
+                 | receive '{' ReceiveCases '}'
 				 ;
-                 
+
 SwitchCases: SwitchCases SwitchCase
            | %empty
            ;
@@ -140,6 +142,21 @@ SwitchCases: SwitchCases SwitchCase
 SwitchCase: case_keyword Literal ':' Statements
           | default_keyword ':' Statements
           ;
+
+
+ReceiveCases: ReceiveCases ReceiveCase
+            | %empty
+            ;
+
+ReceiveCase: case_keyword MessageIdentifier ':' Statements
+
+MessageIdentifier: identifier
+                 | identifier '(' Identifiers ')'
+                 ;
+
+Identifiers: Identifiers ',' identifier
+           | identifier
+           ;
 
 MaybeExpression: Expression
 							 | %empty

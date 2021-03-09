@@ -28,6 +28,11 @@ function dummy(int a) -> int {
         print(karl_er_en_so);
   }
 
+  receive {
+    case Ping: print(1);
+    case Pong(a, b, c): print(a);
+  }
+
 
 
   if (so123) {

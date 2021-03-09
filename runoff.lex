@@ -29,6 +29,7 @@ punctuation [\(\)\{\};:=,\.]
 "switch" {return switch_keyword;}
 "case" {return case_keyword;}
 "default" {return default_keyword;}
+"receive" {return receive;}
 
 {punctuation} {return yytext[0];}
 
