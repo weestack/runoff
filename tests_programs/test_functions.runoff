@@ -64,5 +64,10 @@ function dummy(int a) -> int {
 
   (true) ? print(hej) : print(last);
   1+2 ? print(hej) : print(last);
-  1*2+3/123 ? print(hej) : print(last); 
+  1*2+3/123 ? print(hej) : print(last);
+
+  int[3] a;
+  int[3][5] b;
+  b[1][1] = 15;
+
 }

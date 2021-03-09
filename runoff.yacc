@@ -124,6 +124,8 @@ Args: Args ',' Expression
 
 Type: builtin_type
     | struct_keyword identifier
+    | Type '[' int_literal ']'
+    | Type '[' ']'
     ;
 
 Codeblock: '{' Statements '}'
@@ -209,7 +211,15 @@ Expression: Location
 
 Location: identifier
         | identifier '.' Location
+        | identifier Indexes
         ;
+
+Indexes: Indexes Index
+       | Index
+       ;
+
+Index: '[' int_literal ']'
+     ;
 
 
 
