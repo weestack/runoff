@@ -36,6 +36,9 @@ int yyerror(const char*);
 			task
 			while_keyword
 			for_keyword
+            switch_keyword
+            case_keyword
+            default_keyword
 			builtin_type
 			right_arrow
 
@@ -118,7 +121,6 @@ Type: builtin_type
     | struct_keyword identifier
     ;
 
-
 Codeblock: '{' Statements '}'
 				 ;
 
@@ -128,7 +130,16 @@ Statements: Statements Statement
 Statement: Expression ';'
 				 | while_keyword '(' Expression ')' Codeblock
 				 | for_keyword '(' MaybeExpression ';' MaybeExpression ';' MaybeExpression ')' Codeblock
+                 | switch_keyword '(' Expression ')' '{' SwitchCases '}'
 				 ;
+                 
+SwitchCases: SwitchCases SwitchCase
+           | %empty
+           ;
+
+SwitchCase: case_keyword Literal ':' Statements
+          | default_keyword ':' Statements
+          ;
 
 MaybeExpression: Expression
 							 | %empty
