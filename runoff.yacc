@@ -53,7 +53,7 @@ int yyerror(const char*);
 %left '*' '/'
 %left increment decrement
 
-%right '!' '='
+%right '!' '=' '?' ':'
 %%
 
 Program: Toplevels
@@ -203,12 +203,14 @@ Expression: Location
           | identifier increment
           | identifier decrement
           | Declaration
+          | Expression '?' Expression ':' Expression
           ;
 
 
 Location: identifier
         | identifier '.' Location
         ;
+
 
 
 %%
