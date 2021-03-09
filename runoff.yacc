@@ -143,25 +143,30 @@ Literal: int_literal
 			 | bool_literal
 			 ;
 
-Expression: identifier
-					| Literal
-					| Expression '+' Expression
-					| Expression '-' Expression
-					| Expression '*' Expression
-					| Expression '/' Expression
-					| Expression and_op Expression
-					| Expression or_op Expression
-					| Expression equal Expression
-					| Expression greater_equal Expression
-					| Expression less_equal Expression
-					| '!' Expression
-					| identifier '(' ArgsList ')'
-					| identifier '=' Expression
-					| identifier increment
-					| identifier decrement
-					| Declaration
-					;
+Expression: Location
+          | Literal
+          | Expression '+' Expression
+          | Expression '-' Expression
+          | Expression '*' Expression
+          | Expression '/' Expression
+          | Expression and_op Expression
+          | Expression or_op Expression
+          | Expression equal Expression
+          | Expression greater_equal Expression
+          | Expression less_equal Expression
+          | '!' Expression
+          | '(' Expression ')'
+          | identifier '(' ArgsList ')'
+          | Location '=' Expression
+          | identifier increment
+          | identifier decrement
+          | Declaration
+          ;
 
+
+Location: identifier
+        | identifier '.' Location
+        ;
 
 
 %%

@@ -11,7 +11,7 @@ digit [0-9]
 integer -?(0|[1-9]{digit}*)
 float {integer}\.{digit}*
 identifier [a-zA-Z][a-zA-Z0-9_]*
-punctuation [\(\)\{\};:=,]
+punctuation [\(\)\{\};:=,\.]
 
 
 %%
@@ -26,6 +26,7 @@ punctuation [\(\)\{\};:=,]
 "task" {return task;}
 "while" {return while_keyword;}
 "for" {return for_keyword;}
+
 
 {punctuation} {return yytext[0];}
 

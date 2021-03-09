@@ -1,8 +1,13 @@
 # Struct
+struct hej {
+    int a;
+}
+
 struct test {
   int a;
   int64 b;
   bool c;
+  struct hej s;
 }
 # Messages
 messages {
@@ -42,4 +47,9 @@ function ad() -> void {
   float ff2 = -1.00;
 
   struct peter123 peter1234;
+  peter1234.a = 123;
+  print(peter1234.a);
+  peter1234.c = true;
+
+  print(peter1234.s.a);
 }
