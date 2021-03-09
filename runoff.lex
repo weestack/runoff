@@ -18,6 +18,7 @@ punctuation [\[\]\(\)\{\};:=,\.\?]
 "#".*\n
 "->" {return right_arrow;}
 
+"include" {return include_keyword;}
 
 "const" {return const_keyword;}
 "struct" {return struct_keyword;}

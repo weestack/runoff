@@ -47,6 +47,8 @@ int yyerror(const char*);
 			right_arrow
             return_keyword
 
+            include_keyword
+
 %left and_op or_op
 %left equal less_equal greater_equal '<' '>'
 %left '+' '-'
@@ -69,6 +71,7 @@ Toplevel: DefineConst
 		| DefineTask
 		| DefineStruct
 	    | DefineMessage
+        | DefineInclude
 		;
 
 DefineConst: const_keyword identifier int_literal ';'
@@ -86,6 +89,11 @@ DefineStruct: struct_keyword identifier '{' StructMembers '}'
 
 DefineMessage: messages '{' MessageIdentifiers '}'
              ;
+
+DefineInclude: include_keyword '(' identifier ')' ';'
+             | include_keyword '(' identifier '.' identifer ')' ';'
+             ;
+
 MessageIdentifiers: MessageIdentifiers MessageIdentifier
                   | MessageIdentifier
                   ;
