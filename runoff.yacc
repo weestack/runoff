@@ -36,12 +36,16 @@ int yyerror(const char*);
 			task
 			while_keyword
 			for_keyword
+            if_keyword
+            else_keyword
+            elseif_keyword
             switch_keyword
             receive
             case_keyword
             default_keyword
 			builtin_type
 			right_arrow
+            return_keyword
 
 %left and_op or_op
 %left equal less_equal greater_equal '<' '>'
@@ -132,8 +136,18 @@ Statement: Expression ';'
 				 | while_keyword '(' Expression ')' Codeblock
 				 | for_keyword '(' MaybeExpression ';' MaybeExpression ';' MaybeExpression ')' Codeblock
                  | switch_keyword '(' Expression ')' '{' SwitchCases '}'
+                 | IfStatement
                  | receive '{' ReceiveCases '}'
+                 | return_keyword Expression ';'
+                 | return_keyword ';'
 				 ;
+
+
+IfStatement: if_keyword '(' Expression ')' Codeblock ElsePart
+
+ElsePart: else_keyword Codeblock
+        | elseif_keyword '(' Expression ')' Codeblock ElsePart
+        | %empty
 
 SwitchCases: SwitchCases SwitchCase
            | %empty

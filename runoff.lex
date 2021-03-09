@@ -26,10 +26,15 @@ punctuation [\(\)\{\};:=,\.]
 "task" {return task;}
 "while" {return while_keyword;}
 "for" {return for_keyword;}
+"elseif" {return elseif_keyword;}
+"if" {return if_keyword;}
+"else" {return else_keyword;}
+
 "switch" {return switch_keyword;}
 "case" {return case_keyword;}
 "default" {return default_keyword;}
 "receive" {return receive;}
+"return" {return return_keyword;}
 
 {punctuation} {return yytext[0];}
 

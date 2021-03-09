@@ -4,8 +4,13 @@ function setup() -> void {
   int16 b = 123;
   int32 c = 32123;
   int32 c = 123 + 321;
+  return;
+}
 
-
+function ss(int a) -> struct hello {
+    struct hello test;
+    return 1+2+3*(3+7) + 12;
+    return test;
 }
 
 function dummy(int a) -> int {
@@ -17,6 +22,8 @@ function dummy(int a) -> int {
     state = !state;
     delay(1000);
   }
+
+  return 1;
 
   switch(a) {
     case 1:
@@ -38,6 +45,22 @@ function dummy(int a) -> int {
   if (so123) {
     print(abc);
     int a = 123;
-    int64 = abc;
+    int64 c = abc;
+  }else {
+    print(nu_er_peter_en_so);
   }
+
+  if (true) {
+    print(sunglasses);
+  }
+
+  if (false) {
+
+  }elseif (true) {
+    print(angrysad);
+  }else {
+    print(oh_why);
+  }
+
+
 }
