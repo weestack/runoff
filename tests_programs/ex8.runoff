@@ -1,0 +1,18 @@
+function test() -> void {
+	# if statements
+	int a = 10;
+	if(a==10){
+		delay(100);
+	}elseif(a > 10){
+		sleep(500);
+	}else{
+		sleep(100000);
+	}
+
+	# A switch which works like in C but has implicit breaks between cases
+	switch(a){
+	case 1:	delay(100);
+	case 2: delay(1000);
+	default: delay(1000000);
+	}
+}
