@@ -71,7 +71,7 @@ Toplevel: DefineConst
 		| DefineTask
 		| DefineStruct
 	    | DefineMessage
-        | DefineInclude
+        | IncludeRunoffFile
 		;
 
 DefineConst: const_keyword identifier int_literal ';'
@@ -90,8 +90,7 @@ DefineStruct: struct_keyword identifier '{' StructMembers '}'
 DefineMessage: messages '{' MessageIdentifiers '}'
              ;
 
-DefineInclude: include_keyword '(' identifier ')' ';'
-             | include_keyword '(' identifier '.' identifer ')' ';'
+IncludeRunoffFile: include_keyword '(' identifier ')' ';'
              ;
 
 MessageIdentifiers: MessageIdentifiers MessageIdentifier
