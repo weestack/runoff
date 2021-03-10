@@ -53,7 +53,16 @@
 
     include_keyword
 
-%left and_op or_op
+    bitwise_op
+    bitwise_or
+    bitwise_xor
+    bitwise_not
+    right_shift
+    left_shift
+
+
+
+%left and_op or_op bitwise_op bitwise_or bitwise_xor bitwise_not right_shift left_shift
 %left equal not_equal less_equal greater_equal less_than greater_than modulo
 %left '+' '-'
 %left '*' '/'
@@ -202,6 +211,8 @@ Literal: int_literal
        | bool_literal
        ;
 
+
+
 Expression: Location
           | Literal
           | Expression '+' Expression
@@ -209,6 +220,7 @@ Expression: Location
           | Expression '*' Expression
           | Expression '/' Expression
           | Expression modulo Expression
+
           | Expression and_op Expression
           | Expression or_op Expression
           | Expression equal Expression
@@ -217,7 +229,14 @@ Expression: Location
           | Expression greater_than Expression
           | Expression less_equal Expression
           | Expression less_than Expression
+
           | '!' Expression
+          | bitwise_not Expression
+          | Expression bitwise_op Expression
+          | Expression bitwise_or Expression
+          | Expression bitwise_xor Expression
+          | Expression right_shift Expression
+          | Expression left_shift Expression
           | '(' Expression ')'
           | identifier '(' ArgsList ')'
           | Location '=' Expression

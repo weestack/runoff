@@ -70,4 +70,13 @@ function dummy(int a) -> int {
   int[3][5] b;
   b[1][1] = 15;
 
+  int a = 123 ^ 123; # should be 0
+  int b = 1 | 1;
+  int c = 123 & 12;
+  int d = ~12;
+  int e = 3 >> 4;
+  int f = 4 << 3;
+  int g = f << e;
+  int h = (f * 9) << (e % 3) * 2;
+
 }

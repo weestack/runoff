@@ -57,10 +57,20 @@ punctuation [\[\]\(\)\{\};:=,\.\?]
 "++" {return increment;}
 "!=" {return not_equal;}
 "--" {return decrement;}
+
+"&" {return bitwise_op;}
+"|" {return bitwise_or;}
+"^" {return bitwise_xor;}
+"~" {return bitwise_not;}
+">>" {return right_shift;}
+"<<" {return left_shift;}
+
 "<" {return less_than;}
 ">" {return greater_than;}
 "%" {return modulo;}
 (\+|-|\*|\/|!) {return yytext[0];}
+
+
 
 
 
