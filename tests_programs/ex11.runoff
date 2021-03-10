@@ -1,0 +1,11 @@
+function test() -> void {
+        int val =  analogReadInput(AnalogInPin);
+        int outval = 100;
+        analogWrite(AnalogOutPin, outval);
+}
+
+function setup() -> void {
+        analogInputPin(AnalogInPin);
+        analogOutputPin(AnalogOutPin);
+}
+
