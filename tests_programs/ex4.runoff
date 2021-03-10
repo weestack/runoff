@@ -4,7 +4,7 @@
 task infinite(int a) {
 	int i;
 	for(i = 0; i < a; i++){
-		delay(100)
+		delay(100);
 	}
 }
 
