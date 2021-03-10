@@ -24,9 +24,12 @@
 
     and_op
     or_op
+    greater_than
     greater_equal
+    less_than
     less_equal
     equal
+    modulo
 
     increment
     decrement
@@ -50,7 +53,7 @@
     include_keyword
 
 %left and_op or_op
-%left equal less_equal greater_equal '<' '>'
+%left equal less_equal greater_equal less_than greater_than modulo
 %left '+' '-'
 %left '*' '/'
 %left increment decrement
@@ -204,11 +207,14 @@ Expression: Location
           | Expression '-' Expression
           | Expression '*' Expression
           | Expression '/' Expression
+          | Expression modulo Expression
           | Expression and_op Expression
           | Expression or_op Expression
           | Expression equal Expression
           | Expression greater_equal Expression
+          | Expression greater_than Expression
           | Expression less_equal Expression
+          | Expression less_than Expression
           | '!' Expression
           | '(' Expression ')'
           | identifier '(' ArgsList ')'

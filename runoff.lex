@@ -56,7 +56,10 @@ punctuation [\[\]\(\)\{\};:=,\.\?]
 "==" {return equal;}
 "++" {return increment;}
 "--" {return decrement;}
-(\+|-|\*|\/|!|<|>) {return yytext[0];}
+"<" {return less_than;}
+">" {return greater_than;}
+"%" {return modulo;}
+(\+|-|\*|\/|!) {return yytext[0];}
 
 
 
