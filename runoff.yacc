@@ -1,53 +1,53 @@
 %{
-#include <stdio.h>
+    #include <stdio.h>
 
-extern int yylineno;
-extern int yylex(void);
-int yyerror(const char*);
+    extern int yylineno;
+    extern int yylex(void);
+    int yyerror(const char*);
 %}
 
 /* Give me the good errors please */
 %define parse.error verbose
 
 %union {
-				char *string;
+    char *string;
 }
 
 
 %token
-			const_keyword
-			struct_keyword
-            messages
-			int_literal
-			float_literal
-			bool_literal
+    const_keyword
+    struct_keyword
+    messages
+    int_literal
+    float_literal
+    bool_literal
 
-			and_op
-			or_op
-			greater_equal
-			less_equal
-			equal
+    and_op
+    or_op
+    greater_equal
+    less_equal
+    equal
 
-			increment
-			decrement
+    increment
+    decrement
 
-			identifier
-			function
-			task
-			while_keyword
-			for_keyword
-            if_keyword
-            else_keyword
-            elseif_keyword
-            switch_keyword
-            receive
-            case_keyword
-            default_keyword
-			builtin_type
-			right_arrow
-            return_keyword
+    identifier
+    function
+    task
+    while_keyword
+    for_keyword
+    if_keyword
+    else_keyword
+    elseif_keyword
+    switch_keyword
+    receive
+    case_keyword
+    default_keyword
+    builtin_type
+    right_arrow
+    return_keyword
 
-            include_keyword
+    include_keyword
 
 %left and_op or_op
 %left equal less_equal greater_equal '<' '>'
@@ -59,39 +59,39 @@ int yyerror(const char*);
 %%
 
 Program: Toplevels
-	   ;
+       ;
 
 
 Toplevels: Toplevel
-		 | Toplevels Toplevel
-		 ;
+         | Toplevels Toplevel
+         ;
 
 Toplevel: DefineConst
-		| DefineFunction
-		| DefineTask
-		| DefineStruct
-	    | DefineMessage
+        | DefineFunction
+        | DefineTask
+        | DefineStruct
+        | DefineMessage
         | IncludeRunoffFile
-		;
+        ;
 
 DefineConst: const_keyword identifier int_literal ';'
-		   ;
+           ;
 
 DefineFunction: function identifier '(' ParametersList ')' right_arrow Type Codeblock
-			  ;
+              ;
 
 DefineTask: task identifier '(' ParametersList ')' Codeblock
-		  ;
+          ;
 
 
 DefineStruct: struct_keyword identifier '{' StructMembers '}'
-			;
+            ;
 
 DefineMessage: messages '{' MessageIdentifiers '}'
              ;
 
 IncludeRunoffFile: include_keyword '(' identifier ')' ';'
-             ;
+                 ;
 
 MessageIdentifiers: MessageIdentifiers MessageIdentifier
                   | MessageIdentifier
@@ -102,32 +102,32 @@ MessageIdentifier: identifier '(' Parameters ')' ';'
                  ;
 
 StructMembers: StructMembers StructMember
-			 | StructMember
-			 ;
+             | StructMember
+             ;
 
 StructMember: Type identifier ';'
-			;
+            ;
 
 
 ParametersList: Parameters
-			  | %empty
-			  ;
+              | %empty
+              ;
 
 Parameters: Parameter
-		| Parameters ',' Parameter
-		;
+          | Parameters ',' Parameter
+          ;
 
 Parameter: Type identifier
-	 ;
+         ;
 
 
 ArgsList: Args
-				| %empty
-				;
+        | %empty
+        ;
 
 Args: Args ',' Expression
-		| Expression
-		;
+    | Expression
+    ;
 
 Type: builtin_type
     | struct_keyword identifier
@@ -136,27 +136,30 @@ Type: builtin_type
     ;
 
 Codeblock: '{' Statements '}'
-				 ;
+         ;
 
 Statements: Statements Statement
-				 | %empty
-				 ;
+          | %empty
+          ;
+
 Statement: Expression ';'
-				 | while_keyword '(' Expression ')' Codeblock
-				 | for_keyword '(' MaybeExpression ';' MaybeExpression ';' MaybeExpression ')' Codeblock
-                 | switch_keyword '(' Expression ')' '{' SwitchCases '}'
-                 | IfStatement
-                 | receive '{' ReceiveCases '}'
-                 | return_keyword Expression ';'
-                 | return_keyword ';'
-				 ;
+         | while_keyword '(' Expression ')' Codeblock
+         | for_keyword '(' MaybeExpression ';' MaybeExpression ';' MaybeExpression ')' Codeblock
+         | switch_keyword '(' Expression ')' '{' SwitchCases '}'
+         | IfStatement
+         | receive '{' ReceiveCases '}'
+         | return_keyword Expression ';'
+         | return_keyword ';'
+         ;
 
 
 IfStatement: if_keyword '(' Expression ')' Codeblock ElsePart
+           ;
 
 ElsePart: else_keyword Codeblock
         | elseif_keyword '(' Expression ')' Codeblock ElsePart
         | %empty
+        ;
 
 SwitchCases: SwitchCases SwitchCase
            | %empty
@@ -172,6 +175,7 @@ ReceiveCases: ReceiveCases ReceiveCase
             ;
 
 ReceiveCase: case_keyword MessageIdentifier ':' Statements
+           ;
 
 MessageIdentifier: identifier
                  | identifier '(' Identifiers ')'
@@ -182,17 +186,17 @@ Identifiers: Identifiers ',' identifier
            ;
 
 MaybeExpression: Expression
-							 | %empty
-							 ;
+               | %empty
+               ;
 
 Declaration: Type identifier
-					 | Type identifier '=' Expression
-					 ;
+           | Type identifier '=' Expression
+           ;
 
 Literal: int_literal
-			 | float_literal
-			 | bool_literal
-			 ;
+       | float_literal
+       | bool_literal
+       ;
 
 Expression: Location
           | Literal
@@ -234,5 +238,5 @@ Index: '[' int_literal ']'
 
 int
 yyerror(const char *err) {
-		printf("Parse error at line %d: %s\n", yylineno, err);
+    printf("Parse error at line %d: %s\n", yylineno, err);
 }
