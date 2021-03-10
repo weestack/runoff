@@ -237,7 +237,7 @@ Indexes: Indexes Index
        | Index
        ;
 
-Index: '[' int_literal ']'
+Index: '[' Expression ']'
      ;
 
 
