@@ -1,0 +1,4 @@
+# comments in this form
+function f1() -> void {
+	delay(1000);
+}
