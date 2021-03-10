@@ -1,0 +1,25 @@
+# Tasks are like functions except they cannot return values,
+# and they can be spawned and read from their message box
+
+task infinite(int a) {
+	int i;
+	for(i = 0; i < a; i++){
+		delay(100)
+	}
+}
+
+task quick() {
+	int i = 100;
+	for(; i > 0; i--){
+		delay(1);
+	}
+	# tasks don't need to take parameters
+}
+
+function setup() -> void {
+	int taskid1 = spawn(infinite, 1234);
+	int taskid2 = spawn(quick);
+	# the builtin spawn primite takes n+1 inputs where
+	# the first is the name of a task which expects n inputs,
+	# and the rest are the inputs to the task
+}
