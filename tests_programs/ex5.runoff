@@ -1,0 +1,34 @@
+# First the different message types are defined
+# in the special 'message' block. Messages can contain
+# data such as the ping example which contains an int
+
+messages {
+	Ping(int i);
+	Pong;
+}
+
+task ping(int pongtaskid) {
+	int taskid = taskid(); # the builtin 'taskid' returns the task id of the current task
+	msg pingmsg = Ping(taskid); # the msg type can contain any of the messages
+
+	for(;;){
+		# a ping message is sent to the pong task
+		send(pongtasskid, pingmsg);
+		receive {
+		case Pong: delay(1);
+		}
+	}
+}
+
+task pong() {
+	for(;;) {
+		receive {
+		case Ping(pingtaskid): send(pingtaskid, pong);
+		}
+	}
+}
+
+function setup() -> void {
+	int pongtaskid = spawn(pong);
+	int pingtaskid = spawn(ping, pongtaskid);
+}
