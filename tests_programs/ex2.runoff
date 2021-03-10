@@ -1,0 +1,5 @@
+# this is a comment
+
+function haha() -> void {
+	int i; # so is this until the end of the line
+}
