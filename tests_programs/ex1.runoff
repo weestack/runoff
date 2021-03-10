@@ -1,0 +1,43 @@
+const LED1Pin 7;
+const LED2Pin 8;
+const LED3Pin 9;
+
+messages {
+	Button1Click;
+	Button1Release;
+	PartyTime(bool state);
+}
+
+function setPartyLight(bool state) -> void {
+	if(state) {
+		turnOn(LED3Pin);
+	} else {
+		turnOff(LED3Pin);
+	}
+}
+
+task A() {
+	while(true) {
+		receive {
+		case Button1Click: turnOn(LED2Pin);
+		case Button1Release: turnOff(LED2Pin);
+		case PartyTime(s): setPartyLight(s);
+		}
+	}
+}
+
+task B() {
+	bool party = false;
+	while(true) {
+		delay(500);
+		party = !party;
+		send(A, PartyTime(party));
+	}
+}
+
+function setup() -> void {
+	inputPin(LED1Pin, A, Button1Click, Button1Release);
+	outputPin(LED2Pin);
+	outputPin(LED3Pin);
+}
+
