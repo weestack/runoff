@@ -29,6 +29,7 @@
     less_than
     less_equal
     equal
+    not_equal
     modulo
 
     increment
@@ -53,7 +54,7 @@
     include_keyword
 
 %left and_op or_op
-%left equal less_equal greater_equal less_than greater_than modulo
+%left equal not_equal less_equal greater_equal less_than greater_than modulo
 %left '+' '-'
 %left '*' '/'
 %left increment decrement
@@ -211,6 +212,7 @@ Expression: Location
           | Expression and_op Expression
           | Expression or_op Expression
           | Expression equal Expression
+          | Expression not_equal Expression
           | Expression greater_equal Expression
           | Expression greater_than Expression
           | Expression less_equal Expression

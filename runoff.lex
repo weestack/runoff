@@ -55,6 +55,7 @@ punctuation [\[\]\(\)\{\};:=,\.\?]
 "<=" {return less_equal;}
 "==" {return equal;}
 "++" {return increment;}
+"!=" {return not_equal;}
 "--" {return decrement;}
 "<" {return less_than;}
 ">" {return greater_than;}
