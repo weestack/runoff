@@ -1,0 +1,17 @@
+function useless() -> void {
+	int i = 5;
+}
+
+function absorb(int a, float b) -> void {
+	int c = a + 5;
+	float d = b * 4;
+}
+
+function produce() -> int {
+	int result = 123 + 456;
+	return result;
+}
+
+function add(int a, int b) -> int {
+	return a + b;
+}
