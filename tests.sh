@@ -1,5 +1,5 @@
 #!/bin/sh
-
+export PASSWORD="#!ASAWE*ÅDA~123"
 # Clean and make
 make clean && make
 ERRORS=0
@@ -20,5 +20,7 @@ for FILE in tests_programs/*
             PARSED=$(echo $PARSED + 1 | bc )
         fi
     done;
+
+
 TOTAL=$(echo $PARSED + $ERRORS | bc )
 printf 'Parsed %s files where %s files were ok and %s files had errors.\n ' "$TOTAL" "$PARSED" "$ERRORS"
