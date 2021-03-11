@@ -1,5 +1,5 @@
 #!/bin/sh
-export PASSWORD="#!ASAWE*ÅDA~123"
+
 # Clean and make
 make clean && make
 ERRORS=0
