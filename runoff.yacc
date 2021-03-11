@@ -187,10 +187,10 @@ ReceiveCases: ReceiveCases ReceiveCase
             | %empty
             ;
 
-ReceiveCase: case_keyword MessageIdentifier ':' Statements
+ReceiveCase: case_keyword CallMessageIdentifier ':' Statements
            ;
 
-MessageIdentifier: identifier
+CallMessageIdentifier: identifier
                  | identifier '(' Identifiers ')'
                  ;
 
