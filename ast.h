@@ -37,14 +37,12 @@ struct ProgNode {
 
 
 struct DefineConstNode {
-    /*magic_word*/
     AstNode *identifier;
     AstNode *int_literal;
 };
 
 
 struct DefineFunctionNode {
-    /*magic_word*/
     AstNode *identifier;
     AstNode *parameters;
     AstNode *type;
@@ -53,7 +51,6 @@ struct DefineFunctionNode {
 
 
 struct DefineTaskNode {
-    /*magic_word*/
     AstNode *identifier;
     AstNode *parameters;
     AstNode *statements;
@@ -61,46 +58,39 @@ struct DefineTaskNode {
 
 
 struct DefineMessageNode {
-    /*magic_word*/
     AstNode *messagesIdentifiers;
 };
 
 
 struct IncludeRunoffFileNode {
-    /*magic_word*/
     AstNode *identifier;
 };
 
 
 struct MessageIdentifierNode {
-    /*magic_word*/
     AstNode *identifier;
     AstNode *parameters;
 };
 
 
 struct StructMemberNode {
-    /*magic_word*/
     AstNode *identifier;
     AstNode *type;
 };
 
 
 struct ParameterNode {
-    /*magic_word*/
     AstNode *type;
     AstNode *identifier;
 };
 
 
 struct StructTypeNode {
-    /*magic_word*/
     AstNode *identifier;
 };
 
 
 struct ArrayTypeNode {
-    /*magic_word*/
     AstNode *type;
     /* if int literal is null, then its eq to int a[]; */
     AstNode *int_literal;
@@ -109,14 +99,12 @@ struct ArrayTypeNode {
 
 
 struct WhileNode {
-    /*magic_word*/
     AstNode *expression;
     AstNode *statements;
 };
 
 
 struct ForNode {
-    /*magic_word*/
     AstNode *expressionInit;
     AstNode *expressionTest;
     AstNode *expressionUpdate; /* hehe */
@@ -125,14 +113,12 @@ struct ForNode {
 
 
 struct SwitchNode {
-    /*magic_word*/
     AstNode *expression;
     AstNode *cases;
 };
 
 
 struct SwitchCaseNode {
-    /*magic_word*/
     /* int eller bool, if null then default case hehe */
     AstNode *literal;
     AstNode *statements;
@@ -140,7 +126,6 @@ struct SwitchCaseNode {
 
 
 struct IfNode {
-    /*magic_word*/
     AstNode *expression;
     AstNode *statements;
     /* else or elseif or neither */
@@ -149,7 +134,6 @@ struct IfNode {
 
 
 struct ElseIfNode {
-    /*magic_word*/
     AstNode *expression;
     AstNode *statements;
     AstNode *elsePart;
@@ -157,19 +141,16 @@ struct ElseIfNode {
 
 
 struct ElseNode {
-    /*magic_word*/
     AstNode *statements;
 };
 
 
 struct ReceiveNode {
-    /*magic_word*/
     AstNode *cases;
 };
 
 
 struct ReceiveCaseNode {
-    /*magic_word*/
     AstNode *messageName;
     AstNode *dataNames;
     AstNode *statements;
@@ -177,7 +158,6 @@ struct ReceiveCaseNode {
 
 
 struct VarDeclNode {
-    /*magic_word*/
     AstNode *identifier;
     /* if expression is empty, then init to standard value */
     AstNode *expression;
@@ -185,7 +165,6 @@ struct VarDeclNode {
 
 
 struct BinaryOperationNode {
-    /*magic_word*/
     AstNode *expression_left;
     /* enum */
     int operator;
@@ -194,27 +173,23 @@ struct BinaryOperationNode {
 
 
 struct VariableLocationNode {
-    /*magic_word*/
     AstNode *identifier;
 };
 
 
 struct StructLocationNode {
-    /*magic_word*/
     AstNode *identifier;
     AstNode *location;
 };
 
 
 struct ArrayLocationNode {
-    /*magic_word*/
     AstNode *identifier;
     AstNode *indicies;
 };
 
 
 struct UnaryOperationNode {
-    /*magic_word*/
     /* enum again */
     int operator;
     AstNode *expression;
@@ -222,21 +197,18 @@ struct UnaryOperationNode {
 
 
 struct FunctionCallNode {
-    /*magic_word*/
     AstNode *identifier;
     AstNode *arguments;
 };
 
 
 struct AssignmentNode {
-    /*magic_word*/
     AstNode *location;
     AstNode *expression;
 };
 
 
 struct TernaryOperatorNode {
-    /*magic_word*/
     AstNode *expressionTest;
     AstNode *expressionTrue;
     AstNode *expressionFalse;
