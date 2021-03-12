@@ -280,35 +280,35 @@ struct AstNode {
 };
 
 
-AstNode *mkProgNode();
-AstNode *mkDefineConstNode();
-AstNode *mkDefineFunctionNode();
-AstNode *mkDefineTaskNode();
-AstNode *mkDefineMessageNode();
-AstNode *mkIncludeRunoffFileNode();
-AstNode *mkMessageIdentifierNode();
-AstNode *mkStructMemberNode();
-AstNode *mkParameterNode();
-AstNode *mkStructTypeNode();
-AstNode *mkArrayTypeNode();
-AstNode *mkWhileNode();
-AstNode *mkForNode();
-AstNode *mkSwitchNode();
-AstNode *mkSwitchCaseNode();
-AstNode *mkIfNode();
-AstNode *mkElseIfNode();
-AstNode *mkElseNode();
-AstNode *mkReceiveNode();
-AstNode *mkReceiveCaseNode();
-AstNode *mkVarDeclNode();
-AstNode *mkBinaryOperationNode();
-AstNode *mkVariableLocationNode();
-AstNode *mkStructLocationNode();
-AstNode *mkArrayLocationNode();
-AstNode *mkUnaryOperationNode();
-AstNode *mkFunctionCallNode();
-AstNode *mkAssignmentNode();
-AstNode *mkTernaryOperatorNode();
+AstNode *mkProgNode(int type);
+AstNode *mkDefineConstNode(AstNode *toplevels);
+AstNode *mkDefineFunctionNode(AstNode *identifier, AstNode *int_literal);
+AstNode *mkDefineTaskNode(AstNode *identifier, AstNode *parameters, AstNode *type, AstNode *statements);
+AstNode *mkDefineMessageNode(AstNode *identifier, AstNode *parameters, AstNode *statements);
+AstNode *mkIncludeRunoffFileNode(AstNode *messagesIdentifiers);
+AstNode *mkMessageIdentifierNode(AstNode *identifier, AstNode *parameters);
+AstNode *mkStructMemberNode(AstNode *identifier, AstNode *type);
+AstNode *mkParameterNode(AstNode *type, AstNode *identifier);
+AstNode *mkStructTypeNode(AstNode *identifier);
+AstNode *mkArrayTypeNode(AstNode *type, AstNode *int_literal);
+AstNode *mkWhileNode(AstNode *expression, AstNode *statements);
+AstNode *mkForNode(AstNode *expressionInit, AstNode *expressionTest, AstNode *expressionUpdate, AstNode *statements);
+AstNode *mkSwitchNode(AstNode *expression, AstNode *cases);
+AstNode *mkSwitchCaseNode(AstNode *literal, AstNode *statements);
+AstNode *mkIfNode(AstNode *expression, AstNode *statements, AstNode *elsePart);
+AstNode *mkElseIfNode(AstNode *expression, AstNode *statements, AstNode *elsePart);
+AstNode *mkElseNode(AstNode *statements);
+AstNode *mkReceiveNode(AstNode *cases);
+AstNode *mkReceiveCaseNode(AstNode *messageName, AstNode *dataNames, AstNode *statements);
+AstNode *mkVarDeclNode(AstNode *identifier, AstNode *expression);
+AstNode *mkBinaryOperationNode(AstNode *expression_left, int operator, AstNode *expression_right);
+AstNode *mkVariableLocationNode(AstNode *identifier);
+AstNode *mkStructLocationNode(AstNode *identifier, AstNode *location);
+AstNode *mkArrayLocationNode(AstNode *identifier, AstNode *indicies);
+AstNode *mkUnaryOperationNode(int operator, AstNode *expression);
+AstNode *mkFunctionCallNode(AstNode *identifier, AstNode *arguments);
+AstNode *mkAssignmentNode(AstNode *location, AstNode *expression);
+AstNode *mkTernaryOperatorNode(AstNode *expressionTest, AstNode *expressionTrue, AstNode *expressionFalse);
 
 enum NodeTypes{
     Prog,
