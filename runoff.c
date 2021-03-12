@@ -7,7 +7,15 @@
 void
 prettydummy(void)
 {
-	AstNode *tree = NULL;
+	AstNode *constnode = mkDefineConstNode(NULL, NULL);
+	AstNode *funnode = mkDefineFunctionNode(NULL, NULL, NULL, NULL);
+	AstNode *tasknode = mkDefineTaskNode(NULL, NULL, NULL);
+	AstNode *tree;
+
+	constnode->next = funnode;
+	funnode->next = tasknode;
+
+	tree = mkProgNode(constnode);
 
 	printf("Pretty print of dummy tree:\n%s\n", prettyprint(tree));
 }

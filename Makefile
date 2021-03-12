@@ -13,7 +13,7 @@ PROG=runoff
 
 # Specify the C flags and linker flags.
 # We want ansi c with all warnings
-CFLAGS=-ansi -pedantic -Wall -Wextra -Werror
+CFLAGS=-ansi -pedantic -Wall -Wextra
 
 # We want to link with the flex library
 LDFLAGS=-lfl
