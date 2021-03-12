@@ -252,12 +252,12 @@ struct AstNode {
 };
 
 
-AstNode *mkProgNode(int type);
-AstNode *mkDefineConstNode(AstNode *toplevels);
-AstNode *mkDefineFunctionNode(AstNode *identifier, AstNode *int_literal);
-AstNode *mkDefineTaskNode(AstNode *identifier, AstNode *parameters, AstNode *type, AstNode *statements);
-AstNode *mkDefineMessageNode(AstNode *identifier, AstNode *parameters, AstNode *statements);
-AstNode *mkIncludeRunoffFileNode(AstNode *messagesIdentifiers);
+AstNode *mkProgNode(AstNode *toplevels);
+AstNode *mkDefineConstNode(AstNode *identifier, AstNode *int_literal);
+AstNode *mkDefineFunctionNode(AstNode *identifier, AstNode *parameters, AstNode *type, AstNode *statements);
+AstNode *mkDefineTaskNode(AstNode *identifier, AstNode *parameters, AstNode *statements);
+AstNode *mkDefineMessageNode(AstNode *messagesIdentifiers);
+AstNode *mkIncludeRunoffFileNode(AstNode *identifier);
 AstNode *mkMessageIdentifierNode(AstNode *identifier, AstNode *parameters);
 AstNode *mkStructMemberNode(AstNode *identifier, AstNode *type);
 AstNode *mkParameterNode(AstNode *type, AstNode *identifier);
