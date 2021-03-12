@@ -121,39 +121,103 @@ static char *ppProg(ProgNode node){
 }
 
 static char *ppDefineConst(DefineConstNode node){
-return smprintf("const toplevel");
+	char *idstr = prettyprint(node.identifier);
+	char *intlitstr = prettyprint(node.int_literal);
+	char *result = smprintf("const %s %s;", idstr, intlitstr);
+	free(idstr);
+	free(intlitstr);
+	return result;
 }
 
 static char *ppDefineFunction(DefineFunctionNode node){
-return smprintf("function toplevel");
+	char *idstr = prettyprint(node.identifier);
+	char *paramsstr = prettyprint(node.parameters);	/* Should print a comma seperated list of params */
+	char *typestr = prettyprint(node.type);
+	char *stmtsstr = prettyprint(node.statements);
+	char *result = smprintf("function %s(%s) -> %s {%s}", idstr, paramsstr, typestr, stmtsstr);
+	free(idstr);
+	free(paramsstr);
+	free(typestr);
+	free(stmtsstr);
+	return result;
 }
 
 static char *ppDefineTask(DefineTaskNode node){
-return smprintf("task toplevel");
+	char *idstr = prettyprint(node.identifier);
+	char *paramsstr = prettyprint(node.parameters); /* should print a comma seperated list of params */
+	char *stmtsstr = prettyprint(node.statements);
+	char *result = smprintf("task %s(%s) {%s}", idstr, paramsstr, stmtsstr);
+	free(idstr);
+	free(paramsstr);
+	free(stmtsstr);
+	return result;
 }
 
 static char *ppDefineMessage(DefineMessageNode node){
-return "";
+	char *result = smprintf("messages {");
+	char *old;
+	char *msgstr;
+	AstNode *msg = node.messagesIdentifiers;
+
+	while(msg != NULL){
+		old = result;
+		msgstr = prettyprint(msg);
+		result = smprintf("%s\n\t%s;", old, msgstr);
+		free(old);
+		free(msgstr);
+		msg = msg->next;
+	}
+	old = result;
+	result = smprintf("%s\n}", old);
+	free(old);
+	return result;
 }
 
 static char *ppIncludeRunoffFile(IncludeRunoffFileNode node){
-return "";
+	char *idstr = prettyprint(node.identifier);
+	char *result = smprintf("include(%s);", idstr);
+	free(idstr);
+	return result;
 }
 
 static char *ppMessageIdentifier(MessageIdentifierNode node){
-return "";
+	char *idstr = prettyprint(node.identifier);
+	char *params;
+	char *result;
+
+	if(node.parameters == NULL)
+		result = smprintf("%s", idstr);
+	else{
+		params = prettyprint(node.parameters); /* should print a comma seperated list of params */
+		result = smprintf("%s(%s)", idstr, params);
+		free(params);
+	}
+	return result;
 }
 
 static char *ppStructMember(StructMemberNode node){
-return "";
+	char *idstr = prettyprint(node.identifier);
+	char *typestr = prettyprint(node.type);
+	char *result = smprintf("%s %s", idstr, typestr);
+	free(idstr);
+	free(typestr);
+	return result;
 }
 
 static char *ppParameter(ParameterNode node){
-return "";
+	char *typestr = prettyprint(node.type);
+	char *idstr = prettyprint(node.identifier);
+	char *result = smprintf("%s %s", typestr, idstr);
+	free(typestr);
+	free(idstr);
+	return result;
 }
 
 static char *ppStructType(StructTypeNode node){
-return "";
+	char *idstr = prettyprint(node.identifier);
+	char *result = smprintf("struct %s", idstr);
+	free(idstr);
+	return result;
 }
 
 static char *ppArrayType(ArrayTypeNode node){
