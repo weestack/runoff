@@ -313,3 +313,28 @@ enum NodeTypes{
     Assignment,
     TernaryOperator
 };
+
+enum operatore {
+    elogical_and,
+    elogical_or,
+    egreater_equal,
+    esmaller_equal,
+    eequal,
+    enot_equal,
+    edecrement,
+    eincrement,
+    esmaller_than,
+    ebigger_than,
+    emod,
+    eplus,
+    eminus,
+    etimes,
+    edivid,
+    elogical_not,
+    ebit_and,
+    ebit_or,
+    eright_shift,
+    eleft_shift,
+    ebit_xor,
+    ebit_not
+};
