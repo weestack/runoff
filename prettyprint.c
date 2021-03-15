@@ -38,6 +38,9 @@ static char *ppFunctionCall(FunctionCallNode node);
 static char *ppAssignment(AssignmentNode node);
 static char *ppTernaryOperator(TernaryOperatorNode node);
 static char *ppIdentifier(IdentifierNode node);
+static char *ppIntLiteral(IntLiteralNode node);
+static char *ppFloatLiteral(FloatLiteralNode node);
+static char *ppBoolLiteral(BoolLiteralNode node);
 
 char *prettyprint(AstNode *node)
 {
@@ -104,6 +107,12 @@ char *prettyprint(AstNode *node)
 		return ppTernaryOperator(node->node.TernaryOperator);
 	case Identifier:
 		return ppIdentifier(node->node.Identifier);
+	case IntLiteral:
+		return ppIntLiteral(node->node.IntLiteral);
+	case FloatLiteral:
+		return ppFloatLiteral(node->node.FloatLiteral);
+	case BoolLiteral:
+		return ppBoolLiteral(node->node.BoolLiteral);
 	default:
 		return "";
 	}
@@ -411,6 +420,18 @@ static char *ppTernaryOperator(TernaryOperatorNode node){
 
 static char *ppIdentifier(IdentifierNode node){
 	return smprintf(node.identifier);
+}
+
+static char *ppIntLiteral(IntLiteralNode node){
+	return smprintf("%d", node.value);
+}
+
+static char *ppFloatLiteral(FloatLiteralNode node){
+	return smprintf("%f", node.value);
+}
+
+static char *ppBoolLiteral(BoolLiteralNode node){
+	return smprintf("%s", node.value ? "true" : "false");
 }
 
 /* printf but it returns a string allocated by malloc */

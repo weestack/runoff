@@ -229,3 +229,21 @@ AstNode *mkIdentifierNode(char *identifier){
 	node->node.Identifier.identifier = identifier;
 	return node;
 }
+
+AstNode *mkIntLiteralNode(int value){
+	AstNode *node = mkNode(IntLiteral);
+	node->node.IntLiteral.value = value;
+	return node;
+}
+
+AstNode *mkFloatLiteralNode(float value){
+	AstNode *node = mkNode(FloatLiteral);
+	node->node.FloatLiteral.value = value;
+	return node;
+}
+
+AstNode *mkBoolLiteralNode(int value){
+	AstNode *node = mkNode(BoolLiteral);
+	node->node.BoolLiteral.value = value;
+	return node;
+}

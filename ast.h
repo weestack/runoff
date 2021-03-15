@@ -30,6 +30,9 @@ typedef struct FunctionCallNode FunctionCallNode;
 typedef struct AssignmentNode AssignmentNode;
 typedef struct TernaryOperatorNode TernaryOperatorNode;
 typedef struct IdentifierNode IdentifierNode;
+typedef struct IntLiteralNode IntLiteralNode;
+typedef struct FloatLiteralNode FloatLiteralNode;
+typedef struct BoolLiteralNode BoolLiteralNode;
 
 struct ProgNode {
 	AstNode *toplevels;
@@ -197,6 +200,19 @@ struct IdentifierNode {
 	char *identifier;
 };
 
+struct IntLiteralNode {
+	/* store its size here as well i think */
+	int value;
+};
+
+struct FloatLiteralNode {
+	float value;
+};
+
+struct BoolLiteralNode {
+	int value;
+};
+
 struct AstNode {
 	int tag;
 	union {
@@ -231,6 +247,9 @@ struct AstNode {
 		AssignmentNode Assignment;
 		TernaryOperatorNode TernaryOperator;
 		IdentifierNode Identifier;
+		IntLiteralNode IntLiteral;
+		FloatLiteralNode FloatLiteral;
+		BoolLiteralNode BoolLiteral;
 	} node;
 	AstNode *next;
 };
@@ -266,6 +285,9 @@ AstNode *mkFunctionCallNode(AstNode *identifier, AstNode *arguments);
 AstNode *mkAssignmentNode(AstNode *location, AstNode *expression);
 AstNode *mkTernaryOperatorNode(AstNode *expressionTest, AstNode *expressionTrue, AstNode *expressionFalse);
 AstNode *mkIdentifierNode(char *identifier);
+AstNode *mkIntLiteralNode(int value);
+AstNode *mkFloatLiteralNode(float value);
+AstNode *mkBoolLiteralNode(int value);
 
 enum NodeTypes{
 	Prog,
@@ -298,7 +320,10 @@ enum NodeTypes{
 	FunctionCall,
 	Assignment,
 	TernaryOperator,
-	Identifier
+	Identifier,
+	IntLiteral,
+	FloatLiteral,
+	BoolLiteral
 };
 
 enum operatore {
