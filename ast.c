@@ -150,7 +150,6 @@ AstNode *mkReceiveNode(AstNode *cases){
 	return node;
 }
 
-
 AstNode *mkReceiveCaseNode(AstNode *messageName, AstNode *dataNames, AstNode *statements){
 	AstNode *node = mkNode(ReceiveCase);
 	node->node.ReceiveCase.messageName = messageName;
@@ -158,7 +157,6 @@ AstNode *mkReceiveCaseNode(AstNode *messageName, AstNode *dataNames, AstNode *st
 	node->node.ReceiveCase.statements = statements;
 	return node;
 }
-
 
 AstNode *mkVarDeclNode(AstNode *type, AstNode *identifier, AstNode *expression){
 	AstNode *node = mkNode(VarDecl);

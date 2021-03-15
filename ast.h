@@ -1,5 +1,4 @@
 typedef struct AstNode AstNode;
-
 typedef struct ProgNode ProgNode;
 typedef struct DefineConstNode DefineConstNode;
 typedef struct DefineFunctionNode DefineFunctionNode;
@@ -31,17 +30,14 @@ typedef struct FunctionCallNode FunctionCallNode;
 typedef struct AssignmentNode AssignmentNode;
 typedef struct TernaryOperatorNode TernaryOperatorNode;
 
-
 struct ProgNode {
 	AstNode *toplevels;
 };
-
 
 struct DefineConstNode {
 	AstNode *identifier;
 	AstNode *int_literal;
 };
-
 
 struct DefineFunctionNode {
 	AstNode *identifier;
@@ -49,7 +45,6 @@ struct DefineFunctionNode {
 	AstNode *type;
 	AstNode *statements;
 };
-
 
 struct DefineTaskNode {
 	AstNode *identifier;
@@ -66,34 +61,28 @@ struct DefineMessageNode {
 	AstNode *messagesIdentifiers;
 };
 
-
 struct IncludeRunoffFileNode {
 	AstNode *identifier;
 };
-
 
 struct MessageIdentifierNode {
 	AstNode *identifier;
 	AstNode *parameters;
 };
 
-
 struct StructMemberNode {
 	AstNode *identifier;
 	AstNode *type;
 };
-
 
 struct ParameterNode {
 	AstNode *type;
 	AstNode *identifier;
 };
 
-
 struct StructTypeNode {
 	AstNode *identifier;
 };
-
 
 struct ArrayTypeNode {
 	AstNode *type;
@@ -101,13 +90,10 @@ struct ArrayTypeNode {
 	AstNode *int_literal;
 };
 
-
-
 struct WhileNode {
 	AstNode *expression;
 	AstNode *statements;
 };
-
 
 struct ForNode {
 	AstNode *expressionInit;
@@ -116,19 +102,16 @@ struct ForNode {
 	AstNode *statements;
 };
 
-
 struct SwitchNode {
 	AstNode *expression;
 	AstNode *cases;
 };
-
 
 struct SwitchCaseNode {
 	/* int eller bool, if null then default case hehe */
 	AstNode *literal;
 	AstNode *statements;
 };
-
 
 struct IfNode {
 	AstNode *expression;
@@ -137,13 +120,11 @@ struct IfNode {
 	AstNode *elsePart;
 };
 
-
 struct ElseIfNode {
 	AstNode *expression;
 	AstNode *statements;
 	AstNode *elsePart;
 };
-
 
 struct ElseNode {
 	AstNode *statements;
@@ -154,13 +135,11 @@ struct ReceiveNode {
 	AstNode *cases;
 };
 
-
 struct ReceiveCaseNode {
 	AstNode *messageName;
 	AstNode *dataNames;
 	AstNode *statements;
 };
-
 
 struct VarDeclNode {
 	AstNode *type;
@@ -169,7 +148,6 @@ struct VarDeclNode {
 	AstNode *expression;
 };
 
-
 struct BinaryOperationNode {
 	AstNode *expression_left;
 	/* enum */
@@ -177,23 +155,19 @@ struct BinaryOperationNode {
 	AstNode *expression_right;
 };
 
-
 struct VariableLocationNode {
 	AstNode *identifier;
 };
-
 
 struct StructLocationNode {
 	AstNode *identifier;
 	AstNode *location;
 };
 
-
 struct ArrayLocationNode {
 	AstNode *identifier;
 	AstNode *indicies;
 };
-
 
 struct UnaryOperationNode {
 	/* enum again */
@@ -202,25 +176,21 @@ struct UnaryOperationNode {
 	AstNode *expression;
 };
 
-
 struct FunctionCallNode {
 	AstNode *identifier;
 	AstNode *arguments;
 };
-
 
 struct AssignmentNode {
 	AstNode *location;
 	AstNode *expression;
 };
 
-
 struct TernaryOperatorNode {
 	AstNode *expressionTest;
 	AstNode *expressionTrue;
 	AstNode *expressionFalse;
 };
-
 
 struct AstNode {
 	int tag;
@@ -258,7 +228,6 @@ struct AstNode {
 	} node;
 	AstNode *next;
 };
-
 
 AstNode *mkProgNode(AstNode *toplevels);
 AstNode *mkDefineConstNode(AstNode *identifier, AstNode *int_literal);
