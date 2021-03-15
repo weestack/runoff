@@ -75,32 +75,13 @@ Program: Toplevel
        | Program Toplevel
        ;
 
-Toplevel: DefineConst
-        | DefineFunction
-        | DefineTask
-        | DefineStruct
-        | DefineMessage
-        | IncludeRunoffFile
+Toplevel: const_keyword identifier int_literal ';'
+        | function identifier '(' ParametersList ')' right_arrow Type Codeblock
+        | task identifier '(' ParametersList ')' Codeblock
+        | struct_keyword identifier '{' StructMembers '}'
+        | messages '{' MessageIdentifiers '}'
+        | include_keyword '(' identifier ')' ';'
         ;
-
-DefineConst: const_keyword identifier int_literal ';'
-           ;
-
-DefineFunction: function identifier '(' ParametersList ')' right_arrow Type Codeblock
-              ;
-
-DefineTask: task identifier '(' ParametersList ')' Codeblock
-          ;
-
-
-DefineStruct: struct_keyword identifier '{' StructMembers '}'
-            ;
-
-DefineMessage: messages '{' MessageIdentifiers '}'
-             ;
-
-IncludeRunoffFile: include_keyword '(' identifier ')' ';'
-                 ;
 
 MessageIdentifiers: MessageIdentifiers MessageIdentifier
                   | MessageIdentifier
