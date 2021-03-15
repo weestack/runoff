@@ -1,6 +1,9 @@
 # Specify what source C files we have
 SOURCES=lexer.c parser.c runoff.c ast.c prettyprint.c
 
+# What headers do we have?
+HEADERS=ast.h phases.h
+
 # The objects are just the sources with .c swapped out for .o
 OBJECTS=$(SOURCES:.c=.o)
 
@@ -51,7 +54,7 @@ parser.o: parser.c parser.h
 	@echo [CC] parser.c
 
 # Generic rule to compile c files into o files using our CFLAGS
-%.o: %.c
+%.o: %.c $(HEADERS)
 	@cc $(CFLAGS) -c $<
 	@echo [CC] $<
 
