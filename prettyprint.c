@@ -11,6 +11,7 @@ static char *ppProg(ProgNode node);
 static char *ppDefineConst(DefineConstNode node);
 static char *ppDefineFunction(DefineFunctionNode node);
 static char *ppDefineTask(DefineTaskNode node);
+static char *ppDefineStruct(DefineStructNode node);
 static char *ppDefineMessage(DefineMessageNode node);
 static char *ppIncludeRunoffFile(IncludeRunoffFileNode node);
 static char *ppMessageIdentifier(MessageIdentifierNode node);
@@ -48,6 +49,8 @@ char *prettyprint(AstNode *node)
 		return ppDefineFunction(node->node.DefineFunction);
 	case DefineTask:
 		return ppDefineTask(node->node.DefineTask);
+	case DefineStruct:
+		return ppDefineStruct(node->node.DefineStruct);
 	case DefineMessage:
 		return ppDefineMessage(node->node.DefineMessage);
 	case IncludeRunoffFile:
@@ -150,6 +153,15 @@ static char *ppDefineTask(DefineTaskNode node){
 	free(idstr);
 	free(paramsstr);
 	free(stmtsstr);
+	return result;
+}
+
+static char *ppDefineStruct(DefineStructNode node){
+	char *idstr = prettyprint(node.identifier);
+	char *fieldsstr = prettyprint(node.fields); /* should print a ; seperated list of fields */
+	char *result = smprintf("struct %s { %s };", idstr, fieldsstr);
+	free(idstr);
+	free(fieldsstr);
 	return result;
 }
 

@@ -39,6 +39,13 @@ AstNode *mkDefineTaskNode(AstNode *identifier, AstNode *parameters, AstNode *sta
 	return node;
 }
 
+AstNode *mkDefineStructNode(AstNode *identifier, AstNode *fields){
+	AstNode *node = mkNode(DefineStruct);
+	node->node.DefineStruct.identifier = identifier;
+	node->node.DefineStruct.fields = fields;
+	return node;
+}
+
 AstNode *mkDefineMessageNode(AstNode *messagesIdentifiers){
 	AstNode *node = mkNode(DefineMessage);
 	node->node.DefineMessage.messagesIdentifiers = messagesIdentifiers;

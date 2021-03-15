@@ -3,6 +3,7 @@ typedef struct AstNode AstNode;
 typedef struct ProgNode ProgNode;
 typedef struct DefineConstNode DefineConstNode;
 typedef struct DefineFunctionNode DefineFunctionNode;
+typedef struct DefineStructNode DefineStructNode;
 typedef struct DefineTaskNode DefineTaskNode;
 typedef struct DefineMessageNode DefineMessageNode;
 typedef struct IncludeRunoffFileNode IncludeRunoffFileNode;
@@ -56,6 +57,10 @@ struct DefineTaskNode {
 	AstNode *statements;
 };
 
+struct DefineStructNode {
+	AstNode *identifier;
+	AstNode *fields;
+};
 
 struct DefineMessageNode {
 	AstNode *messagesIdentifiers;
@@ -223,6 +228,7 @@ struct AstNode {
 		DefineConstNode DefineConst;
 		DefineFunctionNode DefineFunction;
 		DefineTaskNode DefineTask;
+		DefineStructNode DefineStruct;
 		DefineMessageNode DefineMessage;
 		IncludeRunoffFileNode IncludeRunoffFile;
 		MessageIdentifierNode MessageIdentifier;
@@ -257,6 +263,7 @@ AstNode *mkProgNode(AstNode *toplevels);
 AstNode *mkDefineConstNode(AstNode *identifier, AstNode *int_literal);
 AstNode *mkDefineFunctionNode(AstNode *identifier, AstNode *parameters, AstNode *type, AstNode *statements);
 AstNode *mkDefineTaskNode(AstNode *identifier, AstNode *parameters, AstNode *statements);
+AstNode *mkDefineStructNode(AstNode *identifier, AstNode *fields);
 AstNode *mkDefineMessageNode(AstNode *messagesIdentifiers);
 AstNode *mkIncludeRunoffFileNode(AstNode *identifier);
 AstNode *mkMessageIdentifierNode(AstNode *identifier, AstNode *parameters);
@@ -288,6 +295,7 @@ enum NodeTypes{
 	DefineConst,
 	DefineFunction,
 	DefineTask,
+	DefineStruct,
 	DefineMessage,
 	IncludeRunoffFile,
 	MessageIdentifier,
