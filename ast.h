@@ -32,224 +32,224 @@ typedef struct TernaryOperatorNode TernaryOperatorNode;
 
 
 struct ProgNode {
-        AstNode *toplevels;
+	AstNode *toplevels;
 };
 
 
 struct DefineConstNode {
-    AstNode *identifier;
-    AstNode *int_literal;
+	AstNode *identifier;
+	AstNode *int_literal;
 };
 
 
 struct DefineFunctionNode {
-    AstNode *identifier;
-    AstNode *parameters;
-    AstNode *type;
-    AstNode *statements;
+	AstNode *identifier;
+	AstNode *parameters;
+	AstNode *type;
+	AstNode *statements;
 };
 
 
 struct DefineTaskNode {
-    AstNode *identifier;
-    AstNode *parameters;
-    AstNode *statements;
+	AstNode *identifier;
+	AstNode *parameters;
+	AstNode *statements;
 };
 
 
 struct DefineMessageNode {
-    AstNode *messagesIdentifiers;
+	AstNode *messagesIdentifiers;
 };
 
 
 struct IncludeRunoffFileNode {
-    AstNode *identifier;
+	AstNode *identifier;
 };
 
 
 struct MessageIdentifierNode {
-    AstNode *identifier;
-    AstNode *parameters;
+	AstNode *identifier;
+	AstNode *parameters;
 };
 
 
 struct StructMemberNode {
-    AstNode *identifier;
-    AstNode *type;
+	AstNode *identifier;
+	AstNode *type;
 };
 
 
 struct ParameterNode {
-    AstNode *type;
-    AstNode *identifier;
+	AstNode *type;
+	AstNode *identifier;
 };
 
 
 struct StructTypeNode {
-    AstNode *identifier;
+	AstNode *identifier;
 };
 
 
 struct ArrayTypeNode {
-    AstNode *type;
-    /* if int literal is null, then its eq to int a[]; */
-    AstNode *int_literal;
+	AstNode *type;
+	/* if int literal is null, then its eq to int a[]; */
+	AstNode *int_literal;
 };
 
 
 
 struct WhileNode {
-    AstNode *expression;
-    AstNode *statements;
+	AstNode *expression;
+	AstNode *statements;
 };
 
 
 struct ForNode {
-    AstNode *expressionInit;
-    AstNode *expressionTest;
-    AstNode *expressionUpdate; /* hehe */
-    AstNode *statements;
+	AstNode *expressionInit;
+	AstNode *expressionTest;
+	AstNode *expressionUpdate; /* hehe */
+	AstNode *statements;
 };
 
 
 struct SwitchNode {
-    AstNode *expression;
-    AstNode *cases;
+	AstNode *expression;
+	AstNode *cases;
 };
 
 
 struct SwitchCaseNode {
-    /* int eller bool, if null then default case hehe */
-    AstNode *literal;
-    AstNode *statements;
+	/* int eller bool, if null then default case hehe */
+	AstNode *literal;
+	AstNode *statements;
 };
 
 
 struct IfNode {
-    AstNode *expression;
-    AstNode *statements;
-    /* else or elseif or neither */
-    AstNode *elsePart;
+	AstNode *expression;
+	AstNode *statements;
+	/* else or elseif or neither */
+	AstNode *elsePart;
 };
 
 
 struct ElseIfNode {
-    AstNode *expression;
-    AstNode *statements;
-    AstNode *elsePart;
+	AstNode *expression;
+	AstNode *statements;
+	AstNode *elsePart;
 };
 
 
 struct ElseNode {
-    AstNode *statements;
+	AstNode *statements;
 };
 
 
 struct ReceiveNode {
-    AstNode *cases;
+	AstNode *cases;
 };
 
 
 struct ReceiveCaseNode {
-    AstNode *messageName;
-    AstNode *dataNames;
-    AstNode *statements;
+	AstNode *messageName;
+	AstNode *dataNames;
+	AstNode *statements;
 };
 
 
 struct VarDeclNode {
-    AstNode *identifier;
-    /* if expression is empty, then init to standard value */
-    AstNode *expression;
+	AstNode *identifier;
+	/* if expression is empty, then init to standard value */
+	AstNode *expression;
 };
 
 
 struct BinaryOperationNode {
-    AstNode *expression_left;
-    /* enum */
-    int operator;
-    AstNode *expression_right;
+	AstNode *expression_left;
+	/* enum */
+	int operator;
+	AstNode *expression_right;
 };
 
 
 struct VariableLocationNode {
-    AstNode *identifier;
+	AstNode *identifier;
 };
 
 
 struct StructLocationNode {
-    AstNode *identifier;
-    AstNode *location;
+	AstNode *identifier;
+	AstNode *location;
 };
 
 
 struct ArrayLocationNode {
-    AstNode *identifier;
-    AstNode *indicies;
+	AstNode *identifier;
+	AstNode *indicies;
 };
 
 
 struct UnaryOperationNode {
-    /* enum again */
-    int operator;
-    int fix; /* prefix or postfix */
-    AstNode *expression;
+	/* enum again */
+	int operator;
+	int fix; /* prefix or postfix */
+	AstNode *expression;
 };
 
 
 struct FunctionCallNode {
-    AstNode *identifier;
-    AstNode *arguments;
+	AstNode *identifier;
+	AstNode *arguments;
 };
 
 
 struct AssignmentNode {
-    AstNode *location;
-    AstNode *expression;
+	AstNode *location;
+	AstNode *expression;
 };
 
 
 struct TernaryOperatorNode {
-    AstNode *expressionTest;
-    AstNode *expressionTrue;
-    AstNode *expressionFalse;
+	AstNode *expressionTest;
+	AstNode *expressionTrue;
+	AstNode *expressionFalse;
 };
 
 
 struct AstNode {
-        int tag;
-        union {
-            ProgNode Prog;
-            DefineConstNode DefineConst;
-            DefineFunctionNode DefineFunction;
-            DefineTaskNode DefineTask;
-            DefineMessageNode DefineMessage;
-            IncludeRunoffFileNode IncludeRunoffFile;
-            MessageIdentifierNode MessageIdentifier;
-            StructMemberNode StructMember;
-            ParameterNode Parameter;
-            StructTypeNode StructType;
-            ArrayTypeNode ArrayType;
-            WhileNode While;
-            ForNode For;
-            SwitchNode Switch;
-            SwitchCaseNode SwitchCase;
-            IfNode If;
-            ElseIfNode ElseIf;
-            ElseNode Else;
-            ReceiveNode Receive;
-            ReceiveCaseNode ReceiveCase;
-            VarDeclNode VarDecl;
-            BinaryOperationNode BinaryOperation;
-            VariableLocationNode VariableLocation;
-            StructLocationNode StructLocation;
-            ArrayLocationNode ArrayLocation;
-            UnaryOperationNode UnaryOperation;
-            FunctionCallNode FunctionCall;
-            AssignmentNode Assignment;
-            TernaryOperatorNode TernaryOperator;
-        } node;
-        AstNode *next;
+	int tag;
+	union {
+		ProgNode Prog;
+		DefineConstNode DefineConst;
+		DefineFunctionNode DefineFunction;
+		DefineTaskNode DefineTask;
+		DefineMessageNode DefineMessage;
+		IncludeRunoffFileNode IncludeRunoffFile;
+		MessageIdentifierNode MessageIdentifier;
+		StructMemberNode StructMember;
+		ParameterNode Parameter;
+		StructTypeNode StructType;
+		ArrayTypeNode ArrayType;
+		WhileNode While;
+		ForNode For;
+		SwitchNode Switch;
+		SwitchCaseNode SwitchCase;
+		IfNode If;
+		ElseIfNode ElseIf;
+		ElseNode Else;
+		ReceiveNode Receive;
+		ReceiveCaseNode ReceiveCase;
+		VarDeclNode VarDecl;
+		BinaryOperationNode BinaryOperation;
+		VariableLocationNode VariableLocation;
+		StructLocationNode StructLocation;
+		ArrayLocationNode ArrayLocation;
+		UnaryOperationNode UnaryOperation;
+		FunctionCallNode FunctionCall;
+		AssignmentNode Assignment;
+		TernaryOperatorNode TernaryOperator;
+	} node;
+	AstNode *next;
 };
 
 
@@ -284,60 +284,60 @@ AstNode *mkAssignmentNode(AstNode *location, AstNode *expression);
 AstNode *mkTernaryOperatorNode(AstNode *expressionTest, AstNode *expressionTrue, AstNode *expressionFalse);
 
 enum NodeTypes{
-    Prog,
-    DefineConst,
-    DefineFunction,
-    DefineTask,
-    DefineMessage,
-    IncludeRunoffFile,
-    MessageIdentifier,
-    StructMember,
-    Parameter,
-    StructType,
-    ArrayType,
-    While,
-    For,
-    Switch,
-    SwitchCase,
-    If,
-    ElseIf,
-    Else,
-    Receive,
-    ReceiveCase,
-    VarDecl,
-    BinaryOperation,
-    VariableLocation,
-    StructLocation,
-    ArrayLocation,
-    UnaryOperation,
-    FunctionCall,
-    Assignment,
-    TernaryOperator
+	Prog,
+	DefineConst,
+	DefineFunction,
+	DefineTask,
+	DefineMessage,
+	IncludeRunoffFile,
+	MessageIdentifier,
+	StructMember,
+	Parameter,
+	StructType,
+	ArrayType,
+	While,
+	For,
+	Switch,
+	SwitchCase,
+	If,
+	ElseIf,
+	Else,
+	Receive,
+	ReceiveCase,
+	VarDecl,
+	BinaryOperation,
+	VariableLocation,
+	StructLocation,
+	ArrayLocation,
+	UnaryOperation,
+	FunctionCall,
+	Assignment,
+	TernaryOperator
 };
 
 enum operatore {
-    elogical_and,
-    elogical_or,
-    egreater_equal,
-    esmaller_equal,
-    eequal,
-    enot_equal,
-    edecrement,
-    eincrement,
-    esmaller_than,
-    ebigger_than,
-    emod,
-    eplus,
-    eminus,
-    etimes,
-    edivid,
-    elogical_not,
-    ebit_and,
-    ebit_or,
-    eright_shift,
-    eleft_shift,
-    ebit_xor,
-    ebit_not
+	elogical_and,
+	elogical_or,
+	egreater_equal,
+	esmaller_equal,
+	eequal,
+	enot_equal,
+	edecrement,
+	eincrement,
+	esmaller_than,
+	ebigger_than,
+	emod,
+	eplus,
+	eminus,
+	etimes,
+	edivid,
+	elogical_not,
+	ebit_and,
+	ebit_or,
+	eright_shift,
+	eleft_shift,
+	ebit_xor,
+	ebit_not
 };
 
 enum {

@@ -221,174 +221,174 @@ static char *ppStructType(StructTypeNode node){
 }
 
 static char *ppArrayType(ArrayTypeNode node){
-    char *typeStr = prettyprint(node.type);
-    char *int_literalStr = prettyprint(node.int_literal);
-    char *result = smprintf("%s[%s]", typeStr, int_literalStr);
-    free(typeStr); free(int_literalStr);
-    return result;
+	char *typeStr = prettyprint(node.type);
+	char *int_literalStr = prettyprint(node.int_literal);
+	char *result = smprintf("%s[%s]", typeStr, int_literalStr);
+	free(typeStr); free(int_literalStr);
+	return result;
 }
 
 static char *ppWhile(WhileNode node){
-    char *expressionStr = prettyprint(node.expression);
-    char *statementsStr = prettyprint(node.statements);
-    char *result = smprintf("while(%s) {%s}", expressionStr, statementsStr);
-    free(expressionStr); free(statementsStr);
-    return result;
+	char *expressionStr = prettyprint(node.expression);
+	char *statementsStr = prettyprint(node.statements);
+	char *result = smprintf("while(%s) {%s}", expressionStr, statementsStr);
+	free(expressionStr); free(statementsStr);
+	return result;
 }
 
 static char *ppFor(ForNode node){
-    char *expressionInitStr = prettyprint(node.expressionInit);
-    char *expressionTestStr = prettyprint(node.expressionTest);
-    char *expressionUpdateStr = prettyprint(node.expressionUpdate);
-    char *statementsStr = prettyprint(node.statements);
-    char *result = smprintf("for(%s; %s; %s) {%s}", expressionInitStr, expressionTestStr, expressionUpdateStr, statementsStr);
-    free(expressionInitStr); free(expressionTestStr);
-    free(expressionUpdateStr); free(statementsStr);
-    return result;
+	char *expressionInitStr = prettyprint(node.expressionInit);
+	char *expressionTestStr = prettyprint(node.expressionTest);
+	char *expressionUpdateStr = prettyprint(node.expressionUpdate);
+	char *statementsStr = prettyprint(node.statements);
+	char *result = smprintf("for(%s; %s; %s) {%s}", expressionInitStr, expressionTestStr, expressionUpdateStr, statementsStr);
+	free(expressionInitStr); free(expressionTestStr);
+	free(expressionUpdateStr); free(statementsStr);
+	return result;
 }
 
 static char *ppSwitch(SwitchNode node){
-    char *expressionStr = prettyprint(node.expression);
-    char *casesStr = prettyprint(node.cases);
-    char *result = smprintf("switch(%s) {%s}", expressionStr, casesStr);
-    free(expressionStr); free(casesStr);
-    return result;
+	char *expressionStr = prettyprint(node.expression);
+	char *casesStr = prettyprint(node.cases);
+	char *result = smprintf("switch(%s) {%s}", expressionStr, casesStr);
+	free(expressionStr); free(casesStr);
+	return result;
 }
 
 static char *ppSwitchCase(SwitchCaseNode node){
-    char *literalStr = prettyprint(node.literal);
-    char *statementsStr = prettyprint(node.statements);
-    char *result = smprintf("case %s: %s", literalStr, statementsStr);
-    free(literalStr); free(statementsStr);
-    return result;
+	char *literalStr = prettyprint(node.literal);
+	char *statementsStr = prettyprint(node.statements);
+	char *result = smprintf("case %s: %s", literalStr, statementsStr);
+	free(literalStr); free(statementsStr);
+	return result;
 }
 
 static char *ppIf(IfNode node){
-    char *expressionStr = prettyprint(node.expression);
-    char *statementsStr = prettyprint(node.statements);
-    char *elsePartStr = prettyprint(node.elsePart);
-    char *result = smprintf("if(%s) {%s} %s", expressionStr, statementsStr, elsePartStr);
-    free(expressionStr); free(expressionStr);  free(elsePartStr);
-    return result;
+	char *expressionStr = prettyprint(node.expression);
+	char *statementsStr = prettyprint(node.statements);
+	char *elsePartStr = prettyprint(node.elsePart);
+	char *result = smprintf("if(%s) {%s} %s", expressionStr, statementsStr, elsePartStr);
+	free(expressionStr); free(expressionStr);  free(elsePartStr);
+	return result;
 }
 
 static char *ppElseIf(ElseIfNode node){
-    char *expressionStr = prettyprint(node.expression);
-    char *statementsStr = prettyprint(node.statements);
-    char *elsePartStr = prettyprint(node.elsePart);
-    char *result = smprintf("elseif(%s) {%s} %s", expressionStr, statementsStr, elsePartStr);
-    free(expressionStr); free(expressionStr);  free(elsePartStr);
-    return result;
+	char *expressionStr = prettyprint(node.expression);
+	char *statementsStr = prettyprint(node.statements);
+	char *elsePartStr = prettyprint(node.elsePart);
+	char *result = smprintf("elseif(%s) {%s} %s", expressionStr, statementsStr, elsePartStr);
+	free(expressionStr); free(expressionStr);  free(elsePartStr);
+	return result;
 }
 
 static char *ppElse(ElseNode node){
-    char *statementsStr = prettyprint(node.statements);
-    char *result = smprintf("else {%s}", statementsStr);
-    free(statementsStr);
-    return result;
+	char *statementsStr = prettyprint(node.statements);
+	char *result = smprintf("else {%s}", statementsStr);
+	free(statementsStr);
+	return result;
 }
 
 static char *ppReceive(ReceiveNode node){
-    char *casesStr = prettyprint(node.cases);
-    char *result = smprintf("receive {%s}", casesStr);
-    free(casesStr);
-    return result;
+	char *casesStr = prettyprint(node.cases);
+	char *result = smprintf("receive {%s}", casesStr);
+	free(casesStr);
+	return result;
 }
 
 static char *ppReceiveCase(ReceiveCaseNode node){
-    char *messageNameStr = prettyprint(node.messageName);
-    char *dataNamesStr = prettyprint(node.dataNames);
-    char *statementsStr = prettyprint(node.statements);
-    char *result = smprintf("case %s(%s):%s", messageNameStr, dataNamesStr, statementsStr);
-    free(messageNameStr); free(dataNamesStr); free(statementsStr);
-    return result;
+	char *messageNameStr = prettyprint(node.messageName);
+	char *dataNamesStr = prettyprint(node.dataNames);
+	char *statementsStr = prettyprint(node.statements);
+	char *result = smprintf("case %s(%s):%s", messageNameStr, dataNamesStr, statementsStr);
+	free(messageNameStr); free(dataNamesStr); free(statementsStr);
+	return result;
 }
 
 static char *ppVarDecl(VarDeclNode node){
-    char *identifierStr = prettyprint(node.identifier);
-    char *expressionStr = prettyprint(node.expression);
-    char *result = smprintf("%s %s", identifierStr, expressionStr);
-    free(identifierStr); free(expressionStr);
-    return result;
+	char *identifierStr = prettyprint(node.identifier);
+	char *expressionStr = prettyprint(node.expression);
+	char *result = smprintf("%s %s", identifierStr, expressionStr);
+	free(identifierStr); free(expressionStr);
+	return result;
 }
 
 static char *ppBinaryOperation(BinaryOperationNode node){
-    char *expressionLeftStr = prettyprint(node.expression_left);
-    /* char *operatorStr = prettyprint(); fix, make print function for ops */
-    char *expressionRightStr = prettyprint(node.expression_right);
-    char *result = smprintf("%s %s", expressionLeftStr, expressionRightStr);
-    free(expressionLeftStr); free(expressionRightStr);
-    return result;
+	char *expressionLeftStr = prettyprint(node.expression_left);
+	/* char *operatorStr = prettyprint(); fix, make print function for ops */
+	char *expressionRightStr = prettyprint(node.expression_right);
+	char *result = smprintf("%s %s", expressionLeftStr, expressionRightStr);
+	free(expressionLeftStr); free(expressionRightStr);
+	return result;
 }
 
 static char *ppVariableLocation(VariableLocationNode node){
-    char *identifierStr = prettyprint(node.identifier);
-    char *result = smprintf("%s %s", identifierStr);
-    free(identifierStr);
-    return result;
+	char *identifierStr = prettyprint(node.identifier);
+	char *result = smprintf("%s %s", identifierStr);
+	free(identifierStr);
+	return result;
 }
 
 static char *ppStructLocation(StructLocationNode node){
-    char *identifier = prettyprint(node.identifier);
-    char *location = prettyprint(node.location);
-    char *result = smprintf("%s.%s", identifier, location);
-    free(identifier); free(location);
-    return result;
+	char *identifier = prettyprint(node.identifier);
+	char *location = prettyprint(node.location);
+	char *result = smprintf("%s.%s", identifier, location);
+	free(identifier); free(location);
+	return result;
 }
 
 static char *ppArrayLocation(ArrayLocationNode node){
-    char *identifier = prettyprint(node.identifier);
-    char *indices = prettyprint(node.indicies);
-    char *result = smprintf("%s[%s]", identifier, indices);
-    free(identifier); free(indices);
-    return result;
+	char *identifier = prettyprint(node.identifier);
+	char *indices = prettyprint(node.indicies);
+	char *result = smprintf("%s[%s]", identifier, indices);
+	free(identifier); free(indices);
+	return result;
 }
 
 static char *ppUnaryOperation(UnaryOperationNode node){
-    char *operatorStr = smprintf("OP") /* fix me */
-    char *expressionStr = prettyprint(node.expression);
- 	char *result;
+	char *operatorStr = smprintf("OP"); /* fix me */
+	char *expressionStr = prettyprint(node.expression);
+	char *result;
 
- 	if(node.fix == prefix)
- 		result = smprintf("%s %s", operatorStr, expressionStr);
- 	else
- 		result = smprintf("%s %s", expressionStr, operatorStr);
- 	free(operatorStr);
-    free(expressionStr);
-    return result;
+	if(node.fix == prefix)
+		result = smprintf("%s %s", operatorStr, expressionStr);
+	else
+		result = smprintf("%s %s", expressionStr, operatorStr);
+	free(operatorStr);
+	free(expressionStr);
+	return result;
 }
 
 static char *ppFunctionCall(FunctionCallNode node){
-    char *identifierStr = prettyprint(node.identifier);
-    char *argumentsStr = prettyprint(node.arguments);
-    char *result = smprintf("%s(%s)", identifierStr, argumentsStr);
-    free(identifierStr); free(argumentsStr);
-    return result;
+	char *identifierStr = prettyprint(node.identifier);
+	char *argumentsStr = prettyprint(node.arguments);
+	char *result = smprintf("%s(%s)", identifierStr, argumentsStr);
+	free(identifierStr); free(argumentsStr);
+	return result;
 }
 
 static char *ppAssignment(AssignmentNode node){
-    char *locationStr = prettyprint(node.location);
-    char *expressionStr = prettyprint(node.expression);
-    char *result = smprintf("%s = %s", locationStr, expressionStr);
-    free(locationStr); free(expressionStr);
-    return result;
+	char *locationStr = prettyprint(node.location);
+	char *expressionStr = prettyprint(node.expression);
+	char *result = smprintf("%s = %s", locationStr, expressionStr);
+	free(locationStr); free(expressionStr);
+	return result;
 }
 
 static char *ppTernaryOperator(TernaryOperatorNode node){
-    char *expressionTestStr = prettyprint(node.expressionTest);
-    char *expressionTrueStr = prettyprint(node.expressionTrue);
-    char *expressionFalseStr = prettyprint(node.expressionFalse);
-    char *result = smprintf("(%s) ? %s : %s", expressionTestStr,
-     expressionTrueStr, expressionFalseStr);
+	char *expressionTestStr = prettyprint(node.expressionTest);
+	char *expressionTrueStr = prettyprint(node.expressionTrue);
+	char *expressionFalseStr = prettyprint(node.expressionFalse);
+	char *result = smprintf("(%s) ? %s : %s", expressionTestStr,
+	 expressionTrueStr, expressionFalseStr);
 
-    free(expressionTestStr);free(expressionTrueStr);free(expressionFalseStr);
-    return result;
+	free(expressionTestStr);free(expressionTrueStr);free(expressionFalseStr);
+	return result;
 }
 
 /* printf but it returns a string allocated by malloc */
 static char *smprintf(char *fmt, ...){
 	va_list args;
-    char *str = malloc(1000000);
+	char *str = malloc(1000000);
 	va_start(args, fmt);
 	vsprintf(str, fmt, args);
 	va_end(args);
