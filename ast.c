@@ -253,3 +253,9 @@ AstNode *mkBoolLiteralNode(int value){
 	node->node.BoolLiteral.value = value;
 	return node;
 }
+
+AstNode *mkReturnNode(AstNode *expression){
+	AstNode *node = mkNode(Return);
+	node->node.Return.expression = expression;
+	return node;
+}

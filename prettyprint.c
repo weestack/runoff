@@ -42,6 +42,7 @@ static char *ppIdentifier(IdentifierNode node);
 static char *ppIntLiteral(IntLiteralNode node);
 static char *ppFloatLiteral(FloatLiteralNode node);
 static char *ppBoolLiteral(BoolLiteralNode node);
+static char *ppReturn(ReturnNode node);
 
 char *prettyprint(AstNode *node)
 {
@@ -116,6 +117,8 @@ char *prettyprint(AstNode *node)
 		return ppFloatLiteral(node->node.FloatLiteral);
 	case BoolLiteral:
 		return ppBoolLiteral(node->node.BoolLiteral);
+	case Return:
+		return ppReturn(node->node.Return);
 	default:
 		return "";
 	}
@@ -440,6 +443,20 @@ static char *ppFloatLiteral(FloatLiteralNode node){
 
 static char *ppBoolLiteral(BoolLiteralNode node){
 	return smprintf("%s", node.value ? "true" : "false");
+}
+
+static char *ppReturn(ReturnNode node){
+	char *exprstr;
+	char *result;
+
+	if(node.expression)
+		exprstr = prettyprint(node.expression);
+	else
+		exprstr = smprintf("");
+
+	result = smprintf("return %s;", exprstr);
+	free(exprstr);
+	return result;
 }
 
 /* printf but it returns a string allocated by malloc */

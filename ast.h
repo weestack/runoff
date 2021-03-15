@@ -34,6 +34,7 @@ typedef struct IdentifierNode IdentifierNode;
 typedef struct IntLiteralNode IntLiteralNode;
 typedef struct FloatLiteralNode FloatLiteralNode;
 typedef struct BoolLiteralNode BoolLiteralNode;
+typedef struct ReturnNode ReturnNode;
 
 struct ProgNode {
 	AstNode *toplevels;
@@ -218,6 +219,10 @@ struct BoolLiteralNode {
 	int value;
 };
 
+struct ReturnNode {
+	AstNode *expression; /* might be null for empty return*/
+};
+
 struct AstNode {
 	int tag;
 	union {
@@ -256,6 +261,7 @@ struct AstNode {
 		IntLiteralNode IntLiteral;
 		FloatLiteralNode FloatLiteral;
 		BoolLiteralNode BoolLiteral;
+		ReturnNode Return;
 	} node;
 	AstNode *next;
 };
@@ -295,6 +301,7 @@ AstNode *mkIdentifierNode(char *identifier);
 AstNode *mkIntLiteralNode(int value);
 AstNode *mkFloatLiteralNode(float value);
 AstNode *mkBoolLiteralNode(int value);
+AstNode *mkReturnNode(AstNode *expression);
 
 enum NodeTypes {
 	Prog,
@@ -331,7 +338,8 @@ enum NodeTypes {
 	Identifier,
 	IntLiteral,
 	FloatLiteral,
-	BoolLiteral
+	BoolLiteral,
+	Return
 };
 
 enum operatore {
