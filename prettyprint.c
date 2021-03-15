@@ -301,9 +301,15 @@ static char *ppSwitchCase(SwitchCaseNode node){
 static char *ppIf(IfNode node){
 	char *expressionStr = prettyprint(node.expression);
 	char *statementsStr = prettyprint(node.statements);
-	char *elsePartStr = prettyprint(node.elsePart);
-	char *result = smprintf("if(%s) {%s} %s", expressionStr, statementsStr, elsePartStr);
-	free(expressionStr); free(expressionStr);  free(elsePartStr);
+	char *elsePartStr;
+	char *result;
+
+	if(node.elsePart)
+		elsePartStr = prettyprint(node.elsePart);
+	else
+		elsePartStr = smprintf("");
+	result = smprintf("if(%s) {%s} %s", expressionStr, statementsStr, elsePartStr);
+	free(expressionStr); free(statementsStr);  free(elsePartStr);
 	return result;
 }
 
@@ -312,7 +318,7 @@ static char *ppElseIf(ElseIfNode node){
 	char *statementsStr = prettyprint(node.statements);
 	char *elsePartStr = prettyprint(node.elsePart);
 	char *result = smprintf("elseif(%s) {%s} %s", expressionStr, statementsStr, elsePartStr);
-	free(expressionStr); free(expressionStr);  free(elsePartStr);
+	free(expressionStr); free(statementsStr);  free(elsePartStr);
 	return result;
 }
 
