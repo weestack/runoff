@@ -445,9 +445,9 @@ static char *ppUnaryOperation(UnaryOperationNode node){
 	char *result;
 
 	if(node.fix == prefix)
-		result = smprintf("%s %s", operatorStr, expressionStr);
+		result = smprintf("%s%s", operatorStr, expressionStr);
 	else
-		result = smprintf("%s %s", expressionStr, operatorStr);
+		result = smprintf("%s%s", expressionStr, operatorStr);
 	free(expressionStr);
 	return result;
 }

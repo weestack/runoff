@@ -24,26 +24,34 @@ prettydummy(void)
 		mkIdentifierNode("a")
 	);
 	functionparams->next = mkParameterNode(
-		mkBuiltinTypeNode(builtintype_uint8),
+		mkBuiltinTypeNode(builtintype_int32),
 		mkIdentifierNode("x")
 	);
 
 	functionbody = mkIfNode(
 		mkBinaryOperationNode(
-			mkIdentifierNode("x"),
-			eequal,
-			mkIntLiteralNode(123)
+			mkIdentifierNode("a"),
+			egreater_equal,
+			mkFloatLiteralNode(123.0)
 		),
 		mkReturnNode(
-			mkFloatLiteralNode(5.123)
+			mkIntLiteralNode(5.123)
 		),
-		NULL
+		mkElseNode(
+			mkReturnNode(
+				mkUnaryOperationNode(
+					eincrement,
+					postfix,
+					mkIdentifierNode("x")
+				)
+			)
+		)
 	);
 
 	funnode = mkDefineFunctionNode(
 		mkIdentifierNode("testfun"),
 		functionparams,
-		mkBuiltinTypeNode(builtintype_float),
+		mkBuiltinTypeNode(builtintype_int32),
 		functionbody
 	);
 
