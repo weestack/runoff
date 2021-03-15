@@ -163,6 +163,7 @@ struct ReceiveCaseNode {
 
 
 struct VarDeclNode {
+	AstNode *type;
 	AstNode *identifier;
 	/* if expression is empty, then init to standard value */
 	AstNode *expression;
@@ -280,7 +281,7 @@ AstNode *mkElseIfNode(AstNode *expression, AstNode *statements, AstNode *elsePar
 AstNode *mkElseNode(AstNode *statements);
 AstNode *mkReceiveNode(AstNode *cases);
 AstNode *mkReceiveCaseNode(AstNode *messageName, AstNode *dataNames, AstNode *statements);
-AstNode *mkVarDeclNode(AstNode *identifier, AstNode *expression);
+AstNode *mkVarDeclNode(AstNode *type, AstNode *identifier, AstNode *expression);
 AstNode *mkBinaryOperationNode(AstNode *expression_left, int operator, AstNode *expression_right);
 AstNode *mkVariableLocationNode(AstNode *identifier);
 AstNode *mkStructLocationNode(AstNode *identifier, AstNode *location);

@@ -160,8 +160,9 @@ AstNode *mkReceiveCaseNode(AstNode *messageName, AstNode *dataNames, AstNode *st
 }
 
 
-AstNode *mkVarDeclNode(AstNode *identifier, AstNode *expression){
+AstNode *mkVarDeclNode(AstNode *type, AstNode *identifier, AstNode *expression){
 	AstNode *node = mkNode(VarDecl);
+	node->node.VarDecl.type = type;
 	node->node.VarDecl.identifier = identifier;
 	node->node.VarDecl.expression = expression;
 	return node;

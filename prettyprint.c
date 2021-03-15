@@ -317,10 +317,19 @@ static char *ppReceiveCase(ReceiveCaseNode node){
 }
 
 static char *ppVarDecl(VarDeclNode node){
+	char *typestr = prettyprint(node.type);
 	char *identifierStr = prettyprint(node.identifier);
-	char *expressionStr = prettyprint(node.expression);
-	char *result = smprintf("%s %s", identifierStr, expressionStr);
-	free(identifierStr); free(expressionStr);
+	char *expressionStr;
+	char *result;
+
+	if(node.expression)
+		expressionStr = prettyprint(node.expression);
+	else
+		expressionStr = smprintf("default value for type %s");
+	result = smprintf("%s %s = %s", typestr, identifierStr, expressionStr);
+	free(typestr);
+	free(identifierStr);
+	free(expressionStr);
 	return result;
 }
 
