@@ -44,6 +44,50 @@ static char *ppFloatLiteral(FloatLiteralNode node);
 static char *ppBoolLiteral(BoolLiteralNode node);
 static char *ppReturn(ReturnNode node);
 
+/* GLOBAL VARIABLES HEHE */
+/* follows the order of the operators enum */
+static char *operatorNames[] = {
+	"&&",
+	"||",
+	">=",
+	"<=",
+	"==",
+	"!=",
+	"--",
+	"++",
+	"<",
+	">",
+	"%",
+	"+",
+	"-",
+	"*",
+	"/",
+	"!",
+	"&",
+	"|",
+	">>",
+	"<<",
+	"^",
+	"~"
+};
+
+/* follows the order of the builintypes enum */
+static char *builtintypeNames[] = {
+	"uint8",
+	"uint16",
+	"uint32",
+	"uint64",
+	"int8",
+	"int16",
+	"int32",
+	"int64",
+	"int",
+	"float",
+	"void",
+	"bool",
+	"msg"
+};
+
 char *prettyprint(AstNode *node)
 {
 	switch(node->tag){
@@ -155,7 +199,7 @@ static char *ppDefineFunction(DefineFunctionNode node){
 	char *paramsstr = prettyprint(node.parameters);	/* Should print a comma seperated list of params */
 	char *typestr = prettyprint(node.type);
 	char *stmtsstr = prettyprint(node.statements);
-	char *result = smprintf("function %s(%s) -> %s {%s}", idstr, paramsstr, typestr, stmtsstr);
+	char *result = smprintf("function %s(%s) -> %s {\n%s\n}", idstr, paramsstr, typestr, stmtsstr);
 	free(idstr);
 	free(paramsstr);
 	free(typestr);
@@ -244,7 +288,7 @@ static char *ppParameter(ParameterNode node){
 }
 
 static char *ppBuiltinType(BuiltinTypeNode node){
-	char *typestr = smprintf("tytytyt%d", node.type); /* should look the name up in a table */
+	char *typestr = smprintf("%s", builtintypeNames[node.type]);
 	return typestr;
 }
 
@@ -308,7 +352,7 @@ static char *ppIf(IfNode node){
 		elsePartStr = prettyprint(node.elsePart);
 	else
 		elsePartStr = smprintf("");
-	result = smprintf("if(%s) {%s} %s", expressionStr, statementsStr, elsePartStr);
+	result = smprintf("if(%s) {\n%s\n} %s", expressionStr, statementsStr, elsePartStr);
 	free(expressionStr); free(statementsStr);  free(elsePartStr);
 	return result;
 }
@@ -364,10 +408,11 @@ static char *ppVarDecl(VarDeclNode node){
 
 static char *ppBinaryOperation(BinaryOperationNode node){
 	char *expressionLeftStr = prettyprint(node.expression_left);
-	/* char *operatorStr = prettyprint(); fix, make print function for ops */
+	char *operatorStr = operatorNames[node.operator];
 	char *expressionRightStr = prettyprint(node.expression_right);
-	char *result = smprintf("%s %s", expressionLeftStr, expressionRightStr);
-	free(expressionLeftStr); free(expressionRightStr);
+	char *result = smprintf("%s %s %s", expressionLeftStr, operatorStr, expressionRightStr);
+	free(expressionLeftStr);
+	free(expressionRightStr);
 	return result;
 }
 
@@ -395,7 +440,7 @@ static char *ppArrayLocation(ArrayLocationNode node){
 }
 
 static char *ppUnaryOperation(UnaryOperationNode node){
-	char *operatorStr = smprintf("OP"); /* fix me */
+	char *operatorStr = operatorNames[node.operator];
 	char *expressionStr = prettyprint(node.expression);
 	char *result;
 
@@ -403,7 +448,6 @@ static char *ppUnaryOperation(UnaryOperationNode node){
 		result = smprintf("%s %s", operatorStr, expressionStr);
 	else
 		result = smprintf("%s %s", expressionStr, operatorStr);
-	free(operatorStr);
 	free(expressionStr);
 	return result;
 }

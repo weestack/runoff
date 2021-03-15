@@ -342,7 +342,7 @@ enum NodeTypes {
 	Return
 };
 
-enum operatore {
+enum operators {
 	elogical_and,
 	elogical_or,
 	egreater_equal,
