@@ -79,6 +79,12 @@ AstNode *mkParameterNode(AstNode *type, AstNode *identifier){
 	return node;
 }
 
+AstNode *mkBuiltinTypeNode(int type){
+	AstNode *node = mkNode(BuiltinType);
+	node->node.BuiltinType.type = type;
+	return node;
+}
+
 AstNode *mkStructTypeNode(AstNode *identifier){
 	AstNode *node = mkNode(StructType);
 	node->node.StructType.identifier = identifier;

@@ -9,6 +9,7 @@ typedef struct IncludeRunoffFileNode IncludeRunoffFileNode;
 typedef struct MessageIdentifierNode MessageIdentifierNode;
 typedef struct StructMemberNode StructMemberNode;
 typedef struct ParameterNode ParameterNode;
+typedef struct BuiltinTypeNode BuiltinTypeNode;
 typedef struct StructTypeNode StructTypeNode;
 typedef struct ArrayTypeNode ArrayTypeNode;
 typedef struct WhileNode WhileNode;
@@ -82,6 +83,10 @@ struct StructMemberNode {
 struct ParameterNode {
 	AstNode *type;
 	AstNode *identifier;
+};
+
+struct BuiltinTypeNode {
+	int type;
 };
 
 struct StructTypeNode {
@@ -226,6 +231,7 @@ struct AstNode {
 		MessageIdentifierNode MessageIdentifier;
 		StructMemberNode StructMember;
 		ParameterNode Parameter;
+		BuiltinTypeNode BuiltinType;
 		StructTypeNode StructType;
 		ArrayTypeNode ArrayType;
 		WhileNode While;
@@ -264,6 +270,7 @@ AstNode *mkIncludeRunoffFileNode(AstNode *identifier);
 AstNode *mkMessageIdentifierNode(AstNode *identifier, AstNode *parameters);
 AstNode *mkStructMemberNode(AstNode *identifier, AstNode *type);
 AstNode *mkParameterNode(AstNode *type, AstNode *identifier);
+AstNode *mkBuiltinTypeNode(int type);
 AstNode *mkStructTypeNode(AstNode *identifier);
 AstNode *mkArrayTypeNode(AstNode *type, AstNode *int_literal);
 AstNode *mkWhileNode(AstNode *expression, AstNode *statements);
@@ -289,7 +296,7 @@ AstNode *mkIntLiteralNode(int value);
 AstNode *mkFloatLiteralNode(float value);
 AstNode *mkBoolLiteralNode(int value);
 
-enum NodeTypes{
+enum NodeTypes {
 	Prog,
 	DefineConst,
 	DefineFunction,
@@ -300,6 +307,7 @@ enum NodeTypes{
 	MessageIdentifier,
 	StructMember,
 	Parameter,
+	BuiltinType,
 	StructType,
 	ArrayType,
 	While,
@@ -351,7 +359,23 @@ enum operatore {
 	ebit_not
 };
 
-enum {
+enum fixity {
 	prefix,
 	postfix
+};
+
+enum builtintypes {
+	builtintype_uint8,
+	builtintype_uint16,
+	builtintype_uint32,
+	builtintype_uint64,
+	builtintype_int8,
+	builtintype_int16,
+	builtintype_int32,
+	builtintype_int64,
+	builtintype_int,
+	builtintype_float,
+	builtintype_void,
+	builtintype_bool,
+	builtintype_msg
 };

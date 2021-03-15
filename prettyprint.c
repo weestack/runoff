@@ -17,6 +17,7 @@ static char *ppIncludeRunoffFile(IncludeRunoffFileNode node);
 static char *ppMessageIdentifier(MessageIdentifierNode node);
 static char *ppStructMember(StructMemberNode node);
 static char *ppParameter(ParameterNode node);
+static char *ppBuiltinType(BuiltinTypeNode node);
 static char *ppStructType(StructTypeNode node);
 static char *ppArrayType(ArrayTypeNode node);
 static char *ppWhile(WhileNode node);
@@ -65,6 +66,8 @@ char *prettyprint(AstNode *node)
 		return ppStructMember(node->node.StructMember);
 	case Parameter:
 		return ppParameter(node->node.Parameter);
+	case BuiltinType:
+		return ppBuiltinType(node->node.BuiltinType);
 	case StructType:
 		return ppStructType(node->node.StructType);
 	case ArrayType:
@@ -235,6 +238,11 @@ static char *ppParameter(ParameterNode node){
 	free(typestr);
 	free(idstr);
 	return result;
+}
+
+static char *ppBuiltinType(BuiltinTypeNode node){
+	char *typestr = smprintf("tytytyt%d", node.type); /* should look the name up in a table */
+	return typestr;
 }
 
 static char *ppStructType(StructTypeNode node){
