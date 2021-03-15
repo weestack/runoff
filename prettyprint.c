@@ -37,6 +37,7 @@ static char *ppUnaryOperation(UnaryOperationNode node);
 static char *ppFunctionCall(FunctionCallNode node);
 static char *ppAssignment(AssignmentNode node);
 static char *ppTernaryOperator(TernaryOperatorNode node);
+static char *ppIdentifier(IdentifierNode node);
 
 char *prettyprint(AstNode *node)
 {
@@ -101,6 +102,8 @@ char *prettyprint(AstNode *node)
 		return ppAssignment(node->node.Assignment);
 	case TernaryOperator:
 		return ppTernaryOperator(node->node.TernaryOperator);
+	case Identifier:
+		return ppIdentifier(node->node.Identifier);
 	default:
 		return "";
 	}
@@ -404,6 +407,10 @@ static char *ppTernaryOperator(TernaryOperatorNode node){
 
 	free(expressionTestStr);free(expressionTrueStr);free(expressionFalseStr);
 	return result;
+}
+
+static char *ppIdentifier(IdentifierNode node){
+	return smprintf(node.identifier);
 }
 
 /* printf but it returns a string allocated by malloc */

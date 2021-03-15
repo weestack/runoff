@@ -29,6 +29,7 @@ typedef struct UnaryOperationNode UnaryOperationNode;
 typedef struct FunctionCallNode FunctionCallNode;
 typedef struct AssignmentNode AssignmentNode;
 typedef struct TernaryOperatorNode TernaryOperatorNode;
+typedef struct IdentifierNode IdentifierNode;
 
 struct ProgNode {
 	AstNode *toplevels;
@@ -192,6 +193,10 @@ struct TernaryOperatorNode {
 	AstNode *expressionFalse;
 };
 
+struct IdentifierNode {
+	char *identifier;
+};
+
 struct AstNode {
 	int tag;
 	union {
@@ -225,6 +230,7 @@ struct AstNode {
 		FunctionCallNode FunctionCall;
 		AssignmentNode Assignment;
 		TernaryOperatorNode TernaryOperator;
+		IdentifierNode Identifier;
 	} node;
 	AstNode *next;
 };
@@ -259,6 +265,7 @@ AstNode *mkUnaryOperationNode(int operator, int fix, AstNode *expression);
 AstNode *mkFunctionCallNode(AstNode *identifier, AstNode *arguments);
 AstNode *mkAssignmentNode(AstNode *location, AstNode *expression);
 AstNode *mkTernaryOperatorNode(AstNode *expressionTest, AstNode *expressionTrue, AstNode *expressionFalse);
+AstNode *mkIdentifierNode(char *identifier);
 
 enum NodeTypes{
 	Prog,
@@ -290,7 +297,8 @@ enum NodeTypes{
 	UnaryOperation,
 	FunctionCall,
 	Assignment,
-	TernaryOperator
+	TernaryOperator,
+	Identifier
 };
 
 enum operatore {

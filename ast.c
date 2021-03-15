@@ -223,3 +223,9 @@ AstNode *mkTernaryOperatorNode(AstNode *expressionTest, AstNode *expressionTrue,
 	node->node.TernaryOperator.expressionFalse = expressionFalse;
 	return node;
 }
+
+AstNode *mkIdentifierNode(char *identifier){
+	AstNode *node = mkNode(Identifier);
+	node->node.Identifier.identifier = identifier;
+	return node;
+}
