@@ -133,14 +133,10 @@ Statement: Expression ';'
          | while_keyword '(' Expression ')' '{' Statements '}'
          | for_keyword '(' MaybeExpression ';' MaybeExpression ';' MaybeExpression ')' '{' Statements '}'
          | switch_keyword '(' Expression ')' '{' SwitchCases '}'
-         | IfStatement
+         | if_keyword '(' Expression ')' '{' Statements '}' ElsePart
          | receive '{' ReceiveCases '}'
          | return_keyword MaybeExpression ';'
          ;
-
-
-IfStatement: if_keyword '(' Expression ')' '{' Statements '}' ElsePart
-           ;
 
 ElsePart: else_keyword '{' Statements '}'
         | elseif_keyword '(' Expression ')' '{' Statements '}' ElsePart
