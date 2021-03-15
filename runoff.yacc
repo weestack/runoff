@@ -76,8 +76,8 @@ Program: Toplevel
        ;
 
 Toplevel: const_keyword identifier int_literal ';'
-        | function identifier '(' ParametersList ')' right_arrow Type Codeblock
-        | task identifier '(' ParametersList ')' Codeblock
+        | function identifier '(' ParametersList ')' right_arrow Type '{' Statements '}'
+        | task identifier '(' ParametersList ')' '{' Statements '}'
         | struct_keyword identifier '{' StructMembers '}'
         | messages '{' MessageIdentifiers '}'
         | include_keyword '(' identifier ')' ';'
@@ -125,16 +125,13 @@ Type: builtin_type
     | Type '[' ']'
     ;
 
-Codeblock: '{' Statements '}'
-         ;
-
 Statements: Statements Statement
           | %empty
           ;
 
 Statement: Expression ';'
-         | while_keyword '(' Expression ')' Codeblock
-         | for_keyword '(' MaybeExpression ';' MaybeExpression ';' MaybeExpression ')' Codeblock
+         | while_keyword '(' Expression ')' '{' Statements '}'
+         | for_keyword '(' MaybeExpression ';' MaybeExpression ';' MaybeExpression ')' '{' Statements '}'
          | switch_keyword '(' Expression ')' '{' SwitchCases '}'
          | IfStatement
          | receive '{' ReceiveCases '}'
@@ -142,11 +139,11 @@ Statement: Expression ';'
          ;
 
 
-IfStatement: if_keyword '(' Expression ')' Codeblock ElsePart
+IfStatement: if_keyword '(' Expression ')' '{' Statements '}' ElsePart
            ;
 
-ElsePart: else_keyword Codeblock
-        | elseif_keyword '(' Expression ')' Codeblock ElsePart
+ElsePart: else_keyword '{' Statements '}'
+        | elseif_keyword '(' Expression ')' '{' Statements '}' ElsePart
         | %empty
         ;
 
