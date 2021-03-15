@@ -7,17 +7,51 @@
 void
 prettydummy(void)
 {
-	AstNode *constnode = mkDefineConstNode(NULL, NULL);
-	AstNode *funnode = mkDefineFunctionNode(NULL, NULL, NULL, NULL);
-	AstNode *tasknode = mkDefineTaskNode(NULL, NULL, NULL);
+
+	AstNode *constnode;
+	AstNode *functionparams;
+	AstNode *functionbody;
+	AstNode *funnode;
 	AstNode *tree;
 
-	constnode->next = funnode;
-	funnode->next = tasknode;
+	constnode = mkDefineConstNode(
+		mkIdentifierNode("x"),
+		mkIntLiteralNode(1234)
+	);
 
+	functionparams = mkParameterNode(
+		mkBuiltinTypeNode(builtintype_float),
+		mkIdentifierNode("a")
+	);
+	functionparams->next = mkParameterNode(
+		mkBuiltinTypeNode(builtintype_uint8),
+		mkIdentifierNode("x")
+	);
+
+	functionbody = mkIfNode(
+		mkBinaryOperationNode(
+			mkIdentifierNode("x"),
+			eequal,
+			mkIntLiteralNode(123)
+		),
+		mkReturnNode(
+			mkFloatLiteralNode(5.123)
+		),
+		NULL
+	);
+
+	funnode = mkDefineFunctionNode(
+		mkIdentifierNode("testfun"),
+		functionparams,
+		mkBuiltinTypeNode(builtintype_float),
+		functionbody
+	);
+
+	constnode->next = funnode;
 	tree = mkProgNode(constnode);
 
 	printf("Pretty print of dummy tree:\n%s\n", prettyprint(tree));
+
 }
 
 int
