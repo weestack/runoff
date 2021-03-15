@@ -259,3 +259,17 @@ AstNode *mkReturnNode(AstNode *expression){
 	node->node.Return.expression = expression;
 	return node;
 }
+
+AstNode *mkSpawnNode(AstNode *identifier, AstNode *arguments){
+	AstNode *node = mkNode(Spawn);
+	node->node.Spawn.identifier = identifier;
+	node->node.Spawn.arguments = arguments;
+	return node;
+}
+
+AstNode *mkSendNode(AstNode *message, AstNode *receiver){
+	AstNode *node = mkNode(Send);
+	node->node.Send.message = message;
+	node->node.Send.receiver = receiver;
+	return node;
+}

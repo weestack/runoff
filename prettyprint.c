@@ -44,6 +44,8 @@ static char *ppIntLiteral(IntLiteralNode node);
 static char *ppFloatLiteral(FloatLiteralNode node);
 static char *ppBoolLiteral(BoolLiteralNode node);
 static char *ppReturn(ReturnNode node);
+static char *ppSpawn(SpawnNode node);
+static char *ppSend(SendNode node);
 
 /* GLOBAL VARIABLES HEHE */
 /* follows the order of the operators enum */
@@ -164,6 +166,10 @@ char *prettyprint(AstNode *node)
 		return ppBoolLiteral(node->node.BoolLiteral);
 	case Return:
 		return ppReturn(node->node.Return);
+	case Spawn:
+		return ppSpawn(node->node.Spawn);
+	case Send:
+		return ppSend(node->node.Send);
 	default:
 		return "";
 	}
@@ -500,6 +506,24 @@ static char *ppReturn(ReturnNode node){
 
 	result = smprintf("return %s;", exprstr);
 	free(exprstr);
+	return result;
+}
+
+static char *ppSpawn(SpawnNode node){
+	char *idstr = prettyprint(node.identifier);
+	char *argsstr = prettyprintlist(node.arguments, ", ");
+	char *result = smprintf("spawn %s(%s)");
+	free(idstr);
+	free(argsstr);
+	return result;
+}
+
+static char *ppSend(SendNode node){
+	char *msgstr = prettyprint(node.message);
+	char *receiverstr = prettyprint(node.receiver);
+	char *result = smprintf("send %s to %s;", msgstr, receiverstr);
+	free(msgstr);
+	free(receiverstr);
 	return result;
 }
 
