@@ -157,8 +157,7 @@ Statement: Expression ';'
          | switch_keyword '(' Expression ')' '{' SwitchCases '}'
          | IfStatement
          | receive '{' ReceiveCases '}'
-         | return_keyword Expression ';'
-         | return_keyword ';'
+         | return_keyword MaybeExpression ';'
          ;
 
 
