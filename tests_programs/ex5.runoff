@@ -13,7 +13,7 @@ task ping(int pongtaskid) {
 
 	for(;;){
 		# a ping message is sent to the pong task
-		send(pongtasskid, pingmsg);
+		send pingmsg to pongtasskid;
 		receive {
 		case Pong: delay(1);
 		}
@@ -23,7 +23,7 @@ task ping(int pongtaskid) {
 task pong() {
 	for(;;) {
 		receive {
-		case Ping(pingtaskid): send(pingtaskid, pong);
+		case Ping(pingtaskid): send pong to pingtaskid;
 		}
 	}
 }

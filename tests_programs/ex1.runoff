@@ -31,7 +31,7 @@ task B() {
 	while(true) {
 		delay(500);
 		party = !party;
-		send(A, PartyTime(party));
+		send PartyTime(party) to A; # Should give an error since A is not a task id
 	}
 }
 

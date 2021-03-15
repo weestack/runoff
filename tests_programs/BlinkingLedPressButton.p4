@@ -15,15 +15,15 @@ task A() {
         }
     }
 }
-    
+
 task B() {
     while(true){
         bool button_status = BinaryPin(BUTTONPIN);
-        
+
         if(button_status){
-            send(ButtonClick);
+            send ButtonClick to 1234; # FIXME who to send to??
         } else{
-            send(ButtonRelase);
+            send ButtonRelase to 1234; # FIXME who to send to??
         }
     }
 }

@@ -51,6 +51,8 @@
     right_arrow
     return_keyword
     spawn_keyword
+    send_keyword
+    to_keyword
 
     include_keyword
 
@@ -137,6 +139,7 @@ Statement: Expression ';'
          | if_keyword '(' Expression ')' '{' Statements '}' ElsePart
          | receive '{' ReceiveCases '}'
          | return_keyword MaybeExpression ';'
+         | send_keyword Expression to_keyword Expression ';'
          ;
 
 ElsePart: else_keyword '{' Statements '}'

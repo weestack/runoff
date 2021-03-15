@@ -37,6 +37,8 @@ punctuation [\[\]\(\)\{\};:=,\.\?]
 "receive" {return receive;}
 "return" {return return_keyword;}
 "spawn" {return spawn_keyword;}
+"send" {return send_keyword;}
+"to" {return to_keyword;}
 
 {punctuation} {return yytext[0];}
 
