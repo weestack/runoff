@@ -345,9 +345,15 @@ static char *ppArrayLocation(ArrayLocationNode node){
 }
 
 static char *ppUnaryOperation(UnaryOperationNode node){
-    /*char *operatorStr = prettyprint(node.operator); fix */
+    char *operatorStr = smprintf("OP") /* fix me */
     char *expressionStr = prettyprint(node.expression);
-    char *result = smprintf(" %s ", expressionStr);
+ 	char *result;
+
+ 	if(node.fix == prefix)
+ 		result = smprintf("%s %s", operatorStr, expressionStr);
+ 	else
+ 		result = smprintf("%s %s", expressionStr, operatorStr);
+ 	free(operatorStr);
     free(expressionStr);
     return result;
 }

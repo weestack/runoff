@@ -192,6 +192,7 @@ struct ArrayLocationNode {
 struct UnaryOperationNode {
     /* enum again */
     int operator;
+    int fix; /* prefix or postfix */
     AstNode *expression;
 };
 
@@ -277,7 +278,7 @@ AstNode *mkBinaryOperationNode(AstNode *expression_left, int operator, AstNode *
 AstNode *mkVariableLocationNode(AstNode *identifier);
 AstNode *mkStructLocationNode(AstNode *identifier, AstNode *location);
 AstNode *mkArrayLocationNode(AstNode *identifier, AstNode *indicies);
-AstNode *mkUnaryOperationNode(int operator, AstNode *expression);
+AstNode *mkUnaryOperationNode(int operator, int fix, AstNode *expression);
 AstNode *mkFunctionCallNode(AstNode *identifier, AstNode *arguments);
 AstNode *mkAssignmentNode(AstNode *location, AstNode *expression);
 AstNode *mkTernaryOperatorNode(AstNode *expressionTest, AstNode *expressionTrue, AstNode *expressionFalse);
@@ -337,4 +338,9 @@ enum operatore {
     eleft_shift,
     ebit_xor,
     ebit_not
+};
+
+enum {
+	prefix,
+	postfix
 };

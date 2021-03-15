@@ -188,9 +188,10 @@ AstNode *mkArrayLocationNode(AstNode *identifier, AstNode *indicies){
         return node;
 }
 
-AstNode *mkUnaryOperationNode(int operator, AstNode *expression){
+AstNode *mkUnaryOperationNode(int operator, int fix, AstNode *expression){
         AstNode *node = mkNode(UnaryOperation);
         node->node.UnaryOperation.operator = operator;
+        node->node.UnaryOperation.fix = fix;
         node->node.UnaryOperation.expression = expression;
         return node;
 }
