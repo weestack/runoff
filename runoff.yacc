@@ -221,14 +221,9 @@ Location: identifier
         | identifier Indexes
         ;
 
-Indexes: Indexes Index
-       | Index
+Indexes: Indexes '[' Expression ']'
+       | '[' Expression ']'
        ;
-
-Index: '[' Expression ']'
-     ;
-
-
 
 %%
 
