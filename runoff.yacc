@@ -71,13 +71,9 @@
 %right '!' '=' '?' ':'
 %%
 
-Program: Toplevels
+Program: Toplevel
+       | Program Toplevel
        ;
-
-
-Toplevels: Toplevel
-         | Toplevels Toplevel
-         ;
 
 Toplevel: DefineConst
         | DefineFunction
