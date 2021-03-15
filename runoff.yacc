@@ -50,6 +50,7 @@
     builtin_type
     right_arrow
     return_keyword
+    spawn_keyword
 
     include_keyword
 
@@ -213,6 +214,7 @@ Expression: Location
           | identifier decrement
           | Declaration
           | Expression '?' Expression ':' Expression
+          | spawn_keyword identifier '(' ArgsList ')'
           ;
 
 

@@ -29,6 +29,6 @@ task pong() {
 }
 
 function setup() -> void {
-	int pongtaskid = spawn(pong);
-	int pingtaskid = spawn(ping, pongtaskid);
+	int pongtaskid = spawn pong();
+	int pingtaskid = spawn ping(pongtaskid);
 }
