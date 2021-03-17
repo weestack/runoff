@@ -93,6 +93,9 @@ static char *builtintypeNames[] = {
 
 char *prettyprint(AstNode *node)
 {
+	if(node == NULL)
+		return smprintf("");
+
 	switch(node->tag){
 	case Prog:
 		return ppProg(node->node.Prog);
@@ -179,8 +182,12 @@ static char *prettyprintlist(AstNode *node, char *sep){
 	char *result;
 	char *prev;
 	char *childstr;
-	AstNode *child = node->next;
+	AstNode *child;
 
+	if(node == NULL)
+		return smprintf("");
+
+	child = node->next;
 	result = prettyprint(node);
 
 	while(child != NULL){
@@ -398,7 +405,7 @@ static char *ppVarDecl(VarDeclNode node){
 	if(node.expression)
 		expressionStr = prettyprint(node.expression);
 	else
-		expressionStr = smprintf("default value for type %s");
+		expressionStr = smprintf("default value for type %s", typestr);
 	result = smprintf("%s %s = %s", typestr, identifierStr, expressionStr);
 	free(typestr);
 	free(identifierStr);
@@ -418,7 +425,7 @@ static char *ppBinaryOperation(BinaryOperationNode node){
 
 static char *ppVariableLocation(VariableLocationNode node){
 	char *identifierStr = prettyprint(node.identifier);
-	char *result = smprintf("%s %s", identifierStr);
+	char *result = smprintf("%s", identifierStr);
 	free(identifierStr);
 	return result;
 }

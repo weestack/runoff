@@ -3,10 +3,16 @@
 #include "ast.h"
 
 
-void append_node(AstNode* siblingA, AstNode* siblingB) {
-    
-    for (; siblingA->next != NULL; siblingA = siblingA->next);
-    siblingA->next = siblingB;
+AstNode *append_node(AstNode* siblingA, AstNode* siblingB) {
+	AstNode *tmp;
+	if(siblingA == NULL)
+		return siblingB;
+
+    for (tmp = siblingA; tmp->next != NULL; tmp = tmp->next);
+
+    tmp->next = siblingB;
+
+    return siblingA;
 }
 
 
