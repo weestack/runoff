@@ -235,7 +235,7 @@ static char *ppDefineFunction(DefineFunctionNode node){
 static char *ppDefineTask(DefineTaskNode node){
 	char *idstr = prettyprint(node.identifier);
 	char *paramsstr = prettyprintlist(node.parameters, ", ", 0);
-	char *stmtsstr = prettyprint(node.statements);
+	char *stmtsstr = prettyprintlist(node.statements, ";\n", 1);
 	char *result = smprintf("task %s(%s) {\n%s}", idstr, paramsstr, stmtsstr);
 	free(idstr);
 	free(paramsstr);
