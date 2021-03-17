@@ -211,7 +211,7 @@ struct IdentifierNode {
 
 struct IntLiteralNode {
 	/* store its size here as well i think */
-	int value;
+	long int value;
 };
 
 struct FloatLiteralNode {
@@ -318,7 +318,7 @@ AstNode *mkFunctionCallNode(AstNode *identifier, AstNode *arguments);
 AstNode *mkAssignmentNode(AstNode *location, AstNode *expression);
 AstNode *mkTernaryOperatorNode(AstNode *expressionTest, AstNode *expressionTrue, AstNode *expressionFalse);
 AstNode *mkIdentifierNode(char *identifier);
-AstNode *mkIntLiteralNode(int value);
+AstNode *mkIntLiteralNode(long int value);
 AstNode *mkFloatLiteralNode(float value);
 AstNode *mkBoolLiteralNode(int value);
 AstNode *mkReturnNode(AstNode *expression);

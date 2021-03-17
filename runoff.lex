@@ -44,10 +44,16 @@ punctuation [\[\]\(\)\{\};:=,\.\?]
 {punctuation} {return yytext[0];}
 
 
-{integer} {yylval.astNode = mkIntLiteralNode(1234); return int_literal;}
-{float} {yylval.astNode = mkFloatLiteralNode(1234.0); return float_literal;}
-("true"|"false") {yylval.astNode = mkBoolLiteralNode(0); return bool_literal;}
-
+{integer} {
+	yylval.astNode = mkIntLiteralNode(strtoll(yytext, NULL, 10));
+	return int_literal;
+}
+{float} {
+	yylval.astNode = mkFloatLiteralNode(strtof(yytext, NULL));
+	return float_literal;
+}
+"true" {yylval.astNode = mkBoolLiteralNode(1); return bool_literal;}
+"false" {yylval.astNode = mkBoolLiteralNode(0); return bool_literal;}
 
 uint8	{yylval.astNode = mkBuiltinTypeNode(builtintype_uint8); return builtin_type;}
 uint16	{yylval.astNode = mkBuiltinTypeNode(builtintype_uint16); return builtin_type;}

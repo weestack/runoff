@@ -250,7 +250,7 @@ AstNode *mkIdentifierNode(char *identifier){
 	return node;
 }
 
-AstNode *mkIntLiteralNode(int value){
+AstNode *mkIntLiteralNode(long int value){
 	AstNode *node = mkNode(IntLiteral);
 	node->node.IntLiteral.value = value;
 	return node;

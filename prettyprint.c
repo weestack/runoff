@@ -506,7 +506,7 @@ static char *ppIdentifier(IdentifierNode node){
 }
 
 static char *ppIntLiteral(IntLiteralNode node){
-	return smprintf("%d", node.value);
+	return smprintf("%ld", node.value);
 }
 
 static char *ppFloatLiteral(FloatLiteralNode node){
