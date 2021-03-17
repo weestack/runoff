@@ -10,11 +10,15 @@
 %define parse.error verbose
 
 %union {
-    char *string;
+    AstNode* astNode;
 }
 
+/* Define all non-terminals as type astNode */
+%type <astNode> Program Toplevel MessageIdentifiers MessageIdentifier StructMembers StructMember ParametersList Parameters ArgsList Args Type Statements Statement ElsePart SwitchCases SwitchCase ReceiveCases ReceiveCase CallMessageIdentifier Identifiers MaybeExpression Declaration Literal Expression Location Indexes
 
 %token
+    <astNode> /* Define type */
+    /* Terminals below */
     const_keyword
     struct_keyword
     messages
@@ -106,12 +110,9 @@ ParametersList: Parameters
               | %empty
               ;
 
-Parameters: Parameter
-          | Parameters ',' Parameter
+Parameters: Type identifier
+          | Parameters ','
           ;
-
-Parameter: Type identifier
-         ;
 
 
 ArgsList: Args
