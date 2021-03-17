@@ -5,8 +5,9 @@
 
     extern int yylineno;
     extern int yylex(void);
+    extern FILE* yyin;
     int yyerror(const char*);
-    AstNode *parseresult;
+    static AstNode *parseresult;
 %}
 
 /* Give me the good errors please */
@@ -237,4 +238,18 @@ Indexes: Indexes '[' Expression ']' {$$ = append_node($1, $3);}
 int
 yyerror(const char *err) {
     printf("Parse error at line %d: %s\n", yylineno, err);
+}
+
+AstNode *parse(char *file){
+	int parseok;
+
+	yyin = fopen(file, "r");
+	if(yyin == NULL)
+		return NULL;
+
+	parseok = yyparse();
+	if(parseok == 0)
+		return parseresult;
+	else
+		return NULL;
 }

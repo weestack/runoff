@@ -4,9 +4,6 @@
 #include "ast.h"
 #include "phases.h"
 
-/* global variable defined in yacc file */
-extern AstNode *parseresult;
-
 void
 prettydummy(void)
 {
@@ -68,15 +65,24 @@ prettydummy(void)
 int
 main(int argc, char *argv[])
 {
-	int ret;
-	ret = 0;
+	AstNode *tree;
 
-	ret = yyparse();
-	if(argc >= 2 && strcmp(argv[1], "--prettyprint") == 0){
-		if(ret == 0)
-			printf("%s\n", prettyprint(parseresult));
+	/* the file name is always the first argument. Rewrite this some day */
+	if(argc < 2){
+		printf("No input file given\n");
+		return -1;
+	}
+
+	tree = parse(argv[1]);
+	if(argc >= 3 && strcmp(argv[2], "--prettyprint") == 0){
+		if(tree != NULL)
+			printf("%s\n", prettyprint(tree));
 		else
 			printf("Can't prettyprint since I couldn't parse ☹\n");
 	}
-	return ret;
+
+	if(tree == NULL)
+		return -1;
+	else
+		return 0;
 }
