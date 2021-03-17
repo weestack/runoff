@@ -15,7 +15,7 @@
 }
 
 /* Define all non-terminals as type astNode */
-%type <astNode> Program Toplevel MessageIdentifiers MessageIdentifier StructMembers StructMember ParametersList Parameters ArgsList Args Type Statements Statement ElsePart SwitchCases SwitchCase ReceiveCases ReceiveCase CallMessageIdentifier Identifiers MaybeExpression Declaration Literal Expression Location Indexes
+%type <astNode> Program Toplevel MessageIdentifiers MessageIdentifier StructMembers ParametersList Parameters ArgsList Args Type Statements Statement ElsePart SwitchCases SwitchCase ReceiveCases CallMessageIdentifier Identifiers MaybeExpression Declaration Literal Expression Location Indexes
 
 %token
     <astNode> /* Define type */
@@ -79,7 +79,7 @@
 %right '!' '=' '?' ':'
 %%
 
-Program: Toplevel 
+Program: Toplevel
        | Program Toplevel
        ;
 
@@ -99,12 +99,9 @@ MessageIdentifier: identifier '(' Parameters ')' ';'
                  | identifier ';'
                  ;
 
-StructMembers: StructMembers StructMember
-             | StructMember
+StructMembers: StructMembers Type identifier ';'
+             | Type identifier ';'
              ;
-
-StructMember: Type identifier ';'
-            ;
 
 
 ParametersList: Parameters
@@ -112,7 +109,7 @@ ParametersList: Parameters
               ;
 
 Parameters: Type identifier
-          | Parameters ','
+          | Parameters ',' Type identifier
           ;
 
 
@@ -158,12 +155,9 @@ SwitchCase: case_keyword Literal ':' Statements
           ;
 
 
-ReceiveCases: ReceiveCases ReceiveCase
+ReceiveCases: ReceiveCases case_keyword CallMessageIdentifier ':' Statements
             | %empty
             ;
-
-ReceiveCase: case_keyword CallMessageIdentifier ':' Statements
-           ;
 
 CallMessageIdentifier: identifier
                  | identifier '(' Identifiers ')'
