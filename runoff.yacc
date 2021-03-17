@@ -7,7 +7,6 @@
     extern int yylex(void);
     int yyerror(const char*);
     AstNode *parseresult;
-    int yydebug = 1;
 %}
 
 /* Give me the good errors please */

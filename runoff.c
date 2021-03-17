@@ -74,7 +74,7 @@ main(int argc, char *argv[])
 	ret = yyparse();
 	if(argc >= 2 && strcmp(argv[1], "--prettyprint") == 0){
 		if(ret == 0)
-			printf("pretty print:\n %s\n", prettyprint(parseresult));
+			printf("pretty print:\n%s\n", prettyprint(parseresult));
 		else
 			printf("Can't prettyprint since I couldn't parse ☹\n");
 	}
