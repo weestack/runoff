@@ -1,5 +1,6 @@
 %{
     #include <stdio.h>
+    #include "ast.h"
 
     extern int yylineno;
     extern int yylex(void);
@@ -10,7 +11,7 @@
 %define parse.error verbose
 
 %union {
-    AstNode* astNode;
+    struct AstNode* astNode;
 }
 
 /* Define all non-terminals as type astNode */
@@ -78,7 +79,7 @@
 %right '!' '=' '?' ':'
 %%
 
-Program: Toplevel
+Program: Toplevel 
        | Program Toplevel
        ;
 
