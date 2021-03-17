@@ -490,7 +490,7 @@ static char *ppTernaryOperator(TernaryOperatorNode node){
 	char *expressionTestStr = prettyprint(node.expressionTest);
 	char *expressionTrueStr = prettyprint(node.expressionTrue);
 	char *expressionFalseStr = prettyprint(node.expressionFalse);
-	char *result = smprintf("(%s) ? %s : %s", expressionTestStr,
+	char *result = smprintf("%s ? %s : %s", expressionTestStr,
 	 expressionTrueStr, expressionFalseStr);
 
 	free(expressionTestStr);free(expressionTrueStr);free(expressionFalseStr);

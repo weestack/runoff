@@ -65,15 +65,22 @@
     right_shift
     left_shift
 
-
-
-%left and_op or_op bitwise_and bitwise_or bitwise_xor bitwise_not right_shift left_shift
-%left equal not_equal less_equal greater_equal less_than greater_than modulo
+%right '='
+%right '?' ':'
+%left or_op
+%left and_op
+%left bitwise_or
+%left bitwise_xor
+%left bitwise_and
+%left equal not_equal
+%left greater_than greater_equal less_than less_equal
+%left right_shift left_shift
 %left '+' '-'
-%left '*' '/'
+%left '*' '/' modulo
+%right '!' bitwise_not
 %left increment decrement
+%left '(' ')' '[' ']' '.'
 
-%right '!' '=' '?' ':'
 %%
 
 Program: Toplevel {$$ = mkProgNode($1); parseresult = $$;}
