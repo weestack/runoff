@@ -287,3 +287,9 @@ AstNode *mkSendNode(AstNode *message, AstNode *receiver){
 	node->node.Send.receiver = receiver;
 	return node;
 }
+
+AstNode *mkExprStmtNode(AstNode *expression){
+	AstNode *node = mkNode(ExprStmt);
+	node->node.ExprStmt.expression = expression;
+	return node;
+}

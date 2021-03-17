@@ -85,8 +85,6 @@
 
 Program: Toplevel {$$ = mkProgNode($1); parseresult = $$;}
        | Program Toplevel {
-       		printf("Program is:  %p\n", $1);
-       		printf("Toplevel is: %p\n", $2);
        		$$ = append_node($1->node.Prog.toplevels, $2);
        		$$ = mkProgNode($$);
        		parseresult = $$;
@@ -141,7 +139,7 @@ Statements: Statements Statement {$$ = append_node($1, $2);}
           | %empty {$$ = NULL;}
           ;
 
-Statement: Expression ';' {$$ = $1;}
+Statement: Expression ';' {$$ = mkExprStmtNode($1);}
          | while_keyword '(' Expression ')' '{' Statements '}' {$$ = mkWhileNode($3, $6);}
          | for_keyword '(' MaybeExpression ';' MaybeExpression ';' MaybeExpression ')' '{' Statements '}'
          {$$ = mkForNode($3, $5, $7, $10);}
