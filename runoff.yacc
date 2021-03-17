@@ -79,46 +79,46 @@
 %right '!' '=' '?' ':'
 %%
 
-Program: Toplevel
-       | Program Toplevel
+Program: Toplevel {$$ = mkProgNode($1);}
+       | Program Toplevel {$$ = $1; append_node($1->node.Prog.toplevels, $2);}
        ;
 
-Toplevel: const_keyword identifier int_literal ';'
-        | function identifier '(' ParametersList ')' right_arrow Type '{' Statements '}'
-        | task identifier '(' ParametersList ')' '{' Statements '}'
-        | struct_keyword identifier '{' StructMembers '}'
-        | messages '{' MessageIdentifiers '}'
-        | include_keyword '(' identifier ')' ';'
+Toplevel: const_keyword identifier int_literal ';' {$$ = mkDefineConstNode($2, $3); }
+        | function identifier '(' ParametersList ')' right_arrow Type '{' Statements '}' { $$=mkDefineFunctionNode($2, $4, $7, $9); }
+        | task identifier '(' ParametersList ')' '{' Statements '}' {$$ = mkDefineTaskNode($2, $4, $7);}
+        | struct_keyword identifier '{' StructMembers '}' {$$=mkDefineStructNode($2, $4);}
+        | messages '{' MessageIdentifiers '}' {$$ = mkDefineMessageNode($3);}
+        /*| include_keyword '(' identifier ')' ';'*/
         ;
 
-MessageIdentifiers: MessageIdentifiers MessageIdentifier
-                  | MessageIdentifier
+MessageIdentifiers: MessageIdentifiers MessageIdentifier {$$ = $1; append_node($1, $2);}
+                  | MessageIdentifier {$$ = $1;}
                   ;
 
-MessageIdentifier: identifier '(' Parameters ')' ';'
-                 | identifier ';'
+MessageIdentifier: identifier '(' Parameters ')' ';' {$$ = mkMessageIdentifierNode($1, $3);}
+                 | identifier ';' {$$ = mkMessageIdentifierNode($1, NULL);}
                  ;
 
-StructMembers: StructMembers Type identifier ';'
-             | Type identifier ';'
+StructMembers: StructMembers Type identifier ';' {$$ = $1; append_node($1, mkStructMemberNode($3, $2));}
+             | Type identifier ';' {$$ = mkStructMemberNode($2, $1);}
              ;
 
 
-ParametersList: Parameters
-              | %empty
+ParametersList: Parameters {$$ = $1;}
+              | %empty {$$ = NULL;}
               ;
 
-Parameters: Type identifier
-          | Parameters ',' Type identifier
+Parameters: Type identifier {$$ = mkParameterNode($1, $2);}
+          | Parameters ',' Type identifier {$$ = $1; append_node($1, mkParameterNode($3, $4));}
           ;
 
 
-ArgsList: Args
-        | %empty
+ArgsList: Args {$$ = $1;}
+        | %empty {$$ = NULL;}
         ;
 
-Args: Args ',' Expression
-    | Expression
+Args: Args ',' Expression {$$ = $1; append_node($1, $3);}
+    | Expression {$$ = $1;}
     ;
 
 Type: builtin_type

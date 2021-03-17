@@ -2,6 +2,14 @@
 #include <stdlib.h>
 #include "ast.h"
 
+
+void append_node(AstNode* siblingA, AstNode* siblingB) {
+    
+    for (; siblingA->next != NULL; siblingA = siblingA->next);
+    siblingA->next = siblingB;
+}
+
+
 static AstNode *mkNode(int type) {
 	AstNode *node = malloc(sizeof(AstNode));
 	node->tag = type;

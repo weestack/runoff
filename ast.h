@@ -318,7 +318,7 @@ AstNode *mkBoolLiteralNode(int value);
 AstNode *mkReturnNode(AstNode *expression);
 AstNode *mkSpawnNode(AstNode *identifier, AstNode *arguments);
 AstNode *mkSendNode(AstNode *message, AstNode *receiver);
-
+void append_node(AstNode* siblingA, AstNode* siblingB);
 enum NodeTypes {
 	Prog,
 	DefineConst,
