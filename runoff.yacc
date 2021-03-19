@@ -25,13 +25,7 @@
 %token
     const_keyword
     struct_keyword
-<<<<<<< HEAD
-    taskid_keyword
     pinid_keyword
-=======
-    pinid_keyword
-    taskid_keyword
->>>>>>> 5eab33a2c230372e5237cdc6954b432004f7b7b8
     messages
 
     and_op
@@ -151,34 +145,17 @@ Statements: Statements Statement {$$ = append_node($1, $2);}
 Statement: Expression ';' {$$ = mkExprStmtNode($1);}
          | while_keyword '(' Expression ')' '{' Statements '}' {$$ = mkWhileNode($3, $6);}
          | for_keyword '(' MaybeExpression ';' MaybeExpression ';' MaybeExpression ')' '{' Statements '}'
-<<<<<<< HEAD
-         | switch_keyword '(' Expression ')' '{' SwitchCases '}'
-         | if_keyword '(' Expression ')' '{' Statements '}' ElsePart
-         | receive '{' ReceiveCases '}'
-         | return_keyword MaybeExpression ';'
-         | send_keyword Expression to_keyword Expression ';'
-=======
          {$$ = mkForNode($3, $5, $7, $10);}
          | switch_keyword '(' Expression ')' '{' SwitchCases '}' {$$ = mkSwitchNode($3, $6);}
          | if_keyword '(' Expression ')' '{' Statements '}' ElsePart {$$ = mkIfNode($3, $6, $8);}
          | receive '{' ReceiveCases '}' {$$ = mkReceiveNode($3);}
          | return_keyword MaybeExpression ';' {$$ = mkReturnNode($2);}
          | send_keyword Expression to_keyword Expression ';' {$$ = mkSendNode($2, $4);}
->>>>>>> 5eab33a2c230372e5237cdc6954b432004f7b7b8
-         | taskid_keyword identifier ';'
-         | taskid_keyword identifier '=' spawn_keyword identifier '(' ArgsList ')' ';'
          ;
 
-<<<<<<< HEAD
-
-ElsePart: else_keyword '{' Statements '}'
-        | elseif_keyword '(' Expression ')' '{' Statements '}' ElsePart
-        | %empty
-=======
 ElsePart: else_keyword '{' Statements '}' {$$ = mkElseNode($3);}
         | elseif_keyword '(' Expression ')' '{' Statements '}' ElsePart {$$ = mkElseIfNode($3, $6, $8);}
         | %empty {$$ = NULL;}
->>>>>>> 5eab33a2c230372e5237cdc6954b432004f7b7b8
         ;
 
 SwitchCases: SwitchCases SwitchCase {$$ = append_node($1, $2);}

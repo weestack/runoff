@@ -23,8 +23,8 @@ punctuation [\[\]\(\)\{\};:=,\.\?]
 
 "const" {return const_keyword;}
 "struct" {return struct_keyword;}
-"taskid" {return taskid_keyword;}
 "pinid" {return pinid_keyword;}
+
 "messages" {return messages;}
 "function" {return function;}
 "task" {return task;}
@@ -70,6 +70,7 @@ float	{yylval.astNode = mkBuiltinTypeNode(builtintype_float); return builtin_typ
 void	{yylval.astNode = mkBuiltinTypeNode(builtintype_void); return builtin_type;}
 bool	{yylval.astNode = mkBuiltinTypeNode(builtintype_bool); return builtin_type;}
 msg		{yylval.astNode = mkBuiltinTypeNode(builtintype_msg); return builtin_type;}
+taskid  {yylval.astNode = mkBuildinTypeNode(builtintype_taskid); return builtin_type;}
 
 
 "&&" {return and_op;}
