@@ -13,6 +13,7 @@ static char *ppDefineConst(DefineConstNode node);
 static char *ppDefineFunction(DefineFunctionNode node);
 static char *ppDefineTask(DefineTaskNode node);
 static char *ppDefineStruct(DefineStructNode node);
+static char *ppDefinePinid(DefinePinid node);
 static char *ppDefineMessage(DefineMessageNode node);
 static char *ppIncludeRunoffFile(IncludeRunoffFileNode node);
 static char *ppMessageIdentifier(MessageIdentifierNode node);
@@ -89,7 +90,8 @@ static char *builtintypeNames[] = {
 	"float",
 	"void",
 	"bool",
-	"msg"
+	"msg",
+    "taskid"
 };
 
 char *prettyprint(AstNode *node)
@@ -108,6 +110,8 @@ char *prettyprint(AstNode *node)
 		return ppDefineTask(node->node.DefineTask);
 	case DefineStruct:
 		return ppDefineStruct(node->node.DefineStruct);
+    case DefinePinid:
+        return ppDefinePinid(node->node.DefinePinid);
 	case DefineMessage:
 		return ppDefineMessage(node->node.DefineMessage);
 	case IncludeRunoffFile:
@@ -254,6 +258,17 @@ static char *ppDefineStruct(DefineStructNode node){
 	free(fieldsstr);
 	return result;
 }
+
+static char *ppDefinePinid(DefinePinidNode node){
+	char *identifierStr = prettyprint(node.identifier);
+	char *int_literalStr = prettyprint(node.int_literal);
+	char *result = smprintf("Pinid %s = %s", identifierStr, int_literalStr);
+	free(identifierStr);
+	free(int_literalStr);
+	return result;
+}
+
+
 
 static char *ppDefineMessage(DefineMessageNode node){
 	char *messagesstr = prettyprintlist(node.messagesIdentifiers, ";\n", 1);

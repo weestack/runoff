@@ -98,7 +98,7 @@ Toplevel: const_keyword identifier int_literal ';' {$$ = mkDefineConstNode($2, $
         | task identifier '(' ParametersList ')' '{' Statements '}' {$$ = mkDefineTaskNode($2, $4, $7);}
         | struct_keyword identifier '{' StructMembers '}' {$$=mkDefineStructNode($2, $4);}
         | messages '{' MessageIdentifiers '}' {$$ = mkDefineMessageNode($3);}
-        | pinid_keyword identifier '=' int_literal ';'
+        | pinid_keyword identifier '=' int_literal ';' {$$ = mkDefinePinidNode($2, $4);}
         /*| include_keyword '(' identifier ')' ';'*/
         ;
 

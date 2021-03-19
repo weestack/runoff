@@ -22,7 +22,7 @@ function otherway() -> int {
 }
 
 function setup() -> void {
-	int taskid = spawn ledhandler();
-	inputPin(ButtonPin, taskid, ButtonPressed, ButtonReleased);
+	taskid nama = spawn ledhandler();
+	inputPin(ButtonPin, nama, ButtonPressed, ButtonReleased);
 	outputPin(LEDPin);
 }
