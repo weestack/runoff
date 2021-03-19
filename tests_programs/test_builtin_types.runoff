@@ -31,8 +31,6 @@ function ad() -> void {
   # int64
   int64 z= 4831482134324321;
 
-
-  uint y = 123;
   # int8
   uint8 u = 123;
   # int16

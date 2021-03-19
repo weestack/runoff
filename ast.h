@@ -37,6 +37,7 @@ typedef struct BoolLiteralNode BoolLiteralNode;
 typedef struct ReturnNode ReturnNode;
 typedef struct SpawnNode SpawnNode;
 typedef struct SendNode SendNode;
+typedef struct ExprStmtNode ExprStmtNode;
 
 struct ProgNode {
 	AstNode *toplevels;
@@ -210,7 +211,7 @@ struct IdentifierNode {
 
 struct IntLiteralNode {
 	/* store its size here as well i think */
-	int value;
+	long int value;
 };
 
 struct FloatLiteralNode {
@@ -233,6 +234,10 @@ struct SpawnNode {
 struct SendNode {
 	AstNode *message;
 	AstNode *receiver;
+};
+
+struct ExprStmtNode {
+	AstNode *expression;
 };
 
 struct AstNode {
@@ -276,6 +281,7 @@ struct AstNode {
 		ReturnNode Return;
 		SpawnNode Spawn;
 		SendNode Send;
+		ExprStmtNode ExprStmt;
 	} node;
 	AstNode *next;
 };
@@ -312,13 +318,16 @@ AstNode *mkFunctionCallNode(AstNode *identifier, AstNode *arguments);
 AstNode *mkAssignmentNode(AstNode *location, AstNode *expression);
 AstNode *mkTernaryOperatorNode(AstNode *expressionTest, AstNode *expressionTrue, AstNode *expressionFalse);
 AstNode *mkIdentifierNode(char *identifier);
-AstNode *mkIntLiteralNode(int value);
+AstNode *mkIntLiteralNode(long int value);
 AstNode *mkFloatLiteralNode(float value);
 AstNode *mkBoolLiteralNode(int value);
 AstNode *mkReturnNode(AstNode *expression);
 AstNode *mkSpawnNode(AstNode *identifier, AstNode *arguments);
 AstNode *mkSendNode(AstNode *message, AstNode *receiver);
-void append_node(AstNode* siblingA, AstNode* siblingB);
+AstNode *mkExprStmtNode(AstNode *expression);
+
+AstNode *append_node(AstNode* siblingA, AstNode* siblingB);
+
 enum NodeTypes {
 	Prog,
 	DefineConst,
@@ -357,7 +366,8 @@ enum NodeTypes {
 	BoolLiteral,
 	Return,
 	Spawn,
-	Send
+	Send,
+	ExprStmt
 };
 
 enum operators {

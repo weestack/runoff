@@ -65,13 +65,24 @@ prettydummy(void)
 int
 main(int argc, char *argv[])
 {
-	int ret;
-	ret = 0;
+	AstNode *tree;
 
-	if(argc >= 2 && strcmp(argv[1], "--prettyprint") == 0)
-		prettydummy(); /* would normally pretty print the AST */
+	/* the file name is always the first argument. Rewrite this some day */
+	if(argc < 2){
+		printf("No input file given\n");
+		return -1;
+	}
+
+	tree = parse(argv[1]);
+	if(argc >= 3 && strcmp(argv[2], "--prettyprint") == 0){
+		if(tree != NULL)
+			printf("%s\n", prettyprint(tree));
+		else
+			printf("Can't prettyprint since I couldn't parse ☹\n");
+	}
+
+	if(tree == NULL)
+		return -1;
 	else
-		ret = yyparse(); /* call the parser from yacc */
-
-	return ret;
+		return 0;
 }

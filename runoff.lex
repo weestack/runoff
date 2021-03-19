@@ -1,6 +1,7 @@
 %{
+#include <strings.h>
 #include "parser.h"
-#include "string.h"
+#include "ast.h"
 int yyerror(const char*);
 %}
 
@@ -24,8 +25,6 @@ punctuation [\[\]\(\)\{\};:=,\.\?]
 "struct" {return struct_keyword;}
 "taskid" {return taskid_keyword;}
 "pinid" {return pinid_keyword;}
-
-
 "messages" {return messages;}
 "function" {return function;}
 "task" {return task;}
@@ -47,13 +46,30 @@ punctuation [\[\]\(\)\{\};:=,\.\?]
 {punctuation} {return yytext[0];}
 
 
-{integer} {return int_literal;}
-{float} {return float_literal;}
-("true"|"false") {return bool_literal;}
+{integer} {
+	yylval.astNode = mkIntLiteralNode(strtoll(yytext, NULL, 10));
+	return int_literal;
+}
+{float} {
+	yylval.astNode = mkFloatLiteralNode(strtof(yytext, NULL));
+	return float_literal;
+}
+"true" {yylval.astNode = mkBoolLiteralNode(1); return bool_literal;}
+"false" {yylval.astNode = mkBoolLiteralNode(0); return bool_literal;}
 
-
-(u?int(8|16|32|64)?|float|bool|void|msg) {return builtin_type;}
-
+uint8	{yylval.astNode = mkBuiltinTypeNode(builtintype_uint8); return builtin_type;}
+uint16	{yylval.astNode = mkBuiltinTypeNode(builtintype_uint16); return builtin_type;}
+uint32	{yylval.astNode = mkBuiltinTypeNode(builtintype_uint32); return builtin_type;}
+uint64	{yylval.astNode = mkBuiltinTypeNode(builtintype_uint64); return builtin_type;}
+int8	{yylval.astNode = mkBuiltinTypeNode(builtintype_int8); return builtin_type;}
+int16	{yylval.astNode = mkBuiltinTypeNode(builtintype_int16); return builtin_type;}
+int32	{yylval.astNode = mkBuiltinTypeNode(builtintype_int32); return builtin_type;}
+int64	{yylval.astNode = mkBuiltinTypeNode(builtintype_int64); return builtin_type;}
+int		{yylval.astNode = mkBuiltinTypeNode(builtintype_int); return builtin_type;}
+float	{yylval.astNode = mkBuiltinTypeNode(builtintype_float); return builtin_type;}
+void	{yylval.astNode = mkBuiltinTypeNode(builtintype_void); return builtin_type;}
+bool	{yylval.astNode = mkBuiltinTypeNode(builtintype_bool); return builtin_type;}
+msg		{yylval.astNode = mkBuiltinTypeNode(builtintype_msg); return builtin_type;}
 
 
 "&&" {return and_op;}
@@ -65,7 +81,7 @@ punctuation [\[\]\(\)\{\};:=,\.\?]
 "!=" {return not_equal;}
 "--" {return decrement;}
 
-"&" {return bitwise_op;}
+"&" {return bitwise_and;}
 "|" {return bitwise_or;}
 "^" {return bitwise_xor;}
 "~" {return bitwise_not;}
@@ -81,7 +97,7 @@ punctuation [\[\]\(\)\{\};:=,\.\?]
 
 
 
-{identifier} {return identifier;}
+{identifier} {yylval.astNode = mkIdentifierNode(strdup(yytext)); return identifier;}
 [ \t\n]+ /* skip whitespce, tab and newline */
 . {yyerror("Unexpected input LEXIS");} /* Skip bad chars */
 

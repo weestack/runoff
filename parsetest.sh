@@ -9,8 +9,7 @@ for FILE in tests_programs/*
     do
         # echo out file name
         # echo "Testing File " $FILE;
-        # pass file into ./runoff
-        OUTPUT=$(cat $FILE | ./runoff >&1)
+        OUTPUT=$(./runoff $FILE >&1)
 
         if [ $? != 0 ]
         then
@@ -23,4 +22,4 @@ for FILE in tests_programs/*
 
 
 TOTAL=$(echo $PARSED + $ERRORS | bc )
-printf 'Parsed %s files where %s files were ok and %s files had errors.\n ' "$TOTAL" "$PARSED" "$ERRORS"
+printf 'Parsed %s files where %s files were ok and %s files had errors.\n' "$TOTAL" "$PARSED" "$ERRORS"

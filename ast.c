@@ -3,10 +3,16 @@
 #include "ast.h"
 
 
-void append_node(AstNode* siblingA, AstNode* siblingB) {
-    
-    for (; siblingA->next != NULL; siblingA = siblingA->next);
-    siblingA->next = siblingB;
+AstNode *append_node(AstNode* siblingA, AstNode* siblingB) {
+	AstNode *tmp;
+	if(siblingA == NULL)
+		return siblingB;
+
+    for (tmp = siblingA; tmp->next != NULL; tmp = tmp->next);
+
+    tmp->next = siblingB;
+
+    return siblingA;
 }
 
 
@@ -244,7 +250,7 @@ AstNode *mkIdentifierNode(char *identifier){
 	return node;
 }
 
-AstNode *mkIntLiteralNode(int value){
+AstNode *mkIntLiteralNode(long int value){
 	AstNode *node = mkNode(IntLiteral);
 	node->node.IntLiteral.value = value;
 	return node;
@@ -279,5 +285,11 @@ AstNode *mkSendNode(AstNode *message, AstNode *receiver){
 	AstNode *node = mkNode(Send);
 	node->node.Send.message = message;
 	node->node.Send.receiver = receiver;
+	return node;
+}
+
+AstNode *mkExprStmtNode(AstNode *expression){
+	AstNode *node = mkNode(ExprStmt);
+	node->node.ExprStmt.expression = expression;
 	return node;
 }
