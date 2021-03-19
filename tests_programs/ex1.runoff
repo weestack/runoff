@@ -1,6 +1,10 @@
-pinid LED1Pin 7;
-pinid LED2Pin 8;
-pinid LED3Pin 9;
+pinid LED1Pin 0x1;
+pinid LED2Pin 0X2;
+pinid LED3Pin 0xF;
+
+pinid LED4Pin -0x1;
+pinid LED5Pin -0X2;
+pinid LED6Pin -0xF;
 
 messages {
 	Button1Click;
@@ -40,4 +44,3 @@ function setup() -> void {
 	outputPin(LED2Pin);
 	outputPin(LED3Pin);
 }
-
