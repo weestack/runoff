@@ -10,6 +10,7 @@ int yyerror(const char*);
 
 digit [0-9]
 integer -?(0|[1-9]{digit}*)
+base_16 -?0(x|X)[0-9a-fA-F]*
 float {integer}\.{digit}*
 identifier [a-zA-Z][a-zA-Z0-9_]*
 punctuation [\[\]\(\)\{\};:=,\.\?]
@@ -49,6 +50,10 @@ punctuation [\[\]\(\)\{\};:=,\.\?]
 {integer} {
 	yylval.astNode = mkIntLiteralNode(strtoll(yytext, NULL, 10));
 	return int_literal;
+}
+{base_16} {
+    yylval.astNode = mkIntLiteralNode(strtoll(yytext, NULL, 16));
+    return int_literal;
 }
 {float} {
 	yylval.astNode = mkFloatLiteralNode(strtof(yytext, NULL));
