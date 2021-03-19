@@ -13,7 +13,7 @@ static char *ppDefineConst(DefineConstNode node);
 static char *ppDefineFunction(DefineFunctionNode node);
 static char *ppDefineTask(DefineTaskNode node);
 static char *ppDefineStruct(DefineStructNode node);
-static char *ppDefinePinid(DefinePinid node);
+static char *ppDefinePinid(DefinePinidNode node);
 static char *ppDefineMessage(DefineMessageNode node);
 static char *ppIncludeRunoffFile(IncludeRunoffFileNode node);
 static char *ppMessageIdentifier(MessageIdentifierNode node);
