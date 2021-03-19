@@ -1,6 +1,6 @@
 # const defines symbolic constants like #define in C
-pinid LEDPin =  7;
-pinid ButtonPin = 8;
+pinid LEDPin  7;
+pinid ButtonPin 8;
 
 messages {
 	ButtonPressed;
