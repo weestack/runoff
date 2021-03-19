@@ -1,6 +1,9 @@
 # First the different message types are defined
 # in the special 'message' block. Messages can contain
 # data such as the ping example which contains an int
+pinid pin1 1;
+pinid pin123 94;
+pinid pin9 23;
 
 messages {
 	Ping(int i);
@@ -8,8 +11,8 @@ messages {
 }
 
 task ping(int pongtaskid) {
-	int taskid = taskid(); # the builtin 'taskid' returns the task id of the current task
-	msg pingmsg = Ping(taskid); # the msg type can contain any of the messages
+	taskid last = spawn nice_task_name_hehe(); # the builtin 'nice_task_name_hehe' returns the task id of the current task
+	msg pingmsg = Ping(last); # the msg type can contain any of the messages
 
 	for(;;){
 		# a ping message is sent to the pong task
@@ -29,6 +32,6 @@ task pong() {
 }
 
 function setup() -> void {
-	int pongtaskid = spawn pong();
-	int pingtaskid = spawn ping(pongtaskid);
+	taskid pongtaskid = spawn pong();
+	taskid pingtaskid = spawn ping(pongtaskid);
 }

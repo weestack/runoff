@@ -60,6 +60,13 @@ AstNode *mkDefineStructNode(AstNode *identifier, AstNode *fields){
 	return node;
 }
 
+AstNode *mkDefinePinidNode(AstNode *identifier, AstNode *int_literal) {
+    AstNode *node = mkNode(DefinePinid);
+    node->node.DefinePinid.identifier = identifier;
+    node->node.DefinePinid.int_literal = int_literal;
+    return node;
+}
+
 AstNode *mkDefineMessageNode(AstNode *messagesIdentifiers){
 	AstNode *node = mkNode(DefineMessage);
 	node->node.DefineMessage.messagesIdentifiers = messagesIdentifiers;

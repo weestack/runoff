@@ -3,6 +3,7 @@ typedef struct ProgNode ProgNode;
 typedef struct DefineConstNode DefineConstNode;
 typedef struct DefineFunctionNode DefineFunctionNode;
 typedef struct DefineStructNode DefineStructNode;
+typedef struct DefinePinidNode DefinePinidNode;
 typedef struct DefineTaskNode DefineTaskNode;
 typedef struct DefineMessageNode DefineMessageNode;
 typedef struct IncludeRunoffFileNode IncludeRunoffFileNode;
@@ -64,6 +65,11 @@ struct DefineTaskNode {
 struct DefineStructNode {
 	AstNode *identifier;
 	AstNode *fields;
+};
+
+struct DefinePinidNode {
+    AstNode *identifier;
+    AstNode *int_literal;
 };
 
 struct DefineMessageNode {
@@ -247,6 +253,7 @@ struct AstNode {
 		DefineConstNode DefineConst;
 		DefineFunctionNode DefineFunction;
 		DefineTaskNode DefineTask;
+        DefinePinidNode DefinePinid;
 		DefineStructNode DefineStruct;
 		DefineMessageNode DefineMessage;
 		IncludeRunoffFileNode IncludeRunoffFile;
@@ -291,6 +298,7 @@ AstNode *mkDefineConstNode(AstNode *identifier, AstNode *int_literal);
 AstNode *mkDefineFunctionNode(AstNode *identifier, AstNode *parameters, AstNode *type, AstNode *statements);
 AstNode *mkDefineTaskNode(AstNode *identifier, AstNode *parameters, AstNode *statements);
 AstNode *mkDefineStructNode(AstNode *identifier, AstNode *fields);
+AstNode *mkDefinePinidNode(AstNode *identifier, AstNode *int_literal);
 AstNode *mkDefineMessageNode(AstNode *messagesIdentifiers);
 AstNode *mkIncludeRunoffFileNode(AstNode *identifier);
 AstNode *mkMessageIdentifierNode(AstNode *identifier, AstNode *parameters);
@@ -334,6 +342,7 @@ enum NodeTypes {
 	DefineFunction,
 	DefineTask,
 	DefineStruct,
+    DefinePinid,
 	DefineMessage,
 	IncludeRunoffFile,
 	MessageIdentifier,
@@ -413,5 +422,6 @@ enum builtintypes {
 	builtintype_float,
 	builtintype_void,
 	builtintype_bool,
-	builtintype_msg
+	builtintype_msg,
+    builtintype_taskid
 };

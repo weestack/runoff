@@ -10,6 +10,7 @@ int yyerror(const char*);
 
 digit [0-9]
 integer -?(0|[1-9]{digit}*)
+base_16 -?0(x|X)[0-9a-fA-F]*
 float {integer}\.{digit}*
 identifier [a-zA-Z][a-zA-Z0-9_]*
 punctuation [\[\]\(\)\{\};:=,\.\?]
@@ -23,6 +24,8 @@ punctuation [\[\]\(\)\{\};:=,\.\?]
 
 "const" {return const_keyword;}
 "struct" {return struct_keyword;}
+"pinid" {return pinid_keyword;}
+
 "messages" {return messages;}
 "function" {return function;}
 "task" {return task;}
@@ -48,6 +51,10 @@ punctuation [\[\]\(\)\{\};:=,\.\?]
 	yylval.astNode = mkIntLiteralNode(strtoll(yytext, NULL, 10));
 	return int_literal;
 }
+{base_16} {
+    yylval.astNode = mkIntLiteralNode(strtoll(yytext, NULL, 16));
+    return int_literal;
+}
 {float} {
 	yylval.astNode = mkFloatLiteralNode(strtof(yytext, NULL));
 	return float_literal;
@@ -68,6 +75,7 @@ float	{yylval.astNode = mkBuiltinTypeNode(builtintype_float); return builtin_typ
 void	{yylval.astNode = mkBuiltinTypeNode(builtintype_void); return builtin_type;}
 bool	{yylval.astNode = mkBuiltinTypeNode(builtintype_bool); return builtin_type;}
 msg		{yylval.astNode = mkBuiltinTypeNode(builtintype_msg); return builtin_type;}
+taskid  {yylval.astNode = mkBuiltinTypeNode(builtintype_taskid); return builtin_type;}
 
 
 "&&" {return and_op;}
