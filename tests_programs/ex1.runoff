@@ -1,6 +1,6 @@
-const LED1Pin 7;
-const LED2Pin 8;
-const LED3Pin 9;
+pinid LED1Pin 7;
+pinid LED2Pin 8;
+pinid LED3Pin 9;
 
 messages {
 	Button1Click;
