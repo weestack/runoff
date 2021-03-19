@@ -10,12 +10,12 @@ struct symbol {
 };
 
 struct symbolTable {
-	symbolTable*	previous;
-	symbol* 		symbols;
+	symbolTable* previous;
+	symbol*	symbols;
 };
 
-void newGlobalTables();
+void newGlobalTables(void);
 void insertSymbol(symbol*);
-void openScope();
-void closeScope();
+void openScope(void);
+void closeScope(void);
 symbol* retrieveSymbol(char*);

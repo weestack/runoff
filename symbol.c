@@ -11,21 +11,21 @@ void insertSymbol(symbol* symbol) {
 	current->symbols = symbol;
 }
 
-void newGlobalTables() {
+void newGlobalTables(void) {
 	SymbolTable = (symbolTable*) malloc(sizeof(symbolTable));
 	SymbolTable->previous = NULL;
 	SymbolTable->symbols = NULL;
 	current = SymbolTable;
 }
 
-void openScope() {
+void openScope(void) {
 	symbolTable* new = (symbolTable*) malloc(sizeof(symbolTable));
 	new->previous = current;
 	new->symbols = NULL;
 	current = new;
 }
 
-void closeScope() {
+void closeScope(void) {
 	current = current->previous;
 }
 
