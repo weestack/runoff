@@ -22,6 +22,8 @@
     /* Terminals below */
     const_keyword
     struct_keyword
+    taskid_keyword
+    pinid_keyword
     messages
     int_literal
     float_literal
@@ -88,6 +90,7 @@ Toplevel: const_keyword identifier int_literal ';' {$$ = mkDefineConstNode($2, $
         | task identifier '(' ParametersList ')' '{' Statements '}' {$$ = mkDefineTaskNode($2, $4, $7);}
         | struct_keyword identifier '{' StructMembers '}' {$$=mkDefineStructNode($2, $4);}
         | messages '{' MessageIdentifiers '}' {$$ = mkDefineMessageNode($3);}
+        | pinid_keyword identifier '=' int_literal ';'
         /*| include_keyword '(' identifier ')' ';'*/
         ;
 
@@ -139,7 +142,10 @@ Statement: Expression ';'
          | receive '{' ReceiveCases '}'
          | return_keyword MaybeExpression ';'
          | send_keyword Expression to_keyword Expression ';'
+         | taskid_keyword identifier ';'
+         | taskid_keyword identifier '=' spawn_keyword identifier '(' ArgsList ')' ';'
          ;
+
 
 ElsePart: else_keyword '{' Statements '}'
         | elseif_keyword '(' Expression ')' '{' Statements '}' ElsePart

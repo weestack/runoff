@@ -22,6 +22,10 @@ punctuation [\[\]\(\)\{\};:=,\.\?]
 
 "const" {return const_keyword;}
 "struct" {return struct_keyword;}
+"taskid" {return taskid_keyword;}
+"pinid" {return pinid_keyword;}
+
+
 "messages" {return messages;}
 "function" {return function;}
 "task" {return task;}
