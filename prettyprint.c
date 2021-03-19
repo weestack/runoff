@@ -262,7 +262,7 @@ static char *ppDefineStruct(DefineStructNode node){
 static char *ppDefinePinid(DefinePinidNode node){
 	char *identifierStr = prettyprint(node.identifier);
 	char *int_literalStr = prettyprint(node.int_literal);
-	char *result = smprintf("Pinid %s %s", identifierStr, int_literalStr);
+	char *result = smprintf("pinid %s %s;", identifierStr, int_literalStr);
 	free(identifierStr);
 	free(int_literalStr);
 	return result;
