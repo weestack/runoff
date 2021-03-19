@@ -1,8 +1,8 @@
 # Specify what source C files we have
-SOURCES=lexer.c parser.c runoff.c ast.c prettyprint.c
+SOURCES=lexer.c parser.c runoff.c ast.c prettyprint.c symbol.c
 
 # What headers do we have?
-HEADERS=ast.h phases.h
+HEADERS=ast.h phases.h symbol.h
 
 # The objects are just the sources with .c swapped out for .o
 OBJECTS=$(SOURCES:.c=.o)
