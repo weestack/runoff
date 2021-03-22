@@ -7,7 +7,7 @@ void processNode(AstNode*);
 void processNodes(AstNode *);
 void undeclaredError(AstNode *);
 void updateSymbolId(AstNode *, Symbol *);
-
+void handleStructLocation(AstNode *);
 static int errors;
 extern char *filename; /* defined and set in runoff.c */
 
@@ -106,7 +106,10 @@ void processNode(AstNode *node){
 		else
 			updateSymbolId(node->node.VariableLocation.identifier, sym);
 		break;
-	case StructLocation: break; /* Nothing yet fix later :) */
+	case StructLocation:
+		/* This is special, so move it to a function */
+		handleStructLocation(node);
+		break;
 	case ArrayLocation:
 		sym = retrieveSymbol(node->node.ArrayLocation.identifier);
 		if(sym == NULL)
@@ -161,4 +164,19 @@ void undeclaredError(AstNode *node){
 
 void updateSymbolId(AstNode *node, Symbol *s){
 	node->node.Identifier.symbol = s;
+}
+
+void handleStructLocation(AstNode *node){
+	AstNode *n = node;
+	while(n->tag == StructLocation){
+		AstNode *identifier = n->node.StructLocation.identifier;
+		identifier = identifier;
+		/* Plan:
+			* find symbol via identifier
+			* hvis null -> fejl
+			* ellers, så burde det være en struct som har gemt et symbol tabel som dens
+			  type, hvori vi i næste runde af loopet skal søge efter n->node.StructLocation.location;
+			* repeat indtil vi ikke kigger på struct locations mere
+		*/
+	}
 }

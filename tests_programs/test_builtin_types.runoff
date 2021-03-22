@@ -9,6 +9,7 @@ struct test {
   bool c;
   struct hej s;
 }
+
 # Messages
 messages {
   ledPin;
@@ -47,7 +48,7 @@ function ad() -> void {
   float ff1 = 1.00;
   float ff2 = -1.00;
 
-  struct peter123 peter1234;
+  struct test peter1234;
   peter1234.a = 123;
   print(peter1234.a);
   peter1234.c = true;
