@@ -1,9 +1,13 @@
 
+struct hello {
+	int nicelevel100;
+}
+
 function setup() -> void {
   int8 a = 321;
   int16 b = 123;
   int32 c = 32123;
-  int32 c = 123 + 321;
+  int32 d = 123 + 321;
   return;
 }
 
@@ -13,12 +17,15 @@ function ss(int a) -> struct hello {
     return test;
 }
 
+function print(int what) -> void {
+}
+
 function dummy(int a) -> int {
   print(a);
   bool state = true;
   while(true) {
     int ledPin = 5;
-    setoutput(ledPin, state);
+    setOutput(ledPin, state);
     state = !state;
     delay(1000);
   }
@@ -32,46 +39,49 @@ function dummy(int a) -> int {
     case 4:
         print(a);
     default:
-        print(karl_er_en_so);
+        print(a);
   }
 
   receive {
     case Ping: print(1);
-    case Pong(a, b, c): print(a);
+    case Pong(int a, int b, int c): print(a);
   }
 
-
+  float so123;
 
   if (so123) {
+  	float abc;
     print(abc);
     int a = 123;
     int64 c = abc;
-  }else {
-    print(nu_er_peter_en_so);
+  } else {
+  	int a = 1234;
+    print(a);
   }
 
   if (true) {
-    print(sunglasses);
+    print(123);
   }
 
   if (false) {
 
   }elseif (true) {
-    print(angrysad);
+    print(333);
   }else {
-    print(oh_why);
+    print(444);
   }
-
+  int hej;
+  float last;
   (true) ? print(hej) : print(last);
   1+2 ? print(hej) : print(last);
   1*2+3/123 ? print(hej) : print(last);
 
-  int[3] a;
+  int[3] array;
   int[3][5] b;
   b[1][1] = 15;
 
-  int a = 123 ^ 123; # should be 0
-  int b = 1 | 1;
+  int abe = 123 ^ 123; # should be 0
+  int bil = 1 | 1;
   int c = 123 & 12;
   int d = ~12;
   int e = 3 >> 4;

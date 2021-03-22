@@ -5,6 +5,8 @@
 #include "ast.h"
 #include "phases.h"
 
+char *filename;
+
 void
 prettydummy(void)
 {
@@ -73,14 +75,19 @@ main(int argc, char *argv[])
 		printf("No input file given\n");
 		return -1;
 	}
+	filename = argv[1];
 
-	tree = parse(argv[1]);
+	tree = parse(filename);
 	if(argc >= 3 && strcmp(argv[2], "--prettyprint") == 0){
-		if(tree != NULL)
+		if(tree != NULL){
 			printf("%s\n", prettyprint(tree));
+			return 0; /* early exit */
+		}
 		else
 			printf("Can't prettyprint since I couldn't parse ☹\n");
 	}
+
+	buildSymbolTable(tree);
 
 	if(tree == NULL)
 		return -1;

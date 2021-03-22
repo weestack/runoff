@@ -19,7 +19,7 @@
 }
 
 /* Define all non-terminals as type astNode */
-%type <astNode> Program Toplevel MessageIdentifiers MessageIdentifier StructMembers ParametersList Parameters ArgsList Args Type Statements Statement ElsePart SwitchCases SwitchCase ReceiveCases Identifiers MaybeExpression Declaration Literal Expression Location Indexes
+%type <astNode> Program Toplevel MessageIdentifiers MessageIdentifier StructMembers ParametersList Parameters ArgsList Args Type Statements Statement ElsePart SwitchCases SwitchCase ReceiveCases MaybeExpression Declaration Literal Expression Location Indexes
 
 %token <astNode> identifier builtin_type int_literal float_literal bool_literal
 
@@ -169,13 +169,9 @@ SwitchCase: case_keyword Literal ':' Statements {$$ = mkSwitchCaseNode($2, $4);}
 
 
 ReceiveCases: ReceiveCases case_keyword identifier ':' Statements {$$ = append_node($1, mkReceiveCaseNode($3, NULL, $5));}
-            | ReceiveCases case_keyword identifier '(' Identifiers ')' ':' Statements {$$ = append_node($1, mkReceiveCaseNode($3, $5, $8));}
+            | ReceiveCases case_keyword identifier '(' ParametersList ')' ':' Statements {$$ = append_node($1, mkReceiveCaseNode($3, $5, $8));}
             | %empty {$$ = NULL;}
             ;
-
-Identifiers: Identifiers ',' identifier {$$ = append_node($1, $3);}
-           | identifier {$$ = $1;}
-           ;
 
 MaybeExpression: Expression {$$ = $1;}
                | %empty {$$ = NULL;}

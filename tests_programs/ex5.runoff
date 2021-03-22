@@ -10,23 +10,23 @@ messages {
 	Pong;
 }
 
-task ping(int pongtaskid) {
-	taskid last = spawn nice_task_name_hehe(); # the builtin 'nice_task_name_hehe' returns the task id of the current task
-	msg pingmsg = Ping(last); # the msg type can contain any of the messages
-
-	for(;;){
-		# a ping message is sent to the pong task
-		send pingmsg to pongtasskid;
+task pong() {
+	for(;;) {
 		receive {
-		case Pong: delay(1);
+		case Ping(int pingtaskid): send pong to pingtaskid;
 		}
 	}
 }
 
-task pong() {
-	for(;;) {
+task ping(int pongtaskid) {
+	taskid last = spawn pong();
+	msg pingmsg = Ping(last); # the msg type can contain any of the messages
+
+	for(;;){
+		# a ping message is sent to the pong task
+		send pingmsg to last;
 		receive {
-		case Ping(pingtaskid): send pong to pingtaskid;
+		case Pong: delay(1);
 		}
 	}
 }

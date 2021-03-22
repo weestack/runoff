@@ -3,6 +3,7 @@
 #include "symbol.h"
 #include "ast.h"
 
+extern int yylineno; /* global variable from flex */
 
 AstNode *append_node(AstNode* siblingA, AstNode* siblingB) {
 	AstNode *tmp;
@@ -21,6 +22,7 @@ static AstNode *mkNode(int type) {
 	AstNode *node = malloc(sizeof(AstNode));
 	node->tag = type;
 	node->next = NULL;
+	node->linenum = yylineno;
 	return node;
 }
 

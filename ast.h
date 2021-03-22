@@ -149,7 +149,6 @@ struct ElseNode {
 	AstNode *statements;
 };
 
-
 struct ReceiveNode {
 	AstNode *cases;
 };
@@ -291,6 +290,7 @@ struct AstNode {
 		SendNode Send;
 		ExprStmtNode ExprStmt;
 	} node;
+	int linenum;
 	AstNode *next;
 };
 
@@ -343,7 +343,7 @@ enum NodeTypes {
 	DefineFunction,
 	DefineTask,
 	DefineStruct,
-    DefinePinid,
+	DefinePinid,
 	DefineMessage,
 	IncludeRunoffFile,
 	MessageIdentifier,

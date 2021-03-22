@@ -4,11 +4,13 @@
 #include "phases.h"
 
 void processNode(AstNode*);
+void processNodes(AstNode *);
 void undeclaredError(AstNode *);
 void updateSymbolId(AstNode *, Symbol *);
 AstNode *getChildren(AstNode *);
 
 static int errors;
+extern char *filename; /* defined and set in runoff.c */
 
 void buildSymbolTable(AstNode *tree){
 	initializeSymbolTables();
@@ -21,6 +23,9 @@ void processNode(AstNode *node){
 	int scopeopened = 0;
 	Symbol *sym;
 	AstNode *child;
+
+	if(node == NULL)
+		return;
 
 	switch(node->tag){
 	case Prog: break; /* Nothing */
@@ -60,7 +65,7 @@ void processNode(AstNode *node){
 	case StructType:
 		sym = retrieveSymbol(node->node.StructType.identifier);
 		if(sym == NULL)
-			undeclaredError(node);
+			undeclaredError(node->node.StructType.identifier);
 		else
 			updateSymbolId(node->node.StructType.identifier, sym);
 		break;
@@ -69,24 +74,35 @@ void processNode(AstNode *node){
 	case For:  /* fallthrough */
 	case Switch:  /* fallthrough */
 	case SwitchCase: /* fallthrough */
-	case If: /* fallthrough */
-	case ElseIf: /* fallthrough */
 	case Else: /* fallthrough */
 	case Receive: /* fallthrough */
 	case ReceiveCase: /* fallthrough */
 		openScope();
 		scopeopened = 1;
 		break;
+	case If:
+		openScope();
+		child = append_node(node->node.If.expression, node->node.If.statements);
+		processNodes(child);
+		closeScope();
+		processNode(node->node.If.elsePart);
+		return; /* special case */
+	case ElseIf:
+	 	openScope();
+		child = append_node(node->node.ElseIf.expression, node->node.ElseIf.statements);
+		processNodes(child);
+		closeScope();
+		processNode(node->node.ElseIf.elsePart);
+		return; /* special case */
 	case VarDecl:
-		if(node->node.VarDecl.expression != NULL)
-			processNode(node->node.VarDecl.expression);
+		/* what about int i = i + 2???? */
 		errors += insertSymbol(node->node.VarDecl.identifier, 0); /* TYPE FIX */
 		break;
 	case BinaryOperation: break; /* Nothing */
 	case VariableLocation:
 		sym = retrieveSymbol(node->node.VariableLocation.identifier);
 		if(sym == NULL)
-			undeclaredError(node);
+			undeclaredError(node->node.VariableLocation.identifier);
 		else
 			updateSymbolId(node->node.VariableLocation.identifier, sym);
 		break;
@@ -94,7 +110,7 @@ void processNode(AstNode *node){
 	case ArrayLocation:
 		sym = retrieveSymbol(node->node.ArrayLocation.identifier);
 		if(sym == NULL)
-			undeclaredError(node);
+			undeclaredError(node->node.ArrayLocation.identifier);
 		else
 			updateSymbolId(node->node.ArrayLocation.identifier, sym);
 		break;
@@ -102,7 +118,7 @@ void processNode(AstNode *node){
 	case FunctionCall:
 		sym = retrieveSymbol(node->node.FunctionCall.identifier);
 		if(sym == NULL)
-			undeclaredError(node);
+			undeclaredError(node->node.FunctionCall.identifier);
 		else
 			updateSymbolId(node->node.FunctionCall.identifier, sym);
 		break;
@@ -116,7 +132,7 @@ void processNode(AstNode *node){
 	case Spawn:
 		sym = retrieveSymbol(node->node.Spawn.identifier);
 		if(sym == NULL)
-			undeclaredError(node);
+			undeclaredError(node->node.Spawn.identifier);
 		else
 			updateSymbolId(node->node.Spawn.identifier, sym);
 		break;
@@ -125,17 +141,22 @@ void processNode(AstNode *node){
 	}
 
 	child = getChildren(node);
-	for(; child != NULL; child = child->next)
-		processNode(child);
+	processNodes(child);
 
 	if(scopeopened)
 		closeScope();
 }
 
+void processNodes(AstNode *nodes){
+	AstNode *child;
+	for(child = nodes; child != NULL; child = child->next)
+		processNode(child);
+}
+
 void undeclaredError(AstNode *node){
 	char *name = node->node.Identifier.identifier;
 	errors++;
-	printf("Undeclared symbol %s\n", name);
+	printf("%s:%d: Undeclared symbol \"%s\"\n", filename, node->linenum, name);
 }
 
 void updateSymbolId(AstNode *node, Symbol *s){

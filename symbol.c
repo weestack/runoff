@@ -6,21 +6,20 @@
 
 static SymbolTable* symbolTable;
 static SymbolTable* current;
+extern char *filename; /* defined in runoff.c */
+
+Symbol *enterSymbol(char *, int);
 
 int insertSymbol(AstNode *node, int type) {
 	Symbol *symbol;
 	char *name = node->node.Identifier.identifier;
 
 	if(declaredLocally(name)){
-		printf("Name %s overloaded\n", name);
+		printf("%s:%d: Name \"%s\" is already declared\n", filename, node->linenum, name);
 		return 1;
 	}
 
-	symbol = malloc(sizeof(Symbol));
-	symbol->name = name;
-	symbol->type = type;
-	symbol->next = current->symbols;
-	current->symbols = symbol;
+	symbol = enterSymbol(name, type);
 	node->node.Identifier.symbol = symbol;
 	return 0;
 }
@@ -30,6 +29,16 @@ void initializeSymbolTables(void) {
 	symbolTable->previous = NULL;
 	symbolTable->symbols = NULL;
 	current = symbolTable;
+
+	/* insert symbols for builin funcions here :) */
+	enterSymbol("turnOn", 0);
+	enterSymbol("turnOff", 0);
+	enterSymbol("readInput", 0);
+	enterSymbol("readAnalogInput", 0);
+	enterSymbol("delay", 0);
+	enterSymbol("inputPin", 0);
+	enterSymbol("outputPin", 0);
+	enterSymbol("setOutput", 0);
 }
 
 void openScope(void) {
@@ -64,4 +73,13 @@ int declaredLocally(char *name){
 			return 1;
 	}
 	return 0;
+}
+
+Symbol *enterSymbol(char *name, int type){
+	Symbol *symbol = malloc(sizeof(Symbol));
+	symbol->name = name;
+	symbol->type = type;
+	symbol->next = current->symbols;
+	current->symbols = symbol;
+	return symbol;
 }
