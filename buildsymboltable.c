@@ -95,6 +95,7 @@ void processNode(AstNode *node){
 		processNode(node->node.ElseIf.elsePart);
 		return; /* special case */
 	case VarDecl:
+		processNode(node->node.VarDecl.type);
 		processNode(node->node.VarDecl.expression);
 		errors += insertSymbol(node->node.VarDecl.identifier, 0); /* TYPE FIX */
 		return; /* special case */
@@ -109,7 +110,7 @@ void processNode(AstNode *node){
 	case StructLocation:
 		/* This is special, so move it to a function */
 		handleStructLocation(node);
-		break;
+		return;
 	case ArrayLocation:
 		sym = retrieveSymbol(node->node.ArrayLocation.identifier);
 		if(sym == NULL)
@@ -178,5 +179,6 @@ void handleStructLocation(AstNode *node){
 			  type, hvori vi i næste runde af loopet skal søge efter n->node.StructLocation.location;
 			* repeat indtil vi ikke kigger på struct locations mere
 		*/
+		return;
 	}
 }

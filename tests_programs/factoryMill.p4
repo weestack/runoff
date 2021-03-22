@@ -18,7 +18,7 @@ function analyse_factory_mill() -> struct placement {
 
 task detect_plastic() {
     while(true){
-        struct placment new_plastic = analyse_factory_mill();
+        struct placement new_plastic = analyse_factory_mill();
         if(new_plastic.exist){
             send detected_plactic(new_plastic) to 1234; # This makes no sense :)
         }
