@@ -1,14 +1,28 @@
-#include "symbol.h"
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include "symbol.h"
+#include "ast.h"
 
 static SymbolTable* symbolTable;
 static SymbolTable* current;
 
-void insertSymbol(Symbol* symbol) {
+int insertSymbol(AstNode *node, int type) {
+	Symbol *symbol;
+	char *name = node->node.Identifier.identifier;
+
+	if(declaredLocally(name)){
+		printf("Name %s overloaded\n", name);
+		return 1;
+	}
+
+	symbol = malloc(sizeof(Symbol));
+	symbol->name = name;
+	symbol->type = type;
 	symbol->next = current->symbols;
 	current->symbols = symbol;
+	node->node.Identifier.symbol = symbol;
+	return 0;
 }
 
 void initializeSymbolTables(void) {
@@ -29,7 +43,8 @@ void closeScope(void) {
 	current = current->previous;
 }
 
-Symbol* retrieveSymbol(char* name) {
+Symbol* retrieveSymbol(AstNode *node) {
+	char *name = node->node.Identifier.identifier;
 	SymbolTable* currentTable = current;
 	for (;currentTable != NULL; currentTable = currentTable->previous) {
 		Symbol* tempSymbol = currentTable->symbols;

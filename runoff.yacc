@@ -1,5 +1,6 @@
 %{
     #include <stdio.h>
+    #include "symbol.h"
     #include "ast.h"
     #include "phases.h"
 

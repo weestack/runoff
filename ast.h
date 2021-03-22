@@ -213,6 +213,7 @@ struct TernaryOperatorNode {
 
 struct IdentifierNode {
 	char *identifier;
+	Symbol *symbol;
 };
 
 struct IntLiteralNode {
@@ -425,3 +426,8 @@ enum builtintypes {
 	builtintype_msg,
     builtintype_taskid
 };
+
+
+/* Symbol table stuff */
+int insertSymbol(AstNode *, int);
+Symbol* retrieveSymbol(AstNode *);

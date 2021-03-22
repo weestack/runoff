@@ -1,6 +1,7 @@
 %{
 #include <strings.h>
 #include "parser.h"
+#include "symbol.h"
 #include "ast.h"
 int yyerror(const char*);
 %}

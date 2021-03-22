@@ -1,5 +1,5 @@
 # Specify what source C files we have
-SOURCES=lexer.c parser.c runoff.c ast.c prettyprint.c symbol.c
+SOURCES=lexer.c parser.c runoff.c ast.c prettyprint.c symbol.cbuildsymboltable.c
 
 # What headers do we have?
 HEADERS=ast.h phases.h symbol.h

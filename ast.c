@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include "symbol.h"
 #include "ast.h"
 
 
@@ -254,6 +255,7 @@ AstNode *mkTernaryOperatorNode(AstNode *expressionTest, AstNode *expressionTrue,
 AstNode *mkIdentifierNode(char *identifier){
 	AstNode *node = mkNode(Identifier);
 	node->node.Identifier.identifier = identifier;
+	node->node.Identifier.symbol = NULL;
 	return node;
 }
 

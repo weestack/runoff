@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <stdarg.h>
 #include <string.h>
+#include "symbol.h"
 #include "ast.h"
 #include "phases.h"
 
