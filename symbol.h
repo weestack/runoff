@@ -14,7 +14,7 @@ struct symbolTable {
 	symbol*	symbols;
 };
 
-void newGlobalTables(void);
+void initializeSymbolTables(void);
 void insertSymbol(symbol*);
 void openScope(void);
 void closeScope(void);

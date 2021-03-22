@@ -11,7 +11,7 @@ void insertSymbol(symbol* symbol) {
 	current->symbols = symbol;
 }
 
-void newGlobalTables(void) {
+void initializeSymbolTables(void) {
 	SymbolTable = (symbolTable*) malloc(sizeof(symbolTable));
 	SymbolTable->previous = NULL;
 	SymbolTable->symbols = NULL;
