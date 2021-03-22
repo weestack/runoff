@@ -14,12 +14,14 @@ int insertSymbol(AstNode *node, int type) {
 	Symbol *symbol;
 	char *name = node->node.Identifier.identifier;
 
-	if(declaredLocally(name)){
-		printf("%s:%d: Name \"%s\" is already declared\n", filename, node->linenum, name);
+	symbol = declaredLocally(name);
+	if(symbol != NULL){
+		printf("%s:%d: Name \"%s\" is already declared on line %d\n", filename, node->linenum, name, symbol->node->linenum);
 		return 1;
 	}
 
 	symbol = enterSymbol(name, type);
+	symbol->node = node;
 	node->node.Identifier.symbol = symbol;
 	return 0;
 }
@@ -66,13 +68,13 @@ Symbol* retrieveSymbol(AstNode *node) {
 	return NULL;
 }
 
-int declaredLocally(char *name){
+Symbol *declaredLocally(char *name){
 	Symbol *tmp;
 	for(tmp = current->symbols; tmp != NULL; tmp = tmp->next){
 		if(strcmp(tmp->name, name) == 0)
-			return 1;
+			return tmp;
 	}
-	return 0;
+	return NULL;
 }
 
 Symbol *enterSymbol(char *name, int type){
