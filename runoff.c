@@ -87,10 +87,8 @@ main(int argc, char *argv[])
 			printf("Can't prettyprint since I couldn't parse ☹\n");
 	}
 
-	buildSymbolTable(tree);
-
 	if(tree == NULL)
 		return -1;
 	else
-		return 0;
+		return buildSymbolTable(tree);
 }

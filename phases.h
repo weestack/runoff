@@ -5,4 +5,4 @@ AstNode *parse(char *file);
 char *prettyprint(AstNode *tree);
 
 /* Building of the symbol table defined in buildsymboltable.c */
-void buildSymbolTable(AstNode *tree);
+int buildSymbolTable(AstNode *tree);

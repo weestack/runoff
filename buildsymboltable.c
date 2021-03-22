@@ -11,11 +11,12 @@ void updateSymbolId(AstNode *, Symbol *);
 static int errors;
 extern char *filename; /* defined and set in runoff.c */
 
-void buildSymbolTable(AstNode *tree){
+int buildSymbolTable(AstNode *tree){
 	initializeSymbolTables();
 	processNode(tree);
 	if(errors)
 		printf("BuildSymbolTable failed with %d errors\n", errors);
+	return errors;
 }
 
 void processNode(AstNode *node){
@@ -94,9 +95,9 @@ void processNode(AstNode *node){
 		processNode(node->node.ElseIf.elsePart);
 		return; /* special case */
 	case VarDecl:
-		/* what about int i = i + 2???? */
+		processNode(node->node.VarDecl.expression);
 		errors += insertSymbol(node->node.VarDecl.identifier, 0); /* TYPE FIX */
-		break;
+		return; /* special case */
 	case BinaryOperation: break; /* Nothing */
 	case VariableLocation:
 		sym = retrieveSymbol(node->node.VariableLocation.identifier);
