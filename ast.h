@@ -336,6 +336,7 @@ AstNode *mkSendNode(AstNode *message, AstNode *receiver);
 AstNode *mkExprStmtNode(AstNode *expression);
 
 AstNode *append_node(AstNode* siblingA, AstNode* siblingB);
+AstNode *getChildren(AstNode *node);
 
 enum NodeTypes {
 	Prog,
