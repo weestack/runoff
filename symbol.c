@@ -8,9 +8,9 @@ static SymbolTable* symbolTable;
 static SymbolTable* current;
 extern char *filename; /* defined in runoff.c */
 
-Symbol *enterSymbol(char *, int);
+Symbol *enterSymbol(char *, Type*);
 
-int insertSymbol(AstNode *node, int type) {
+int insertSymbol(AstNode *node, Type *type) {
 	Symbol *symbol;
 	char *name = node->node.Identifier.identifier;
 
@@ -59,14 +59,23 @@ void closeScope(void) {
 }
 
 Symbol* retrieveSymbol(AstNode *node) {
-	char *name = node->node.Identifier.identifier;
 	SymbolTable* currentTable = current;
-	for (;currentTable != NULL; currentTable = currentTable->previous) {
-		Symbol* tempSymbol = currentTable->symbols;
-		for (;tempSymbol != NULL; tempSymbol = tempSymbol->next) {
-			if (strcmp(tempSymbol->name, name) == 0) {
-				return tempSymbol;
-			}
+	Symbol *sym;
+	for (;currentTable != NULL; currentTable = currentTable->previous){
+		sym = retrieveSymbolFromTable(node, currentTable);
+		if(sym != NULL)
+			return sym;
+	}
+
+	return NULL;
+}
+
+Symbol *retrieveSymbolFromTable(AstNode *node, SymbolTable *table){
+	char *name = node->node.Identifier.identifier;
+	Symbol* tempSymbol = table->symbols;
+	for (;tempSymbol != NULL; tempSymbol = tempSymbol->next) {
+		if (strcmp(tempSymbol->name, name) == 0) {
+			return tempSymbol;
 		}
 	}
 	return NULL;
@@ -81,11 +90,15 @@ Symbol *declaredLocally(char *name){
 	return NULL;
 }
 
-Symbol *enterSymbol(char *name, int type){
+Symbol *enterSymbol(char *name, Type *type){
 	Symbol *symbol = malloc(sizeof(Symbol));
 	symbol->name = name;
 	symbol->type = type;
 	symbol->next = current->symbols;
 	current->symbols = symbol;
 	return symbol;
+}
+
+SymbolTable *getCurrentSymbolTable(void){
+	return current;
 }

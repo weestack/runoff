@@ -1,6 +1,7 @@
 # Struct
 struct hej {
     int a;
+    int wuut;
 }
 
 struct test {
@@ -18,6 +19,10 @@ messages {
 
 function print() -> void {
 
+}
+
+function hehe(struct test s) -> int {
+	return s.s.a;
 }
 
 function ad() -> void {
@@ -50,8 +55,8 @@ function ad() -> void {
 
   struct test peter1234;
   peter1234.a = 123;
-  print(peter1234.a);
+  print(peter1234.b);
   peter1234.c = true;
 
-  print(peter1234.s.a);
+  print(peter1234.s.wuut);
 }

@@ -1,9 +1,10 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include "symbol.h"
 #include "ast.h"
 #include "phases.h"
 
-void processNode(AstNode*);
+Type *processNode(AstNode*);
 void processNodes(AstNode *);
 void undeclaredError(AstNode *);
 void updateSymbolId(AstNode *, Symbol *);
@@ -19,13 +20,16 @@ int buildSymbolTable(AstNode *tree){
 	return errors;
 }
 
-void processNode(AstNode *node){
+/* process node CAN return a type if it makes sense */
+Type *processNode(AstNode *node){
 	int scopeopened = 0;
 	Symbol *sym;
 	AstNode *child;
+	Type *type = NULL; /* the return value of this function */
+	Type *vartype;
 
 	if(node == NULL)
-		return;
+		return NULL;
 
 	switch(node->tag){
 	case Prog: break; /* Nothing */
@@ -44,7 +48,10 @@ void processNode(AstNode *node){
 		break;
 	case DefineStruct:
 		errors += insertSymbol(node->node.DefineStruct.identifier, 0); /* TYPE FIX */
+		sym = retrieveSymbol(node->node.DefineStruct.identifier);
 		openScope();
+		sym->type = malloc(sizeof(Type));
+		sym->type->structfields = getCurrentSymbolTable();
 		scopeopened = 1;
 		break;
 	case DefinePinid:
@@ -56,18 +63,22 @@ void processNode(AstNode *node){
 		errors += insertSymbol(node->node.MessageIdentifier.identifier, 0); /* TYPE FIX */
 		break;
 	case StructMember:
-		errors += insertSymbol(node->node.StructMember.identifier, 0); /* TYPE FIX */
+		vartype = processNode(node->node.StructMember.type);
+		errors += insertSymbol(node->node.StructMember.identifier, vartype); /* TYPE FIX */
 		break;
 	case Parameter:
-		errors += insertSymbol(node->node.Parameter.identifier, 0); /* TYPE FIX */
+		vartype = processNode(node->node.Parameter.type);
+		errors += insertSymbol(node->node.Parameter.identifier, vartype); /* TYPE FIX */
 		break;
 	case BuiltinType: break; /* Nothing */
 	case StructType:
 		sym = retrieveSymbol(node->node.StructType.identifier);
 		if(sym == NULL)
 			undeclaredError(node->node.StructType.identifier);
-		else
+		else{
 			updateSymbolId(node->node.StructType.identifier, sym);
+			type = sym->type;
+		}
 		break;
 	case ArrayType: break; /* Nothing */
 	case While:
@@ -86,19 +97,19 @@ void processNode(AstNode *node){
 		processNodes(child);
 		closeScope();
 		processNode(node->node.If.elsePart);
-		return; /* special case */
+		return NULL; /* special case */
 	case ElseIf:
 	 	openScope();
 		child = append_node(node->node.ElseIf.expression, node->node.ElseIf.statements);
 		processNodes(child);
 		closeScope();
 		processNode(node->node.ElseIf.elsePart);
-		return; /* special case */
+		return NULL; /* special case */
 	case VarDecl:
-		processNode(node->node.VarDecl.type);
+		vartype = processNode(node->node.VarDecl.type);
 		processNode(node->node.VarDecl.expression);
-		errors += insertSymbol(node->node.VarDecl.identifier, 0); /* TYPE FIX */
-		return; /* special case */
+		errors += insertSymbol(node->node.VarDecl.identifier, vartype); /* TYPE FIX */
+		return NULL; /* special case */
 	case BinaryOperation: break; /* Nothing */
 	case VariableLocation:
 		sym = retrieveSymbol(node->node.VariableLocation.identifier);
@@ -110,7 +121,7 @@ void processNode(AstNode *node){
 	case StructLocation:
 		/* This is special, so move it to a function */
 		handleStructLocation(node);
-		return;
+		return NULL;
 	case ArrayLocation:
 		sym = retrieveSymbol(node->node.ArrayLocation.identifier);
 		if(sym == NULL)
@@ -149,6 +160,8 @@ void processNode(AstNode *node){
 
 	if(scopeopened)
 		closeScope();
+
+	return type;
 }
 
 void processNodes(AstNode *nodes){
@@ -169,16 +182,40 @@ void updateSymbolId(AstNode *node, Symbol *s){
 
 void handleStructLocation(AstNode *node){
 	AstNode *n = node;
-	while(n->tag == StructLocation){
-		AstNode *identifier = n->node.StructLocation.identifier;
-		identifier = identifier;
-		/* Plan:
-			* find symbol via identifier
-			* hvis null -> fejl
-			* ellers, så burde det være en struct som har gemt et symbol tabel som dens
-			  type, hvori vi i næste runde af loopet skal søge efter n->node.StructLocation.location;
-			* repeat indtil vi ikke kigger på struct locations mere
-		*/
-		return;
+	AstNode *next = n;
+	SymbolTable *table = NULL; /* default is the current table */
+	while(next != NULL){
+		AstNode *identifier;
+		Symbol *sym;
+
+		switch(n->tag){
+		case StructLocation:
+			identifier = n->node.StructLocation.identifier;
+			next = n->node.StructLocation.location;
+			break;
+		case VariableLocation:
+			identifier = n->node.VariableLocation.identifier;
+			next = NULL;
+			break;
+		case ArrayLocation:
+			identifier = n->node.ArrayLocation.identifier;
+			next = NULL;
+			processNodes(n->node.ArrayLocation.indicies);
+			break;
+		}
+
+		if(table == NULL)
+			sym = retrieveSymbol(identifier);
+		else
+			sym = retrieveSymbolFromTable(identifier, table);
+
+		if(sym == NULL){
+			undeclaredError(identifier);
+			return;
+		}else{
+			if(n->tag == StructLocation)
+				table = sym->type->structfields;
+			n = next;
+		}
 	}
 }

@@ -430,5 +430,6 @@ enum builtintypes {
 
 
 /* Symbol table stuff */
-int insertSymbol(AstNode *, int);
+int insertSymbol(AstNode *, Type *);
 Symbol* retrieveSymbol(AstNode *);
+Symbol *retrieveSymbolFromTable(AstNode *node, SymbolTable *table);
