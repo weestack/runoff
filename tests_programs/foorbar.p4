@@ -4,6 +4,9 @@ messages {
     print_foobar;
 }
 
+function print() -> void {
+}
+
 task printer() {
     while(true){
         int print_statement;
@@ -13,6 +16,10 @@ task printer() {
             case print_foobar : print_statement = 2;
         }
 
+		int foo;
+		int bar;
+		int foobar;
+		int EERRROR;
         switch(print_statement){
             case 0:
                 print(foo);
@@ -28,7 +35,7 @@ task printer() {
 }
 
 
-function calculator() -> void {
+function calculator(int f) -> void {
 
 
     for(int i = f; i > 0; i--){

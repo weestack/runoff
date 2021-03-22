@@ -4,9 +4,9 @@ function test() -> void {
 	if(a==10){
 		delay(100);
 	}elseif(a > 10){
-		sleep(500);
+		delay(500);
 	}else{
-		sleep(100000);
+		delay(100000);
 	}
 
 	# A switch which works like in C but has implicit breaks between cases

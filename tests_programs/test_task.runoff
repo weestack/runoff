@@ -1,6 +1,6 @@
 task a(bool is_so, int8 pinInput) {
   for(int i = 0; i <= 5; i++) {
-    check_pinInput(pinInput);
+    readInput(pinInput);
     is_so = !is_so;
   }
 

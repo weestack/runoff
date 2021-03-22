@@ -1,3 +1,7 @@
+function CopyPart() -> void {
+
+}
+
 function merge(int[] arr, int left, int mid, int right) -> void {
     int i; int j; int k;
     int n1 = mid - left + 1;
@@ -6,11 +10,11 @@ function merge(int[] arr, int left, int mid, int right) -> void {
     int [5] LeftHalf;
     int [5] RightHalf;
 
-    # Synes det kunne være nice med funktioner til at koppier Arrays, tænker Copy, koppier det hele og 
+    # Synes det kunne være nice med funktioner til at koppier Arrays, tænker Copy, koppier det hele og
     # CopyPart(arr1, arr2, index1, index2), koppier arr2[index..index2] over i arr1.
 
     CopyPart(LeftHalf, arr, 0, n1);
-    
+
     # Synes helt sikkert vi skal have Array.length.
     CopyPart(RightHalf, arr, n1 + 1, arr.length);
 
@@ -41,6 +45,9 @@ function merge(int[] arr, int left, int mid, int right) -> void {
 }
 
 function mergeSort(int[] arr, int left, int right) -> void {
+	int l;
+	int r;
+
     if(left < right){
         int mid = l + (r - 1) / 2;
 

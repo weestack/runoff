@@ -18,7 +18,7 @@ task A() {
 
 task B() {
     while(true){
-        bool button_status = BinaryPin(BUTTONPIN);
+        bool button_status = readInput(BUTTONPIN);
 
         if(button_status){
             send ButtonClick to 1234; # FIXME who to send to??

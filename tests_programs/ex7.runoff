@@ -7,6 +7,6 @@ function test() -> void {
 
 	int i;
 	for(i = 0; i < 10; i++){ # Just as in C :)
-		sleep(200);
+		delay(200);
 	}
 }

@@ -3,7 +3,7 @@ function sum(int[] numbers) -> int {
 	int i;
 	# the builtin 'len' return the length of an array which is always
 	# known since they must be given a size when they are made
-	for(i = 0; i < len(numbers); i++){
+	for(i = 0; i < length(numbers); i++){
 		res = res + numbers[i]; # Array indexing stats from 0
 	}
 	return res;

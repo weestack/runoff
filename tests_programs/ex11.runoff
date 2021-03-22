@@ -1,5 +1,8 @@
+const AnalogInPin 123;
+const AnalogOutPin 234;
+
 function test() -> void {
-        int val =  analogReadInput(AnalogInPin);
+        int val =  readAnalogInput(AnalogInPin);
         int outval = 100;
         analogWrite(AnalogOutPin, outval);
 }

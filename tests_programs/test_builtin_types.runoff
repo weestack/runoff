@@ -15,6 +15,9 @@ messages {
   puuuhaa;
 }
 
+function print() -> void {
+
+}
 
 function ad() -> void {
   # bool

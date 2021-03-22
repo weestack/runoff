@@ -40,7 +40,11 @@ void initializeSymbolTables(void) {
 	enterSymbol("delay", 0);
 	enterSymbol("inputPin", 0);
 	enterSymbol("outputPin", 0);
+	enterSymbol("analogInputPin", 0);
+	enterSymbol("analogOutputPin", 0);
 	enterSymbol("setOutput", 0);
+	enterSymbol("analogWrite", 0);
+	enterSymbol("length", 0);
 }
 
 void openScope(void) {
