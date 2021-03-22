@@ -1,21 +1,22 @@
-typedef struct symbol symbol;
-typedef struct symbolTable symbolTable;
+typedef struct Symbol Symbol;
+typedef struct SymbolTable SymbolTable;
 
-struct symbol {
+struct Symbol {
 	char* 	name;
 	char* 	type;
 	int 	var;
 
-	symbol* next;
+	Symbol* next;
 };
 
-struct symbolTable {
-	symbolTable* previous;
-	symbol*	symbols;
+struct SymbolTable {
+	SymbolTable* previous;
+	Symbol*	symbols;
 };
 
 void initializeSymbolTables(void);
-void insertSymbol(symbol*);
+void insertSymbol(Symbol*);
 void openScope(void);
 void closeScope(void);
-symbol* retrieveSymbol(char*);
+Symbol* retrieveSymbol(char*);
+int declaredLocally(char*);

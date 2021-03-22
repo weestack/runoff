@@ -3,23 +3,23 @@
 #include <string.h>
 #include <stdlib.h>
 
-static symbolTable* SymbolTable;
-static symbolTable* current;
+static SymbolTable* symbolTable;
+static SymbolTable* current;
 
-void insertSymbol(symbol* symbol) {
+void insertSymbol(Symbol* symbol) {
 	symbol->next = current->symbols;
 	current->symbols = symbol;
 }
 
 void initializeSymbolTables(void) {
-	SymbolTable = (symbolTable*) malloc(sizeof(symbolTable));
-	SymbolTable->previous = NULL;
-	SymbolTable->symbols = NULL;
-	current = SymbolTable;
+	symbolTable = (SymbolTable*) malloc(sizeof(SymbolTable));
+	symbolTable->previous = NULL;
+	symbolTable->symbols = NULL;
+	current = symbolTable;
 }
 
 void openScope(void) {
-	symbolTable* new = (symbolTable*) malloc(sizeof(symbolTable));
+	SymbolTable* new = (SymbolTable*) malloc(sizeof(SymbolTable));
 	new->previous = current;
 	new->symbols = NULL;
 	current = new;
@@ -29,10 +29,10 @@ void closeScope(void) {
 	current = current->previous;
 }
 
-symbol* retrieveSymbol(char* name) {
-	symbolTable* currentTable = current;
+Symbol* retrieveSymbol(char* name) {
+	SymbolTable* currentTable = current;
 	for (;currentTable != NULL; currentTable = currentTable->previous) {
-		symbol* tempSymbol = currentTable->symbols;
+		Symbol* tempSymbol = currentTable->symbols;
 		for (;tempSymbol != NULL; tempSymbol = tempSymbol->next) {
 			if (strcmp(tempSymbol->name, name) == 0) {
 				return tempSymbol;
@@ -40,4 +40,13 @@ symbol* retrieveSymbol(char* name) {
 		}
 	}
 	return NULL;
+}
+
+int declaredLocally(char *name){
+	Symbol *tmp;
+	for(tmp = current->symbols; tmp != NULL; tmp = tmp->next){
+		if(strcmp(tmp->name, name) == 0)
+			return 1;
+	}
+	return 0;
 }
