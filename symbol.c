@@ -102,3 +102,47 @@ Symbol *enterSymbol(char *name, Type *type){
 SymbolTable *getCurrentSymbolTable(void){
 	return current;
 }
+
+Type* mkBuiltinTypeDiscriptor(int type){
+	Type *t = malloc(sizeof(Type));
+	t->tag = BuiltinTypeTag;
+	t->tags.typeBuiltin.builtinType = type;
+
+	return t;
+}
+
+Type* mkArrayTypeDiscriptor(Type *elementType, int size){
+	Type *t = malloc(sizeof(Type));
+	t->tag = ArrayTypeTag;
+	t->tags.typeArray.elementType = elementType;
+	t->tags.typeArray.size = size;
+
+	return t;
+}
+
+Type* mkFunctionTypeDiscriptor(int arity, Type **parameterTypes, Type *returnType){
+	Type *t = malloc(sizeof(Type));
+	t->tag = FunctionTypeTag;
+	t->tags.typeFunction.arity = arity;
+	t->tags.typeFunction.parameterTypes = parameterTypes;
+	t->tags.typeFunction.returnType = returnType;
+
+	return t;
+}
+
+Type* mkStructTypeDiscriptor(SymbolTable *fields){
+	Type *t = malloc(sizeof(Type));
+	t->tag = StructTypeTag;
+	t->tags.typeStruct.fields = fields;
+
+	return t;
+}
+
+Type* mkTaskTypeDiscriptor(int arity, Type **parameterTypes){
+	Type *t = malloc(sizeof(Type));
+	t->tag = TaskTypeTag;
+	t->tags.typeTask.arity = arity;
+	t->tags.typeTask.parameterTypes = parameterTypes;
+
+	return t;
+}

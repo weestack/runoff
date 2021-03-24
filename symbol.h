@@ -5,6 +5,12 @@ typedef struct ArrayTypeDiscriptor ArrayTypeDiscriptor;
 typedef struct FunctionTypeDiscriptor FunctionTypeDiscriptor;
 typedef struct BuiltinTypeDiscriptor BuiltinTypeDiscriptor;
 typedef struct StructTypeDiscriptor StructTypeDiscriptor;
+typedef struct TaskTypeDiscriptor TaskTypeDiscriptor;
+Type* mkBuiltinTypeDiscriptor(int);
+Type* mkArrayTypeDiscriptor(Type *, int);
+Type* mkFunctionTypeDiscriptor(int, Type **, Type *);
+Type* mkTaskTypeDiscriptor(int, Type **);
+Type* mkStructTypeDiscriptor(SymbolTable *);
 
 struct AstNode; /* declared fully in ast.h */
 
@@ -32,6 +38,11 @@ struct FunctionTypeDiscriptor {
 	Type *returnType;
 };
 
+struct TaskTypeDiscriptor {
+	int arity;
+	Type **parameterTypes;
+};
+
 struct BuiltinTypeDiscriptor {
 	int builtinType;
 };
@@ -46,9 +57,18 @@ struct Type {
 	union {
 		ArrayTypeDiscriptor typeArray;
 		FunctionTypeDiscriptor typeFunction;
+		TaskTypeDiscriptor typeTask;
 		BuiltinTypeDiscriptor typeBuiltin;
 		StructTypeDiscriptor typeStruct;
 	} tags;
+};
+
+enum {
+	ArrayTypeTag,
+	FunctionTypeTag,
+	TaskTypeTag,
+	BuiltinTypeTag,
+	StructTypeTag
 };
 
 void initializeSymbolTables(void);
