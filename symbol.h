@@ -1,6 +1,10 @@
 typedef struct Symbol Symbol;
 typedef struct SymbolTable SymbolTable;
 typedef struct Type Type;
+typedef struct ArrayTypeDiscriptor ArrayTypeDiscriptor;
+typedef struct FunctionTypeDiscriptor FunctionTypeDiscriptor;
+typedef struct BuiltinTypeDiscriptor BuiltinTypeDiscriptor;
+typedef struct StructTypeDiscriptor StructTypeDiscriptor;
 
 struct AstNode; /* declared fully in ast.h */
 
@@ -17,11 +21,34 @@ struct SymbolTable {
 	Symbol*	symbols;
 };
 
-/* this is currently only used by the struct types to handle lines such as
-   int i = hej.med.dig where .med must be a field in whatever struct type
-   hej is an instance of, and .dig must be a field in that... */
+struct ArrayTypeDiscriptor {
+	Type *elementType;
+	int size;
+};
+
+struct FunctionTypeDiscriptor {
+	int arity;
+	Type **parameterTypes;
+	Type *returnType;
+};
+
+struct BuiltinTypeDiscriptor {
+	int builtinType;
+};
+
+struct StructTypeDiscriptor {
+	SymbolTable *fields;
+};
+
+
 struct Type {
-	SymbolTable *structfields;
+	int tag;
+	union {
+		ArrayTypeDiscriptor typeArray;
+		FunctionTypeDiscriptor typeFunction;
+		BuiltinTypeDiscriptor typeBuiltin;
+		StructTypeDiscriptor typeStruct;
+	} tags;
 };
 
 void initializeSymbolTables(void);

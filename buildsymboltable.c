@@ -51,7 +51,7 @@ Type *processNode(AstNode *node){
 		sym = retrieveSymbol(node->node.DefineStruct.identifier);
 		openScope();
 		sym->type = malloc(sizeof(Type));
-		sym->type->structfields = getCurrentSymbolTable();
+		sym->type->tags.typeStruct.fields = getCurrentSymbolTable();
 		scopeopened = 1;
 		break;
 	case DefinePinid:
@@ -214,7 +214,7 @@ void handleStructLocation(AstNode *node){
 			return;
 		}else{
 			if(n->tag == StructLocation)
-				table = sym->type->structfields;
+				table = sym->type->tags.typeStruct.fields;
 			n = next;
 		}
 	}
