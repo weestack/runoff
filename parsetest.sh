@@ -23,3 +23,5 @@ for FILE in tests_programs/*
 
 TOTAL=$(echo $PARSED + $ERRORS | bc )
 printf 'Parsed %s files where %s files were ok and %s files had errors.\n' "$TOTAL" "$PARSED" "$ERRORS"
+
+make clean

@@ -3,7 +3,6 @@ typedef struct ProgNode ProgNode;
 typedef struct DefineConstNode DefineConstNode;
 typedef struct DefineFunctionNode DefineFunctionNode;
 typedef struct DefineStructNode DefineStructNode;
-typedef struct DefinePinidNode DefinePinidNode;
 typedef struct DefineTaskNode DefineTaskNode;
 typedef struct DefineMessageNode DefineMessageNode;
 typedef struct IncludeRunoffFileNode IncludeRunoffFileNode;
@@ -67,10 +66,6 @@ struct DefineStructNode {
 	AstNode *fields;
 };
 
-struct DefinePinidNode {
-    AstNode *identifier;
-    AstNode *int_literal;
-};
 
 struct DefineMessageNode {
 	AstNode *messagesIdentifiers;
@@ -164,6 +159,8 @@ struct VarDeclNode {
 	AstNode *identifier;
 	/* if expression is empty, then init to standard value */
 	AstNode *expression;
+	/* 1 if top level, else 0 */
+	int toplevel;
 };
 
 struct BinaryOperationNode {
@@ -253,7 +250,7 @@ struct AstNode {
 		DefineConstNode DefineConst;
 		DefineFunctionNode DefineFunction;
 		DefineTaskNode DefineTask;
-        DefinePinidNode DefinePinid;
+
 		DefineStructNode DefineStruct;
 		DefineMessageNode DefineMessage;
 		IncludeRunoffFileNode IncludeRunoffFile;
@@ -299,7 +296,6 @@ AstNode *mkDefineConstNode(AstNode *identifier, AstNode *int_literal);
 AstNode *mkDefineFunctionNode(AstNode *identifier, AstNode *parameters, AstNode *type, AstNode *statements);
 AstNode *mkDefineTaskNode(AstNode *identifier, AstNode *parameters, AstNode *statements);
 AstNode *mkDefineStructNode(AstNode *identifier, AstNode *fields);
-AstNode *mkDefinePinidNode(AstNode *identifier, AstNode *int_literal);
 AstNode *mkDefineMessageNode(AstNode *messagesIdentifiers);
 AstNode *mkIncludeRunoffFileNode(AstNode *identifier);
 AstNode *mkMessageIdentifierNode(AstNode *identifier, AstNode *parameters);
@@ -317,7 +313,7 @@ AstNode *mkElseIfNode(AstNode *expression, AstNode *statements, AstNode *elsePar
 AstNode *mkElseNode(AstNode *statements);
 AstNode *mkReceiveNode(AstNode *cases);
 AstNode *mkReceiveCaseNode(AstNode *messageName, AstNode *dataNames, AstNode *statements);
-AstNode *mkVarDeclNode(AstNode *type, AstNode *identifier, AstNode *expression);
+AstNode *mkVarDeclNode(AstNode *type, AstNode *identifier, AstNode *expression, int toplevel);
 AstNode *mkBinaryOperationNode(AstNode *expression_left, int operator, AstNode *expression_right);
 AstNode *mkVariableLocationNode(AstNode *identifier);
 AstNode *mkStructLocationNode(AstNode *identifier, AstNode *location);
@@ -344,7 +340,6 @@ enum NodeTypes {
 	DefineFunction,
 	DefineTask,
 	DefineStruct,
-	DefinePinid,
 	DefineMessage,
 	IncludeRunoffFile,
 	MessageIdentifier,
@@ -425,7 +420,8 @@ enum builtintypes {
 	builtintype_void,
 	builtintype_bool,
 	builtintype_msg,
-    builtintype_taskid
+  builtintype_taskid,
+	builtintype_pinid
 };
 
 

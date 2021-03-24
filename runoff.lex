@@ -25,7 +25,7 @@ punctuation [\[\]\(\)\{\};:=,\.\?]
 
 "const" {return const_keyword;}
 "struct" {return struct_keyword;}
-"pinid" {return pinid_keyword;}
+
 
 "messages" {return messages;}
 "function" {return function;}
@@ -77,7 +77,7 @@ void	{yylval.astNode = mkBuiltinTypeNode(builtintype_void); return builtin_type;
 bool	{yylval.astNode = mkBuiltinTypeNode(builtintype_bool); return builtin_type;}
 msg		{yylval.astNode = mkBuiltinTypeNode(builtintype_msg); return builtin_type;}
 taskid  {yylval.astNode = mkBuiltinTypeNode(builtintype_taskid); return builtin_type;}
-
+pinid {yylval.astNode = mkBuiltinTypeNode(builtintype_pinid); return builtin_type;}
 
 "&&" {return and_op;}
 "||" {return or_op;}

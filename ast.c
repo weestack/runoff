@@ -63,13 +63,6 @@ AstNode *mkDefineStructNode(AstNode *identifier, AstNode *fields){
 	return node;
 }
 
-AstNode *mkDefinePinidNode(AstNode *identifier, AstNode *int_literal) {
-    AstNode *node = mkNode(DefinePinid);
-    node->node.DefinePinid.identifier = identifier;
-    node->node.DefinePinid.int_literal = int_literal;
-    return node;
-}
-
 AstNode *mkDefineMessageNode(AstNode *messagesIdentifiers){
 	AstNode *node = mkNode(DefineMessage);
 	node->node.DefineMessage.messagesIdentifiers = messagesIdentifiers;
@@ -188,11 +181,12 @@ AstNode *mkReceiveCaseNode(AstNode *messageName, AstNode *dataNames, AstNode *st
 	return node;
 }
 
-AstNode *mkVarDeclNode(AstNode *type, AstNode *identifier, AstNode *expression){
+AstNode *mkVarDeclNode(AstNode *type, AstNode *identifier, AstNode *expression, int toplevel){
 	AstNode *node = mkNode(VarDecl);
 	node->node.VarDecl.type = type;
 	node->node.VarDecl.identifier = identifier;
 	node->node.VarDecl.expression = expression;
+	node->node.VarDecl.toplevel = toplevel;
 	return node;
 }
 
@@ -326,9 +320,6 @@ AstNode *getChildren(AstNode *node){
 		break;
 	case DefineStruct:
 		result = append_node(node->node.DefineStruct.identifier, node->node.DefineStruct.fields);
-		break;
-	case DefinePinid:
-		result = append_node(node->node.DefinePinid.identifier, node->node.DefinePinid.int_literal);
 		break;
 	case DefineMessage:
 		result = node->node.DefineMessage.messagesIdentifiers;

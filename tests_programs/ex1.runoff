@@ -1,10 +1,10 @@
-pinid LED1Pin 0x1;
-pinid LED2Pin 0X2;
-pinid LED3Pin 0xF;
+pinid LED1Pin = 0x1;
+pinid LED2Pin = 0X2;
+pinid LED3Pin = 0xF;
 
-pinid LED4Pin -0x1;
-pinid LED5Pin -0X2;
-pinid LED6Pin -0xF;
+pinid LED4Pin = -0x1;
+pinid LED5Pin = -0X2;
+pinid LED6Pin = -0xF;
 
 messages {
 	Button1Click;
@@ -13,6 +13,7 @@ messages {
 }
 
 function setPartyLight(bool state) -> void {
+
 	if(state) {
 		turnOn(LED3Pin);
 	} else {

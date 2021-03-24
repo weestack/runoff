@@ -54,9 +54,6 @@ Type *processNode(AstNode *node){
 		sym->type->tags.typeStruct.fields = getCurrentSymbolTable();
 		scopeopened = 1;
 		break;
-	case DefinePinid:
-		errors += insertSymbol(node->node.DefinePinid.identifier, 0); /* TYPE FIX */
-		break;
 	case DefineMessage: break; /* Nothing */
 	case IncludeRunoffFile: break; /* Nothing */
 	case MessageIdentifier:

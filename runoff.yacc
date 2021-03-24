@@ -26,7 +26,6 @@
 %token
     const_keyword
     struct_keyword
-    pinid_keyword
     messages
 
     and_op
@@ -99,7 +98,7 @@ Toplevel: const_keyword identifier int_literal ';' {$$ = mkDefineConstNode($2, $
         | task identifier '(' ParametersList ')' '{' Statements '}' {$$ = mkDefineTaskNode($2, $4, $7);}
         | struct_keyword identifier '{' StructMembers '}' {$$=mkDefineStructNode($2, $4);}
         | messages '{' MessageIdentifiers '}' {$$ = mkDefineMessageNode($3);}
-        | pinid_keyword identifier int_literal ';' {$$ = mkDefinePinidNode($2, $3);}
+        | Type identifier '=' Expression ';' {$$ = mkVarDeclNode($1, $2, $4, 1);}
         /*| include_keyword '(' identifier ')' ';'*/
         ;
 
@@ -177,8 +176,8 @@ MaybeExpression: Expression {$$ = $1;}
                | %empty {$$ = NULL;}
                ;
 
-Declaration: Type identifier {$$ = mkVarDeclNode($1, $2, NULL);}
-           | Type identifier '=' Expression {$$ = mkVarDeclNode($1, $2, $4);}
+Declaration: Type identifier {$$ = mkVarDeclNode($1, $2, NULL, 0);}
+           | Type identifier '=' Expression {$$ = mkVarDeclNode($1, $2, $4, 0);}
            ;
 
 Literal: int_literal {$$ = $1;}

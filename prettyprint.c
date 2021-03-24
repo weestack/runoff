@@ -14,7 +14,6 @@ static char *ppDefineConst(DefineConstNode node);
 static char *ppDefineFunction(DefineFunctionNode node);
 static char *ppDefineTask(DefineTaskNode node);
 static char *ppDefineStruct(DefineStructNode node);
-static char *ppDefinePinid(DefinePinidNode node);
 static char *ppDefineMessage(DefineMessageNode node);
 static char *ppIncludeRunoffFile(IncludeRunoffFileNode node);
 static char *ppMessageIdentifier(MessageIdentifierNode node);
@@ -92,7 +91,8 @@ static char *builtintypeNames[] = {
 	"void",
 	"bool",
 	"msg",
-    "taskid"
+  "taskid",
+	"pinid"
 };
 
 char *prettyprint(AstNode *node)
@@ -111,8 +111,6 @@ char *prettyprint(AstNode *node)
 		return ppDefineTask(node->node.DefineTask);
 	case DefineStruct:
 		return ppDefineStruct(node->node.DefineStruct);
-    case DefinePinid:
-        return ppDefinePinid(node->node.DefinePinid);
 	case DefineMessage:
 		return ppDefineMessage(node->node.DefineMessage);
 	case IncludeRunoffFile:
@@ -259,16 +257,6 @@ static char *ppDefineStruct(DefineStructNode node){
 	free(fieldsstr);
 	return result;
 }
-
-static char *ppDefinePinid(DefinePinidNode node){
-	char *identifierStr = prettyprint(node.identifier);
-	char *int_literalStr = prettyprint(node.int_literal);
-	char *result = smprintf("pinid %s %s;", identifierStr, int_literalStr);
-	free(identifierStr);
-	free(int_literalStr);
-	return result;
-}
-
 
 
 static char *ppDefineMessage(DefineMessageNode node){
@@ -438,6 +426,11 @@ static char *ppVarDecl(VarDeclNode node){
 		free(expressionStr);
 	}else{
 		result = smprintf("%s %s", typestr, identifierStr);
+	}
+	if (node.toplevel) {
+		char *tmp = result;
+		result = smprintf("%s;", result);
+		free(tmp);
 	}
 	free(typestr);
 	free(identifierStr);
