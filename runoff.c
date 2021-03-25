@@ -7,64 +7,6 @@
 
 char *filename;
 
-void
-prettydummy(void)
-{
-
-	AstNode *constnode;
-	AstNode *functionparams;
-	AstNode *functionbody;
-	AstNode *funnode;
-	AstNode *tree;
-
-	constnode = mkDefineConstNode(
-		mkIdentifierNode("x"),
-		mkIntLiteralNode(1234)
-	);
-
-	functionparams = mkParameterNode(
-		mkBuiltinTypeNode(builtintype_float),
-		mkIdentifierNode("a")
-	);
-	functionparams->next = mkParameterNode(
-		mkBuiltinTypeNode(builtintype_int32),
-		mkIdentifierNode("x")
-	);
-
-	functionbody = mkIfNode(
-		mkBinaryOperationNode(
-			mkIdentifierNode("a"),
-			egreater_equal,
-			mkFloatLiteralNode(123.0)
-		),
-		mkReturnNode(
-			mkIntLiteralNode(5.123)
-		),
-		mkElseNode(
-			mkReturnNode(
-				mkUnaryOperationNode(
-					eincrement,
-					postfix,
-					mkIdentifierNode("x")
-				)
-			)
-		)
-	);
-
-	funnode = mkDefineFunctionNode(
-		mkIdentifierNode("testfun"),
-		functionparams,
-		mkBuiltinTypeNode(builtintype_int32),
-		functionbody
-	);
-
-	constnode->next = funnode;
-	tree = mkProgNode(constnode);
-
-	printf("Pretty print of dummy tree:\n%s\n", prettyprint(tree));
-
-}
-
 int
 main(int argc, char *argv[])
 {

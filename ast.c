@@ -32,13 +32,6 @@ AstNode *mkProgNode(AstNode *toplevels){
 	return node;
 }
 
-AstNode *mkDefineConstNode(AstNode *identifier, AstNode *int_literal){
-	AstNode *node = mkNode(DefineConst);
-	node->node.DefineConst.identifier = identifier;
-	node->node.DefineConst.int_literal = int_literal;
-	return node;
-}
-
 AstNode *mkDefineFunctionNode(AstNode *identifier, AstNode *parameters, AstNode *type, AstNode *statements){
 	AstNode *node = mkNode(DefineFunction);
 	node->node.DefineFunction.identifier = identifier;
@@ -305,9 +298,6 @@ AstNode *getChildren(AstNode *node){
 	switch(node->tag){
 	case Prog:
 		result = node->node.Prog.toplevels;
-		break;
-	case DefineConst:
-		result = append_node(node->node.DefineConst.identifier, node->node.DefineConst.int_literal);
 		break;
 	case DefineFunction:
 		result = append_node(node->node.DefineFunction.identifier, node->node.DefineFunction.parameters);

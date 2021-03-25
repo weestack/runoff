@@ -23,7 +23,6 @@ punctuation [\[\]\(\)\{\};:=,\.\?]
 
 "include" {return include_keyword;}
 
-"const" {return const_keyword;}
 "struct" {return struct_keyword;}
 
 

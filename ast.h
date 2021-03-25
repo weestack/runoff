@@ -1,6 +1,5 @@
 typedef struct AstNode AstNode;
 typedef struct ProgNode ProgNode;
-typedef struct DefineConstNode DefineConstNode;
 typedef struct DefineFunctionNode DefineFunctionNode;
 typedef struct DefineStructNode DefineStructNode;
 typedef struct DefineTaskNode DefineTaskNode;
@@ -41,11 +40,6 @@ typedef struct ExprStmtNode ExprStmtNode;
 
 struct ProgNode {
 	AstNode *toplevels;
-};
-
-struct DefineConstNode {
-	AstNode *identifier;
-	AstNode *int_literal;
 };
 
 struct DefineFunctionNode {
@@ -247,7 +241,6 @@ struct AstNode {
 	int tag;
 	union {
 		ProgNode Prog;
-		DefineConstNode DefineConst;
 		DefineFunctionNode DefineFunction;
 		DefineTaskNode DefineTask;
 
@@ -292,7 +285,6 @@ struct AstNode {
 };
 
 AstNode *mkProgNode(AstNode *toplevels);
-AstNode *mkDefineConstNode(AstNode *identifier, AstNode *int_literal);
 AstNode *mkDefineFunctionNode(AstNode *identifier, AstNode *parameters, AstNode *type, AstNode *statements);
 AstNode *mkDefineTaskNode(AstNode *identifier, AstNode *parameters, AstNode *statements);
 AstNode *mkDefineStructNode(AstNode *identifier, AstNode *fields);
@@ -336,7 +328,6 @@ AstNode *getChildren(AstNode *node);
 
 enum NodeTypes {
 	Prog,
-	DefineConst,
 	DefineFunction,
 	DefineTask,
 	DefineStruct,

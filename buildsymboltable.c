@@ -33,9 +33,6 @@ Type *processNode(AstNode *node){
 
 	switch(node->tag){
 	case Prog: break; /* Nothing */
-	case DefineConst:
-		errors += insertSymbol(node->node.DefineConst.identifier, 0); /* TYPE FIX */
-		break;
 	case DefineFunction:
 		errors += insertSymbol(node->node.DefineFunction.identifier, 0); /* TYPE FIX */
 		openScope();

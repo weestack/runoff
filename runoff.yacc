@@ -24,7 +24,6 @@
 %token <astNode> identifier builtin_type int_literal float_literal bool_literal
 
 %token
-    const_keyword
     struct_keyword
     messages
 
@@ -93,8 +92,7 @@ Program: Toplevel {$$ = mkProgNode($1); parseresult = $$;}
        		}
        ;
 
-Toplevel: const_keyword identifier int_literal ';' {$$ = mkDefineConstNode($2, $3); }
-        | function identifier '(' ParametersList ')' right_arrow Type '{' Statements '}' { $$=mkDefineFunctionNode($2, $4, $7, $9); }
+Toplevel: function identifier '(' ParametersList ')' right_arrow Type '{' Statements '}' { $$=mkDefineFunctionNode($2, $4, $7, $9); }
         | task identifier '(' ParametersList ')' '{' Statements '}' {$$ = mkDefineTaskNode($2, $4, $7);}
         | struct_keyword identifier '{' StructMembers '}' {$$=mkDefineStructNode($2, $4);}
         | messages '{' MessageIdentifiers '}' {$$ = mkDefineMessageNode($3);}

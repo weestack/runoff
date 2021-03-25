@@ -10,7 +10,6 @@ static char *smprintf(char *fmt, ...);
 
 static char *prettyprintlist(AstNode *node, char *sep, int end);
 static char *ppProg(ProgNode node);
-static char *ppDefineConst(DefineConstNode node);
 static char *ppDefineFunction(DefineFunctionNode node);
 static char *ppDefineTask(DefineTaskNode node);
 static char *ppDefineStruct(DefineStructNode node);
@@ -103,8 +102,6 @@ char *prettyprint(AstNode *node)
 	switch(node->tag){
 	case Prog:
 		return ppProg(node->node.Prog);
-	case DefineConst:
-		return ppDefineConst(node->node.DefineConst);
 	case DefineFunction:
 		return ppDefineFunction(node->node.DefineFunction);
 	case DefineTask:
@@ -214,15 +211,6 @@ static char *prettyprintlist(AstNode *node, char *sep, int end){
 
 static char *ppProg(ProgNode node){
 	return prettyprintlist(node.toplevels, "\n\n", 0);
-}
-
-static char *ppDefineConst(DefineConstNode node){
-	char *idstr = prettyprint(node.identifier);
-	char *intlitstr = prettyprint(node.int_literal);
-	char *result = smprintf("const %s %s;", idstr, intlitstr);
-	free(idstr);
-	free(intlitstr);
-	return result;
 }
 
 static char *ppDefineFunction(DefineFunctionNode node){
