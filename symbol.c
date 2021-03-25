@@ -146,3 +146,12 @@ Type* mkTaskTypeDiscriptor(int arity, Type **parameterTypes){
 
 	return t;
 }
+
+Type* mkMessageTypeDiscriptor(int arity, Type **parameterTypes){
+	Type *t = malloc(sizeof(Type));
+	t->tag = MessageTypeTag;
+	t->tags.typeMessage.arity = arity;
+	t->tags.typeMessage.parameterTypes = parameterTypes;
+
+	return t;
+}

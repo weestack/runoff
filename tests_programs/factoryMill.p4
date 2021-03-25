@@ -29,7 +29,7 @@ task blow_plastic_away() {
     while(true){
         struct placement target;
         receive {
-            case detected_plactic : target = value;
+            case detected_plactic(struct placement value) : target = value;
         }
         blow_away_plastic_at_id(detected_plactic);
     }

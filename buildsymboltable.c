@@ -11,6 +11,7 @@ void updateSymbolId(AstNode *, Symbol *);
 void handleStructLocation(AstNode *);
 void handleDefineFunction(AstNode *function);
 void handleDefineTask(AstNode *function);
+void handleMessageIdentifier(AstNode *function);
 static int errors;
 extern char *filename; /* defined and set in runoff.c */
 
@@ -52,8 +53,8 @@ Type *processNode(AstNode *node){
 	case DefineMessage: break; /* Nothing */
 	case IncludeRunoffFile: break; /* Nothing */
 	case MessageIdentifier:
-		errors += insertSymbol(node->node.MessageIdentifier.identifier, 0); /* TYPE FIX */
-		break;
+		handleMessageIdentifier(node);
+		return NULL;
 	case StructMember:
 		vartype = processNode(node->node.StructMember.type);
 		errors += insertSymbol(node->node.StructMember.identifier, vartype); /* TYPE FIX */
@@ -272,5 +273,35 @@ void handleDefineTask(AstNode *function){
 	closeScope();
 
 	sym = retrieveSymbol(function->node.DefineTask.identifier);
+	sym->type = t;
+}
+
+void handleMessageIdentifier(AstNode *function){
+	/* Copy pasted from handleDefineTask. */
+	AstNode *tmp;
+	Type **para_types;
+	Type *t;
+	Symbol *sym;
+	int i = 0, parameter_length;
+
+	errors += insertSymbol(function->node.MessageIdentifier.identifier, NULL);
+
+	openScope();
+	processNodes(function->node.MessageIdentifier.parameters);
+
+	parameter_length = nodeLength(function->node.MessageIdentifier.parameters);
+
+	para_types = malloc(sizeof(Type*)*parameter_length);
+	for(tmp = function->node.MessageIdentifier.parameters; tmp != NULL; tmp=tmp->next){
+		AstNode *identifier = tmp->node.Parameter.identifier;
+		para_types[i] = identifier->node.Identifier.symbol->type;
+		i++;
+	}
+
+	t = mkMessageTypeDiscriptor(parameter_length, para_types);
+
+	closeScope();
+
+	sym = retrieveSymbol(function->node.MessageIdentifier.identifier);
 	sym->type = t;
 }

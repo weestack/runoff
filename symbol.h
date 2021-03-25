@@ -6,11 +6,13 @@ typedef struct FunctionTypeDiscriptor FunctionTypeDiscriptor;
 typedef struct BuiltinTypeDiscriptor BuiltinTypeDiscriptor;
 typedef struct StructTypeDiscriptor StructTypeDiscriptor;
 typedef struct TaskTypeDiscriptor TaskTypeDiscriptor;
+typedef struct MessageTypeDiscriptor MessageTypeDiscriptor;
 Type* mkBuiltinTypeDiscriptor(int);
 Type* mkArrayTypeDiscriptor(Type *, int);
 Type* mkFunctionTypeDiscriptor(int, Type **, Type *);
 Type* mkTaskTypeDiscriptor(int, Type **);
 Type* mkStructTypeDiscriptor(SymbolTable *);
+Type* mkMessageTypeDiscriptor(int, Type**);
 
 struct AstNode; /* declared fully in ast.h */
 
@@ -51,6 +53,11 @@ struct StructTypeDiscriptor {
 	SymbolTable *fields;
 };
 
+struct MessageTypeDiscriptor {
+	int arity;
+	Type **parameterTypes;
+};
+
 
 struct Type {
 	int tag;
@@ -60,6 +67,7 @@ struct Type {
 		TaskTypeDiscriptor typeTask;
 		BuiltinTypeDiscriptor typeBuiltin;
 		StructTypeDiscriptor typeStruct;
+		MessageTypeDiscriptor typeMessage;
 	} tags;
 };
 
@@ -68,7 +76,8 @@ enum {
 	FunctionTypeTag,
 	TaskTypeTag,
 	BuiltinTypeTag,
-	StructTypeTag
+	StructTypeTag,
+	MessageTypeTag
 };
 
 void initializeSymbolTables(void);
