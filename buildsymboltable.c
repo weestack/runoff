@@ -10,6 +10,7 @@ void undeclaredError(AstNode *);
 void updateSymbolId(AstNode *, Symbol *);
 void handleStructLocation(AstNode *);
 void handleDefineFunction(AstNode *function);
+void handleDefineTask(AstNode *function);
 static int errors;
 extern char *filename; /* defined and set in runoff.c */
 
@@ -39,10 +40,8 @@ Type *processNode(AstNode *node){
 		
 		return NULL;
 	case DefineTask:
-		errors += insertSymbol(node->node.DefineTask.identifier, 0); /* TYPE FIX */
-		openScope();
-		scopeopened = 1;
-		break;
+		handleDefineTask(node);
+		return NULL;
 	case DefineStruct:
 		errors += insertSymbol(node->node.DefineStruct.identifier, 0);
 		sym = retrieveSymbol(node->node.DefineStruct.identifier);
@@ -243,3 +242,35 @@ void handleDefineFunction(AstNode *function){
 	sym = retrieveSymbol(function->node.DefineFunction.identifier);
 	sym->type = t;
 } 
+
+void handleDefineTask(AstNode *function){
+	/* Copy pasted from handleDefineFunction. */
+	AstNode *Children;
+	AstNode *tmp;
+	Type **para_types;
+	Type *t;
+	Symbol *sym;
+	int i = 0, parameter_length;
+
+	errors += insertSymbol(function->node.DefineTask.identifier, NULL);
+
+	openScope();
+	Children = concat_node(function->node.DefineTask.parameters, function->node.DefineTask.statements);
+	processNodes(Children);
+
+	parameter_length = nodeLength(function->node.DefineTask.parameters);
+
+	para_types = malloc(sizeof(Type*)*parameter_length);
+	for(tmp = function->node.DefineTask.parameters; tmp != NULL; tmp=tmp->next){
+		AstNode *identifier = tmp->node.Parameter.identifier;
+		para_types[i] = identifier->node.Identifier.symbol->type;
+		i++;
+	}
+
+	t = mkTaskTypeDiscriptor(parameter_length, para_types);
+
+	closeScope();
+
+	sym = retrieveSymbol(function->node.DefineTask.identifier);
+	sym->type = t;
+}
