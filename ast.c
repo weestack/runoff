@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "symbol.h"
 #include "ast.h"
 
@@ -15,6 +16,47 @@ AstNode *append_node(AstNode* siblingA, AstNode* siblingB) {
     tmp->next = siblingB;
 
     return siblingA;
+}
+
+AstNode *concat_node(AstNode *siblingA, AstNode* siblingB){
+	AstNode *tmp;
+	AstNode *new_list;
+	AstNode *start;
+	
+	if(siblingA == NULL)
+		return siblingB;
+	if(siblingB == NULL)
+		return siblingA;
+	
+	tmp=siblingA;
+	start = malloc(sizeof(AstNode));
+	memcpy(start, tmp, sizeof(AstNode));
+	start->next = NULL;
+
+	for(tmp=tmp->next; tmp != NULL; tmp=tmp->next){
+		new_list = malloc(sizeof(AstNode));
+		memcpy(new_list, tmp, sizeof(AstNode));
+		new_list->next = NULL;
+		append_node(start, new_list);
+	}
+	
+	for(tmp=siblingB; tmp != NULL; tmp=tmp->next){
+		new_list = malloc(sizeof(AstNode));
+		memcpy(new_list, tmp, sizeof(AstNode));
+		new_list->next = NULL;
+		append_node(start, new_list);
+	}
+
+	return start;
+}
+
+int nodeLength(AstNode *list){
+	int length = 0;
+	while(list != NULL){
+		list = list->next;
+		length++;
+	}
+	return length;
 }
 
 

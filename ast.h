@@ -324,6 +324,8 @@ AstNode *mkSendNode(AstNode *message, AstNode *receiver);
 AstNode *mkExprStmtNode(AstNode *expression);
 
 AstNode *append_node(AstNode* siblingA, AstNode* siblingB);
+AstNode *concat_node(AstNode *siblingA, AstNode* siblingB);
+int nodeLength(AstNode *);
 AstNode *getChildren(AstNode *node);
 
 enum NodeTypes {

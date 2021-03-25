@@ -9,6 +9,7 @@ void processNodes(AstNode *);
 void undeclaredError(AstNode *);
 void updateSymbolId(AstNode *, Symbol *);
 void handleStructLocation(AstNode *);
+void handleDefineFunction(AstNode *function);
 static int errors;
 extern char *filename; /* defined and set in runoff.c */
 
@@ -34,21 +35,19 @@ Type *processNode(AstNode *node){
 	switch(node->tag){
 	case Prog: break; /* Nothing */
 	case DefineFunction:
-		errors += insertSymbol(node->node.DefineFunction.identifier, 0); /* TYPE FIX */
-		openScope();
-		scopeopened = 1;
-		break;
+		handleDefineFunction(node);
+		
+		return NULL;
 	case DefineTask:
 		errors += insertSymbol(node->node.DefineTask.identifier, 0); /* TYPE FIX */
 		openScope();
 		scopeopened = 1;
 		break;
 	case DefineStruct:
-		errors += insertSymbol(node->node.DefineStruct.identifier, 0); /* TYPE FIX */
+		errors += insertSymbol(node->node.DefineStruct.identifier, 0);
 		sym = retrieveSymbol(node->node.DefineStruct.identifier);
 		openScope();
-		sym->type = malloc(sizeof(Type));
-		sym->type->tags.typeStruct.fields = getCurrentSymbolTable();
+		sym->type = mkStructTypeDiscriptor(getCurrentSymbolTable());
 		scopeopened = 1;
 		break;
 	case DefineMessage: break; /* Nothing */
@@ -213,3 +212,34 @@ void handleStructLocation(AstNode *node){
 		}
 	}
 }
+
+void handleDefineFunction(AstNode *function){
+	AstNode *Children;
+	AstNode *tmp;
+	Type **para_types;
+	Type *t;
+	Symbol *sym;
+	int i = 0, parameter_length;
+
+	errors += insertSymbol(function->node.DefineFunction.identifier, NULL);
+
+	openScope();
+	Children = concat_node(function->node.DefineFunction.parameters, function->node.DefineFunction.statements);
+	processNodes(Children);
+
+	parameter_length = nodeLength(function->node.DefineFunction.parameters);
+
+	para_types = malloc(sizeof(Type*)*parameter_length);
+	for(tmp = function->node.DefineFunction.parameters; tmp != NULL; tmp=tmp->next){
+		AstNode *identifier = tmp->node.Parameter.identifier;
+		para_types[i] = identifier->node.Identifier.symbol->type;
+		i++;
+	}
+
+	t = mkFunctionTypeDiscriptor(parameter_length, para_types, processNode(function->node.DefineFunction.type));
+
+	closeScope();
+
+	sym = retrieveSymbol(function->node.DefineFunction.identifier);
+	sym->type = t;
+} 
