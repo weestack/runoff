@@ -342,16 +342,16 @@ AstNode *getChildren(AstNode *node){
 		result = node->node.Prog.toplevels;
 		break;
 	case DefineFunction:
-		result = append_node(node->node.DefineFunction.identifier, node->node.DefineFunction.parameters);
-		result = append_node(result, node->node.DefineFunction.type);
-		result = append_node(result, node->node.DefineFunction.statements);
+		result = concat_node(node->node.DefineFunction.identifier, node->node.DefineFunction.parameters);
+		result = concat_node(result, node->node.DefineFunction.type);
+		result = concat_node(result, node->node.DefineFunction.statements);
 		break;
 	case DefineTask:
-		result = append_node(node->node.DefineTask.identifier, node->node.DefineTask.parameters);
-		result = append_node(result, node->node.DefineTask.statements);
+		result = concat_node(node->node.DefineTask.identifier, node->node.DefineTask.parameters);
+		result = concat_node(result, node->node.DefineTask.statements);
 		break;
 	case DefineStruct:
-		result = append_node(node->node.DefineStruct.identifier, node->node.DefineStruct.fields);
+		result = concat_node(node->node.DefineStruct.identifier, node->node.DefineStruct.fields);
 		break;
 	case DefineMessage:
 		result = node->node.DefineMessage.messagesIdentifiers;
@@ -360,13 +360,13 @@ AstNode *getChildren(AstNode *node){
 		result = node->node.IncludeRunoffFile.identifier;
 		break;
 	case MessageIdentifier:
-		result = append_node(node->node.MessageIdentifier.identifier, node->node.MessageIdentifier.parameters);
+		result = concat_node(node->node.MessageIdentifier.identifier, node->node.MessageIdentifier.parameters);
 		break;
 	case StructMember:
-		result = append_node(node->node.StructMember.identifier, node->node.StructMember.type);
+		result = concat_node(node->node.StructMember.identifier, node->node.StructMember.type);
 		break;
 	case Parameter:
-		result = append_node(node->node.Parameter.type, node->node.Parameter.identifier);
+		result = concat_node(node->node.Parameter.type, node->node.Parameter.identifier);
 		break;
 	case BuiltinType:
 		break;
@@ -374,29 +374,29 @@ AstNode *getChildren(AstNode *node){
 		result = node->node.StructType.identifier;
 		break;
 	case ArrayType:
-		result = append_node(node->node.ArrayType.type, node->node.ArrayType.int_literal);
+		result = concat_node(node->node.ArrayType.type, node->node.ArrayType.int_literal);
 		break;
 	case While:
-		result = append_node(node->node.While.expression, node->node.While.statements);
+		result = concat_node(node->node.While.expression, node->node.While.statements);
 		break;
 	case For:
-		result = append_node(node->node.For.expressionInit, node->node.For.expressionTest);
-		result = append_node(result, node->node.For.expressionUpdate);
-		result = append_node(result, node->node.For.statements);
+		result = concat_node(node->node.For.expressionInit, node->node.For.expressionTest);
+		result = concat_node(result, node->node.For.expressionUpdate);
+		result = concat_node(result, node->node.For.statements);
 		break;
 	case Switch:
-		result = append_node(node->node.Switch.expression, node->node.Switch.cases);
+		result = concat_node(node->node.Switch.expression, node->node.Switch.cases);
 		break;
 	case SwitchCase:
-		result = append_node(node->node.SwitchCase.literal, node->node.SwitchCase.statements);
+		result = concat_node(node->node.SwitchCase.literal, node->node.SwitchCase.statements);
 		break;
 	case If:
-		result = append_node(node->node.If.expression, node->node.If.statements);
-		result = append_node(result, node->node.If.elsePart);
+		result = concat_node(node->node.If.expression, node->node.If.statements);
+		result = concat_node(result, node->node.If.elsePart);
 		break;
 	case ElseIf:
-		result = append_node(node->node.ElseIf.expression, node->node.ElseIf.statements);
-		result = append_node(result, node->node.ElseIf.elsePart);
+		result = concat_node(node->node.ElseIf.expression, node->node.ElseIf.statements);
+		result = concat_node(result, node->node.ElseIf.elsePart);
 		break;
 	case Else:
 		result = node->node.Else.statements;
@@ -405,37 +405,37 @@ AstNode *getChildren(AstNode *node){
 		result = node->node.Receive.cases;
 		break;
 	case ReceiveCase:
-		result = append_node(node->node.ReceiveCase.messageName, node->node.ReceiveCase.dataNames);
-		result = append_node(result, node->node.ReceiveCase.statements);
+		result = concat_node(node->node.ReceiveCase.messageName, node->node.ReceiveCase.dataNames);
+		result = concat_node(result, node->node.ReceiveCase.statements);
 		break;
 	case VarDecl:
-		result = append_node(node->node.VarDecl.type, node->node.VarDecl.identifier);
-		result = append_node(result, node->node.VarDecl.expression);
+		result = concat_node(node->node.VarDecl.type, node->node.VarDecl.identifier);
+		result = concat_node(result, node->node.VarDecl.expression);
 		break;
 	case BinaryOperation:
-		result = append_node(node->node.BinaryOperation.expression_left, node->node.BinaryOperation.expression_right);
+		result = concat_node(node->node.BinaryOperation.expression_left, node->node.BinaryOperation.expression_right);
 		break;
 	case VariableLocation:
 		result = node->node.VariableLocation.identifier;
 		break;
 	case StructLocation:
-		result = append_node(node->node.StructLocation.identifier, node->node.StructLocation.location);
+		result = concat_node(node->node.StructLocation.identifier, node->node.StructLocation.location);
 		break;
 	case ArrayLocation:
-		result = append_node(node->node.ArrayLocation.identifier, node->node.ArrayLocation.indicies);
+		result = concat_node(node->node.ArrayLocation.identifier, node->node.ArrayLocation.indicies);
 		break;
 	case UnaryOperation:
 		result = node->node.UnaryOperation.expression;
 		break;
 	case FunctionCall:
-		result = append_node(node->node.FunctionCall.identifier, node->node.FunctionCall.arguments);
+		result = concat_node(node->node.FunctionCall.identifier, node->node.FunctionCall.arguments);
 		break;
 	case Assignment:
-		result = append_node(node->node.Assignment.location, node->node.Assignment.expression);
+		result = concat_node(node->node.Assignment.location, node->node.Assignment.expression);
 		break;
 	case TernaryOperator:
-		result = append_node(node->node.TernaryOperator.expressionTest, node->node.TernaryOperator.expressionTrue);
-		result = append_node(result, node->node.TernaryOperator.expressionFalse);
+		result = concat_node(node->node.TernaryOperator.expressionTest, node->node.TernaryOperator.expressionTrue);
+		result = concat_node(result, node->node.TernaryOperator.expressionFalse);
 		break;
 	case Identifier:
 		break;
@@ -449,10 +449,10 @@ AstNode *getChildren(AstNode *node){
 		result = node->node.Return.expression;
 		break;
 	case Spawn:
-		result = append_node(node->node.Spawn.identifier, node->node.Spawn.arguments);
+		result = concat_node(node->node.Spawn.identifier, node->node.Spawn.arguments);
 		break;
 	case Send:
-		result = append_node(node->node.Send.message, node->node.Send.receiver);
+		result = concat_node(node->node.Send.message, node->node.Send.receiver);
 		break;
 	case ExprStmt:
 		result = node->node.ExprStmt.expression;
