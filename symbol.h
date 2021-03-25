@@ -29,6 +29,7 @@ struct SymbolTable {
 	Symbol*	symbols;
 };
 
+/* if size equal to -1 then it is array[]. */
 struct ArrayTypeDiscriptor {
 	Type *elementType;
 	int size;

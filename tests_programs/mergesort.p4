@@ -17,7 +17,6 @@ function merge(int[] arr, int left, int mid, int right) -> void {
 
     # Synes helt sikkert vi skal have Array.length.
     CopyPart(RightHalf, arr, n1 + 1, length(arr));
-
     i = j = 0;
     k = left;
     while(i < n1 && j < n2){

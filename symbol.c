@@ -33,18 +33,18 @@ void initializeSymbolTables(void) {
 	current = symbolTable;
 
 	/* insert symbols for builin funcions here :) */
-	enterSymbol("turnOn", 0);
-	enterSymbol("turnOff", 0);
-	enterSymbol("readInput", 0);
-	enterSymbol("readAnalogInput", 0);
-	enterSymbol("delay", 0);
-	enterSymbol("inputPin", 0);
-	enterSymbol("outputPin", 0);
-	enterSymbol("analogInputPin", 0);
-	enterSymbol("analogOutputPin", 0);
-	enterSymbol("setOutput", 0);
-	enterSymbol("analogWrite", 0);
-	enterSymbol("length", 0);
+	enterSymbol("turnOn", mkFunctionTypeDiscriptor(0,NULL,mkBuiltinTypeDiscriptor(builtintype_void)));
+	enterSymbol("turnOff", mkFunctionTypeDiscriptor(0,NULL,mkBuiltinTypeDiscriptor(builtintype_void)));
+	enterSymbol("readInput", mkFunctionTypeDiscriptor(0,NULL,mkBuiltinTypeDiscriptor(builtintype_void)));
+	enterSymbol("readAnalogInput", mkFunctionTypeDiscriptor(0,NULL,mkBuiltinTypeDiscriptor(builtintype_void)));
+	enterSymbol("delay", mkFunctionTypeDiscriptor(0,NULL,mkBuiltinTypeDiscriptor(builtintype_void)));
+	enterSymbol("inputPin", mkFunctionTypeDiscriptor(0,NULL,mkBuiltinTypeDiscriptor(builtintype_void)));
+	enterSymbol("outputPin", mkFunctionTypeDiscriptor(0,NULL,mkBuiltinTypeDiscriptor(builtintype_void)));
+	enterSymbol("analogInputPin", mkFunctionTypeDiscriptor(0,NULL,mkBuiltinTypeDiscriptor(builtintype_void)));
+	enterSymbol("analogOutputPin", mkFunctionTypeDiscriptor(0,NULL,mkBuiltinTypeDiscriptor(builtintype_void)));
+	enterSymbol("setOutput", mkFunctionTypeDiscriptor(0,NULL,mkBuiltinTypeDiscriptor(builtintype_void)));
+	enterSymbol("analogWrite", mkFunctionTypeDiscriptor(0,NULL,mkBuiltinTypeDiscriptor(builtintype_void)));
+	enterSymbol("length", mkFunctionTypeDiscriptor(0,NULL,mkBuiltinTypeDiscriptor(builtintype_void)));
 }
 
 void openScope(void) {

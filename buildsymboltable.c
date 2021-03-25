@@ -12,15 +12,42 @@ void handleStructLocation(AstNode *);
 void handleDefineFunction(AstNode *function);
 void handleDefineTask(AstNode *function);
 void handleMessageIdentifier(AstNode *function);
+void checkIdentifierTypes(AstNode *tree);
 static int errors;
 extern char *filename; /* defined and set in runoff.c */
 
 int buildSymbolTable(AstNode *tree){
 	initializeSymbolTables();
 	processNode(tree);
+
+	checkIdentifierTypes(tree);
+
 	if(errors)
 		printf("BuildSymbolTable failed with %d errors\n", errors);
+
 	return errors;
+}
+
+void checkIdentifierTypes(AstNode *tree){
+	if(tree->tag == Identifier){
+		Symbol *sym = tree->node.Identifier.symbol;
+		if(sym == NULL){
+			errors++;
+			printf("Symbol for %s is NULL on line %d\n", tree->node.Identifier.identifier, tree->linenum);
+		} else if(sym->type == NULL){
+			errors++;
+			printf("Symbol type for %s is NULL on line %d\n", tree->node.Identifier.identifier, tree->linenum);
+		} else {
+			/*
+			printf("Symbol for %s is %d on line %d\n", tree->node.Identifier.identifier, sym->type->tag, tree->linenum);
+			*/
+		}
+	} else {
+		AstNode *children = getChildren(tree);
+		for(;children!=NULL;children=children->next){
+			checkIdentifierTypes(children);
+		}
+	}
 }
 
 /* process node CAN return a type if it makes sense */
@@ -74,19 +101,35 @@ Type *processNode(AstNode *node){
 			type = sym->type;
 		}
 		break;
-	case ArrayType: 
-		vartype = processNode(node->node.ArrayType.type);
-		return mkArrayTypeDiscriptor(vartype, node->node.ArrayType.int_literal->node.IntLiteral.value);
+	case ArrayType:
+		vartype = processNode(node->node.ArrayType.type); 
+		if(node->node.ArrayType.int_literal == NULL){
+			return mkArrayTypeDiscriptor(vartype, -1);
+		} else {
+			return mkArrayTypeDiscriptor(vartype, node->node.ArrayType.int_literal->node.IntLiteral.value);
+		}
 	case While:
 	case For:  /* fallthrough */
 	case Switch:  /* fallthrough */
 	case SwitchCase: /* fallthrough */
 	case Else: /* fallthrough */
 	case Receive: /* fallthrough */
-	case ReceiveCase: /* fallthrough */
 		openScope();
 		scopeopened = 1;
 		break;
+	case ReceiveCase:
+		sym = retrieveSymbol(node->node.ReceiveCase.messageName);
+		if(sym == NULL)
+			undeclaredError(node->node.ReceiveCase.messageName);
+		else
+			updateSymbolId(node->node.ReceiveCase.messageName, sym);
+		openScope();
+
+		processNodes(node->node.ReceiveCase.dataNames);
+		processNodes(node->node.ReceiveCase.statements);
+
+		closeScope();
+		return NULL;
 	case If:
 		openScope();
 		child = append_node(node->node.If.expression, node->node.If.statements);
@@ -135,7 +178,13 @@ Type *processNode(AstNode *node){
 		break;
 	case Assignment: break; /* Nothing */
 	case TernaryOperator: break; /* Nothing */
-	case Identifier: break; /* Nothing */
+	case Identifier: 
+		sym = retrieveSymbol(node);
+		if(sym == NULL)
+			undeclaredError(node);
+		else
+			updateSymbolId(node, sym);
+		break; /* Nothing */
 	case IntLiteral: break; /* Nothing */
 	case FloatLiteral: break; /* Nothing */
 	case BoolLiteral: break; /* Nothing */
