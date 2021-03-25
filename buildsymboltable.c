@@ -57,13 +57,14 @@ Type *processNode(AstNode *node){
 		return NULL;
 	case StructMember:
 		vartype = processNode(node->node.StructMember.type);
-		errors += insertSymbol(node->node.StructMember.identifier, vartype); /* TYPE FIX */
+		errors += insertSymbol(node->node.StructMember.identifier, vartype);
 		break;
 	case Parameter:
 		vartype = processNode(node->node.Parameter.type);
-		errors += insertSymbol(node->node.Parameter.identifier, vartype); /* TYPE FIX */
+		errors += insertSymbol(node->node.Parameter.identifier, vartype);
 		break;
-	case BuiltinType: break; /* Nothing */
+	case BuiltinType: 
+		return mkBuiltinTypeDiscriptor(node->node.BuiltinType.type);
 	case StructType:
 		sym = retrieveSymbol(node->node.StructType.identifier);
 		if(sym == NULL)
@@ -73,7 +74,9 @@ Type *processNode(AstNode *node){
 			type = sym->type;
 		}
 		break;
-	case ArrayType: break; /* Nothing */
+	case ArrayType: 
+		vartype = processNode(node->node.ArrayType.type);
+		return mkArrayTypeDiscriptor(vartype, node->node.ArrayType.int_literal->node.IntLiteral.value);
 	case While:
 	case For:  /* fallthrough */
 	case Switch:  /* fallthrough */
@@ -101,7 +104,7 @@ Type *processNode(AstNode *node){
 	case VarDecl:
 		vartype = processNode(node->node.VarDecl.type);
 		processNode(node->node.VarDecl.expression);
-		errors += insertSymbol(node->node.VarDecl.identifier, vartype); /* TYPE FIX */
+		errors += insertSymbol(node->node.VarDecl.identifier, vartype);
 		return NULL; /* special case */
 	case BinaryOperation: break; /* Nothing */
 	case VariableLocation:
