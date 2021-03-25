@@ -258,6 +258,7 @@ void handleStructLocation(AstNode *node){
 			undeclaredError(identifier);
 			return;
 		}else{
+			updateSymbolId(identifier, sym);
 			if(n->tag == StructLocation)
 				table = sym->type->tags.typeStruct.fields;
 			n = next;
