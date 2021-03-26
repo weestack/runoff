@@ -39,9 +39,11 @@ static char *ppFunctionCall(FunctionCallNode node);
 static char *ppAssignment(AssignmentNode node);
 static char *ppTernaryOperator(TernaryOperatorNode node);
 static char *ppIdentifier(IdentifierNode node);
+static char *ppPinLiteral(PinLiteralNode node);
 static char *ppIntLiteral(IntLiteralNode node);
 static char *ppFloatLiteral(FloatLiteralNode node);
 static char *ppBoolLiteral(BoolLiteralNode node);
+static char *ppMessageLiteral(MessageLiteralNode node);
 static char *ppReturn(ReturnNode node);
 static char *ppSpawn(SpawnNode node);
 static char *ppSend(SendNode node);
@@ -162,12 +164,16 @@ char *prettyprint(AstNode *node)
 		return ppTernaryOperator(node->node.TernaryOperator);
 	case Identifier:
 		return ppIdentifier(node->node.Identifier);
+	case PinLiteral:
+		return ppPinLiteral(node->node.PinLiteral);
 	case IntLiteral:
 		return ppIntLiteral(node->node.IntLiteral);
 	case FloatLiteral:
 		return ppFloatLiteral(node->node.FloatLiteral);
 	case BoolLiteral:
 		return ppBoolLiteral(node->node.BoolLiteral);
+	case MessageLiteral:
+		return ppMessageLiteral(node->node.MessageLiteral);
 	case Return:
 		return ppReturn(node->node.Return);
 	case Spawn:
@@ -270,7 +276,7 @@ static char *ppMessageIdentifier(MessageIdentifierNode node){
 		result = smprintf("%s", idstr);
 	else{
 		params = prettyprintlist(node.parameters, ", ", 0);
-		result = smprintf("%s(%s)", idstr, params);
+		result = smprintf("%s{%s}", idstr, params);
 		free(params);
 	}
 	return result;
@@ -396,7 +402,7 @@ static char *ppReceiveCase(ReceiveCaseNode node){
 	if(node.dataNames == NULL)
 		result = smprintf("case %s:%s", messageNameStr, statementsStr);
 	else
-		result = smprintf("case %s(%s):%s", messageNameStr, dataNamesStr, statementsStr);
+		result = smprintf("case %s{%s}:%s", messageNameStr, dataNamesStr, statementsStr);
 
 	free(messageNameStr); free(dataNamesStr); free(statementsStr);
 	return result;
@@ -502,6 +508,10 @@ static char *ppIdentifier(IdentifierNode node){
 	return smprintf(node.identifier);
 }
 
+static char *ppPinLiteral(PinLiteralNode node){
+	return smprintf("%ldP", node.value);
+}
+
 static char *ppIntLiteral(IntLiteralNode node){
 	return smprintf("%ld", node.value);
 }
@@ -513,6 +523,22 @@ static char *ppFloatLiteral(FloatLiteralNode node){
 static char *ppBoolLiteral(BoolLiteralNode node){
 	return smprintf("%s", node.value ? "true" : "false");
 }
+
+static char *ppMessageLiteral(MessageLiteralNode node){
+	char *idstr = prettyprint(node.identifier);
+	char *args;
+	char *result;
+
+	if(node.arguments == NULL)
+		result = smprintf("%s", idstr);
+	else{
+		args = prettyprintlist(node.arguments, ", ", 0);
+		result = smprintf("%s{%s}", idstr, args);
+		free(args);
+	}
+	return result;
+}
+
 
 static char *ppReturn(ReturnNode node){
 	char *exprstr;

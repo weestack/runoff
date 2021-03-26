@@ -46,6 +46,10 @@ punctuation [\[\]\(\)\{\};:=,\.\?]
 
 {punctuation} {return yytext[0];}
 
+{integer}P {
+	yylval.astNode = mkPinLiteralNode(strtoll(yytext, NULL, 10));
+	return pin_literal;
+}
 
 {integer} {
 	yylval.astNode = mkIntLiteralNode(strtoll(yytext, NULL, 10));

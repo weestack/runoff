@@ -65,7 +65,7 @@ Type *processNode(AstNode *node){
 	case Prog: break; /* Nothing */
 	case DefineFunction:
 		handleDefineFunction(node);
-		
+
 		return NULL;
 	case DefineTask:
 		handleDefineTask(node);
@@ -90,7 +90,7 @@ Type *processNode(AstNode *node){
 		vartype = processNode(node->node.Parameter.type);
 		errors += insertSymbol(node->node.Parameter.identifier, vartype);
 		break;
-	case BuiltinType: 
+	case BuiltinType:
 		return mkBuiltinTypeDiscriptor(node->node.BuiltinType.type);
 	case StructType:
 		sym = retrieveSymbol(node->node.StructType.identifier);
@@ -102,7 +102,7 @@ Type *processNode(AstNode *node){
 		}
 		break;
 	case ArrayType:
-		vartype = processNode(node->node.ArrayType.type); 
+		vartype = processNode(node->node.ArrayType.type);
 		if(node->node.ArrayType.int_literal == NULL){
 			return mkArrayTypeDiscriptor(vartype, -1);
 		} else {
@@ -178,13 +178,14 @@ Type *processNode(AstNode *node){
 		break;
 	case Assignment: break; /* Nothing */
 	case TernaryOperator: break; /* Nothing */
-	case Identifier: 
+	case Identifier:
 		sym = retrieveSymbol(node);
 		if(sym == NULL)
 			undeclaredError(node);
 		else
 			updateSymbolId(node, sym);
 		break; /* Nothing */
+	case PinLiteral: break; /* Nothing */
 	case IntLiteral: break; /* Nothing */
 	case FloatLiteral: break; /* Nothing */
 	case BoolLiteral: break; /* Nothing */
@@ -295,7 +296,7 @@ void handleDefineFunction(AstNode *function){
 
 	sym = retrieveSymbol(function->node.DefineFunction.identifier);
 	sym->type = t;
-} 
+}
 
 void handleDefineTask(AstNode *function){
 	/* Copy pasted from handleDefineFunction. */

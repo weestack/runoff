@@ -1,12 +1,12 @@
 # First the different message types are defined
 # in the special 'message' block. Messages can contain
 # data such as the ping example which contains an int
-pinid pin1 = 1;
-pinid pin123 = 94;
-pinid pin9 = 23;
+pinid pin1 = 1P;
+pinid pin123 = 94P;
+pinid pin9 = 23P;
 
 messages {
-	Ping(int i);
+	Ping{int i};
 	Pong;
 }
 
@@ -14,14 +14,14 @@ task pong() {
 
 	for(;;) {
 		receive {
-		case Ping(int pingtaskid): send pong to pingtaskid;
+		case Ping{int pingtaskid}: send pong to pingtaskid;
 		}
 	}
 }
 
 task ping(int pongtaskid) {
 	taskid last = spawn pong();
-	msg pingmsg = Ping(last); # the msg type can contain any of the messages
+	msg pingmsg = Ping{last}; # the msg type can contain any of the messages
 
 	for(;;){
 		# a ping message is sent to the pong task

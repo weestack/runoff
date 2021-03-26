@@ -22,12 +22,12 @@ AstNode *concat_node(AstNode *siblingA, AstNode* siblingB){
 	AstNode *tmp;
 	AstNode *new_list;
 	AstNode *start;
-	
+
 	if(siblingA == NULL)
 		return siblingB;
 	if(siblingB == NULL)
 		return siblingA;
-	
+
 	tmp=siblingA;
 	start = malloc(sizeof(AstNode));
 	memcpy(start, tmp, sizeof(AstNode));
@@ -39,7 +39,7 @@ AstNode *concat_node(AstNode *siblingA, AstNode* siblingB){
 		new_list->next = NULL;
 		append_node(start, new_list);
 	}
-	
+
 	for(tmp=siblingB; tmp != NULL; tmp=tmp->next){
 		new_list = malloc(sizeof(AstNode));
 		memcpy(new_list, tmp, sizeof(AstNode));
@@ -290,6 +290,12 @@ AstNode *mkIdentifierNode(char *identifier){
 	return node;
 }
 
+AstNode *mkPinLiteralNode(long int value){
+	AstNode *node = mkNode(PinLiteral);
+	node->node.PinLiteral.value = value;
+	return node;
+}
+
 AstNode *mkIntLiteralNode(long int value){
 	AstNode *node = mkNode(IntLiteral);
 	node->node.IntLiteral.value = value;
@@ -305,6 +311,13 @@ AstNode *mkFloatLiteralNode(float value){
 AstNode *mkBoolLiteralNode(int value){
 	AstNode *node = mkNode(BoolLiteral);
 	node->node.BoolLiteral.value = value;
+	return node;
+}
+
+AstNode *mkMessageLiteralNode(AstNode *identifier, AstNode *arguments){
+	AstNode *node = mkNode(MessageLiteral);
+	node->node.MessageLiteral.identifier = identifier;
+	node->node.MessageLiteral.arguments = arguments;
 	return node;
 }
 

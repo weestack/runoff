@@ -1,5 +1,5 @@
-pinid AnalogInPin = 123;
-pinid AnalogOutPin = 234;
+pinid AnalogInPin = 123P;
+pinid AnalogOutPin = 234P;
 
 function test() -> void {
         int val =  readAnalogInput(AnalogInPin);

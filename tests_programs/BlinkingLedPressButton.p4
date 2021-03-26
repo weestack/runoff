@@ -1,6 +1,6 @@
-pinid BLINKLEDPIN = 4;
-pinid BUTTONLEDPIN = 8;
-pinid BUTTONPIN = 9;
+pinid BLINKLEDPIN = 4P;
+pinid BUTTONLEDPIN = 8P;
+pinid BUTTONPIN = 9P;
 
 messages {
     ButtonClick;

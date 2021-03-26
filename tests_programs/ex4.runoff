@@ -17,8 +17,8 @@ task quick() {
 }
 
 function setup() -> void {
-	int taskid1 = spawn infinite(1234);
-	int taskid2 = spawn quick();
+	taskid taskid1 = spawn infinite(1234);
+	taskid taskid2 = spawn quick();
 	# the builtin spawn primite takes n+1 inputs where
 	# the first is the name of a task which expects n inputs,
 	# and the rest are the inputs to the task

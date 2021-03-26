@@ -63,7 +63,7 @@ void typeCheckNode(AstNode *node){
 	case For:
 		if(node->node.For.expressionTest == NULL){
 			break;
-		}		
+		}
         type = typeof(node->node.For.expressionTest);
         if(!buildinTypeMatch(type, builtintype_bool))
             printTypeFail("For loop test expected bool", node->node.For.expressionTest, type);
@@ -97,7 +97,7 @@ void typeCheckNode(AstNode *node){
 	case VarDecl:
 		if(node->node.VarDecl.expression == NULL)
 			break;
-			
+
 		typeA = typeof(node->node.VarDecl.identifier);
 		typeB = typeof(node->node.VarDecl.expression);
 		if (!typeMatch(typeA, typeB)){
@@ -107,10 +107,8 @@ void typeCheckNode(AstNode *node){
 			free(typeAString);
 			free(errorMessage);
 		}
-		
         break;
-	case BinaryOperation:
-        typeof(node);
+	case BinaryOperation: /*Nothing*/
         break;
 	case VariableLocation:
         break;
@@ -118,8 +116,7 @@ void typeCheckNode(AstNode *node){
         break;
 	case ArrayLocation:
         break;
-	case UnaryOperation:
-		typeof(node);
+	case UnaryOperation: /*Nothing*/
         break;
 	case FunctionCall:
         break;
@@ -142,6 +139,7 @@ void typeCheckNode(AstNode *node){
 	case Send:
         break;
 	case ExprStmt:
+		typeof(node); /* typeof will check that the expression is ok (it tries to find its type) */
         break;
     }
 
@@ -167,6 +165,8 @@ Type *typeof(AstNode *node){
             return id->node.Identifier.symbol->type;
 		case Identifier:
 			return node->node.Identifier.symbol->type;
+		case PinLiteral:
+			return mkBuiltinTypeDiscriptor(builtintype_pinid);
         case IntLiteral:
 			return mkBuiltinTypeDiscriptor(builtintype_unknownInt);
         case FloatLiteral:
@@ -196,7 +196,7 @@ Type *typeof(AstNode *node){
 }
 
 int buildinTypeMatch(Type *a, int b){
-	Type *bType = mkBuiltinTypeDiscriptor(b); 
+	Type *bType = mkBuiltinTypeDiscriptor(b);
     if(a == NULL)
         return 0;
 
@@ -210,7 +210,7 @@ int buildinTypeMatch(Type *a, int b){
 		else if (b == builtintype_unknownInt && buildinTypeMatchInt(a)){
 			return 1;
 		}
-		return 0;		
+		return 0;
 	}
 	else
 		return 0;
@@ -246,12 +246,12 @@ int typeMatch(Type *a, Type *b){
 
 	if(a->tag != b->tag)
 		return 0;
-	
+
 	if (a->tag == BuiltinTypeTag)
 		return buildinTypeMatch(b, a->tags.typeBuiltin.builtinType);
-	
+
 	/*mangler at sammenligne alle andre typer end builtin typer hehexd*/
-	return 0;	
+	return 0;
 }
 
 int numericType(Type *type){
@@ -305,7 +305,7 @@ Type *binaryOperatorType(AstNode *node){
 
     switch(node->node.BinaryOperation.operator){
     case elogical_and: /*Fall through*/
-    case elogical_or:  
+    case elogical_or:
         expected_left = expected_right = return_type = builtintype_bool;
         break;
     case esmaller_equal: /*Fall through*/
@@ -382,7 +382,7 @@ Type *binaryOperatorType(AstNode *node){
 
         printTypeFail(fail_message, node->node.BinaryOperation.expression_left, left);
         free(fail_message);
-        
+
         return NULL;
     } else if(!buildinTypeMatch(right, expected_right)){
         char *fail_message = smprintf("right hand side of %s expected type %s",
@@ -415,7 +415,7 @@ Type *unaryOperatorType(AstNode *node){
 		expected = operandType->tags.typeBuiltin.builtinType;
 		returnType = expected;
 		break;
-	
+
 	default:
 		return NULL;
 	}
@@ -432,5 +432,5 @@ Type *unaryOperatorType(AstNode *node){
 		free(errorMessage);
 		return NULL;
 	}
-	return mkBuiltinTypeDiscriptor(returnType);	
+	return mkBuiltinTypeDiscriptor(returnType);
 }

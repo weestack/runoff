@@ -1,15 +1,15 @@
-pinid LED1Pin = 0x1;
-pinid LED2Pin = 0X2;
-pinid LED3Pin = 0xF;
+pinid LED1Pin = 1P;
+pinid LED2Pin = 2P;
+pinid LED3Pin = 15P;
 
-pinid LED4Pin = -0x1;
-pinid LED5Pin = -0X2;
-pinid LED6Pin = -0xF;
+pinid LED4Pin = 1P;
+pinid LED5Pin = 2P;
+pinid LED6Pin = 15P;
 
 messages {
 	Button1Click;
 	Button1Release;
-	PartyTime(bool state);
+	PartyTime{bool state};
 }
 
 function setPartyLight(bool state) -> void {
@@ -28,7 +28,7 @@ task A() {
 		receive {
 		case Button1Click: turnOn(LED2Pin);
 		case Button1Release: turnOff(LED2Pin);
-		case PartyTime(bool s): setPartyLight(s);
+		case PartyTime{bool s}: setPartyLight(s);
 		}
 	}
 	i >= j;
@@ -41,7 +41,8 @@ task B() {
 	while(true) {
 		delay(500);
 		party = !party;
-		send PartyTime(party) to A; # Should give an error since A is not a task id
+		send PartyTime{party} to A; # Should give an error since A is not a task id
+		send Button1Click to A;
 	}
 }
 

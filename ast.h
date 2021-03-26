@@ -30,9 +30,11 @@ typedef struct FunctionCallNode FunctionCallNode;
 typedef struct AssignmentNode AssignmentNode;
 typedef struct TernaryOperatorNode TernaryOperatorNode;
 typedef struct IdentifierNode IdentifierNode;
+typedef struct PinLiteralNode PinLiteralNode;
 typedef struct IntLiteralNode IntLiteralNode;
 typedef struct FloatLiteralNode FloatLiteralNode;
 typedef struct BoolLiteralNode BoolLiteralNode;
+typedef struct MessageLiteralNode MessageLiteralNode;
 typedef struct ReturnNode ReturnNode;
 typedef struct SpawnNode SpawnNode;
 typedef struct SendNode SendNode;
@@ -211,12 +213,21 @@ struct IntLiteralNode {
 	long int value;
 };
 
+struct PinLiteralNode {
+	long int value;
+};
+
 struct FloatLiteralNode {
 	float value;
 };
 
 struct BoolLiteralNode {
 	int value;
+};
+
+struct MessageLiteralNode {
+	AstNode *identifier;
+	AstNode *arguments;
 };
 
 struct ReturnNode {
@@ -272,9 +283,11 @@ struct AstNode {
 		AssignmentNode Assignment;
 		TernaryOperatorNode TernaryOperator;
 		IdentifierNode Identifier;
+		PinLiteralNode PinLiteral;
 		IntLiteralNode IntLiteral;
 		FloatLiteralNode FloatLiteral;
 		BoolLiteralNode BoolLiteral;
+		MessageLiteralNode MessageLiteral;
 		ReturnNode Return;
 		SpawnNode Spawn;
 		SendNode Send;
@@ -315,9 +328,11 @@ AstNode *mkFunctionCallNode(AstNode *identifier, AstNode *arguments);
 AstNode *mkAssignmentNode(AstNode *location, AstNode *expression);
 AstNode *mkTernaryOperatorNode(AstNode *expressionTest, AstNode *expressionTrue, AstNode *expressionFalse);
 AstNode *mkIdentifierNode(char *identifier);
+AstNode *mkPinLiteralNode(long int value);
 AstNode *mkIntLiteralNode(long int value);
 AstNode *mkFloatLiteralNode(float value);
 AstNode *mkBoolLiteralNode(int value);
+AstNode *mkMessageLiteralNode(AstNode *identifier, AstNode *arguments);
 AstNode *mkReturnNode(AstNode *expression);
 AstNode *mkSpawnNode(AstNode *identifier, AstNode *arguments);
 AstNode *mkSendNode(AstNode *message, AstNode *receiver);
@@ -360,9 +375,11 @@ enum NodeTypes {
 	Assignment,
 	TernaryOperator,
 	Identifier,
+	PinLiteral,
 	IntLiteral,
 	FloatLiteral,
 	BoolLiteral,
+	MessageLiteral,
 	Return,
 	Spawn,
 	Send,

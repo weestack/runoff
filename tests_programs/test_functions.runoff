@@ -48,7 +48,7 @@ function dummy(int a) -> int {
 
   receive {
     case Ping: print(1);
-    case Pong(int a, int b, int c): print(a);
+    case Pong{int a, int b, int c}: print(a);
   }
 
   float so123;

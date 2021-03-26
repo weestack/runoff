@@ -19,9 +19,9 @@
 }
 
 /* Define all non-terminals as type astNode */
-%type <astNode> Program Toplevel MessageIdentifiers MessageIdentifier StructMembers ParametersList Parameters ArgsList Args Type Statements Statement ElsePart SwitchCases SwitchCase ReceiveCases MaybeExpression Declaration Literal Expression Location Indexes
+%type <astNode> Program Toplevel MessageIdentifiers MessageIdentifier StructMembers ParametersList Parameters ArgsList Args Type Statements Statement ElsePart SwitchCases SwitchCase ReceiveCases MaybeExpression Declaration Literal Expression Location Indexes Identifiers
 
-%token <astNode> identifier builtin_type int_literal float_literal bool_literal
+%token <astNode> identifier builtin_type pin_literal int_literal float_literal bool_literal
 
 %token
     struct_keyword
@@ -104,14 +104,13 @@ MessageIdentifiers: MessageIdentifiers MessageIdentifier {$$ = append_node($1, $
                   | MessageIdentifier {$$ = $1;}
                   ;
 
-MessageIdentifier: identifier '(' Parameters ')' ';' {$$ = mkMessageIdentifierNode($1, $3);}
+MessageIdentifier: identifier '{' Parameters '}' ';' {$$ = mkMessageIdentifierNode($1, $3);}
                  | identifier ';' {$$ = mkMessageIdentifierNode($1, NULL);}
                  ;
 
 StructMembers: StructMembers Type identifier ';' {$$ = append_node($1, mkStructMemberNode($3, $2));}
              | Type identifier ';' {$$ = mkStructMemberNode($2, $1);}
              ;
-
 
 ParametersList: Parameters {$$ = $1;}
               | %empty {$$ = NULL;}
@@ -120,7 +119,6 @@ ParametersList: Parameters {$$ = $1;}
 Parameters: Type identifier {$$ = mkParameterNode($1, $2);}
           | Parameters ',' Type identifier {$$ = append_node($1, mkParameterNode($3, $4));}
           ;
-
 
 ArgsList: Args {$$ = $1;}
         | %empty {$$ = NULL;}
@@ -166,7 +164,7 @@ SwitchCase: case_keyword int_literal ':' Statements {$$ = mkSwitchCaseNode($2, $
 
 
 ReceiveCases: ReceiveCases case_keyword identifier ':' Statements {$$ = append_node($1, mkReceiveCaseNode($3, NULL, $5));}
-            | ReceiveCases case_keyword identifier '(' ParametersList ')' ':' Statements {$$ = append_node($1, mkReceiveCaseNode($3, $5, $8));}
+            | ReceiveCases case_keyword identifier '{' Parameters '}' ':' Statements {$$ = append_node($1, mkReceiveCaseNode($3, $5, $8));}
             | %empty {$$ = NULL;}
             ;
 
@@ -174,16 +172,20 @@ MaybeExpression: Expression {$$ = $1;}
                | %empty {$$ = NULL;}
                ;
 
+Identifiers: Identifiers identifier {$$ = append_node($1, $2);}
+           | identifier {$$ = $1;}
+           ;
+
 Declaration: Type identifier {$$ = mkVarDeclNode($1, $2, NULL, 0);}
            | Type identifier '=' Expression {$$ = mkVarDeclNode($1, $2, $4, 0);}
            ;
 
-Literal: int_literal {$$ = $1;}
+Literal: pin_literal {$$ = $1;}
+       | int_literal {$$ = $1;}
        | float_literal {$$ = $1;}
        | bool_literal {$$ = $1;}
+       | identifier '{' Identifiers '}' {$$ = mkMessageLiteralNode($1, $3);}
        ;
-
-
 
 Expression: Location {$$ = $1;}
           | Literal {$$ = $1;}
