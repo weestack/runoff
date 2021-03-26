@@ -395,16 +395,12 @@ static char *ppReceive(ReceiveNode node){
 
 static char *ppReceiveCase(ReceiveCaseNode node){
 	char *messageNameStr = prettyprint(node.messageName);
-	char *dataNamesStr = prettyprint(node.dataNames);
+	char *dataNamesStr = prettyprintlist(node.dataNames, ", ", 0);
 	char *statementsStr = prettyprintlist(node.statements, "\n", 1);
-	char *result;
-
-	if(node.dataNames == NULL)
-		result = smprintf("case %s:%s", messageNameStr, statementsStr);
-	else
-		result = smprintf("case %s{%s}:%s", messageNameStr, dataNamesStr, statementsStr);
-
-	free(messageNameStr); free(dataNamesStr); free(statementsStr);
+	char *result = smprintf("case %s{%s}:%s", messageNameStr, dataNamesStr, statementsStr);
+	free(messageNameStr);
+	free(dataNamesStr);
+	free(statementsStr);
 	return result;
 }
 

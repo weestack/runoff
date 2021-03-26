@@ -26,9 +26,9 @@ task A() {
 	int j;
 	while(true) {
 		receive {
-		case Button1Click: turnOn(LED2Pin);
-		case Button1Release: turnOff(LED2Pin);
-		case PartyTime{bool s}: setPartyLight(s);
+		case Button1Click{}: turnOn(LED2Pin);
+		case Button1Release{}: turnOff(LED2Pin);
+		case PartyTime{s}: setPartyLight(s);
 		}
 	}
 	i >= j;

@@ -12,6 +12,7 @@ void handleStructLocation(AstNode *);
 void handleDefineFunction(AstNode *function);
 void handleDefineTask(AstNode *function);
 void handleMessageIdentifier(AstNode *function);
+void handleReceiveCase(AstNode *node);
 void checkIdentifierTypes(AstNode *tree);
 static int errors;
 extern char *filename; /* defined and set in runoff.c */
@@ -118,17 +119,7 @@ Type *processNode(AstNode *node){
 		scopeopened = 1;
 		break;
 	case ReceiveCase:
-		sym = retrieveSymbol(node->node.ReceiveCase.messageName);
-		if(sym == NULL)
-			undeclaredError(node->node.ReceiveCase.messageName);
-		else
-			updateSymbolId(node->node.ReceiveCase.messageName, sym);
-		openScope();
-
-		processNodes(node->node.ReceiveCase.dataNames);
-		processNodes(node->node.ReceiveCase.statements);
-
-		closeScope();
+		handleReceiveCase(node);
 		return NULL;
 	case If:
 		openScope();
@@ -358,4 +349,36 @@ void handleMessageIdentifier(AstNode *function){
 
 	sym = retrieveSymbol(function->node.MessageIdentifier.identifier);
 	sym->type = t;
+}
+
+void handleReceiveCase(AstNode *node){
+	Symbol *sym = retrieveSymbol(node->node.ReceiveCase.messageName);
+	AstNode *arg;
+	Type **params = NULL;
+	int paramnr = 0;
+	int paramcount = 0;
+	if(sym == NULL){
+		undeclaredError(node->node.ReceiveCase.messageName);
+		return;
+	}else
+		updateSymbolId(node->node.ReceiveCase.messageName, sym);
+
+	if(sym->type->tag == MessageTypeTag){
+		params = sym->type->tags.typeMessage.parameterTypes;
+		paramcount = sym->type->tags.typeMessage.arity;
+	}
+
+	openScope();
+	for(arg = node->node.ReceiveCase.dataNames;
+		arg != NULL && paramnr < paramcount;
+		arg = arg->next, paramnr++)
+	{
+		errors += insertSymbol(arg, params[paramnr]);
+	}
+	if(paramnr != paramcount || arg != NULL){
+		errors++;
+		printf("%s:%d: Arity of message in receive case does not match message prototype for %s (should be %d but is %d)\n", filename, node->linenum, sym->name, paramcount, nodeLength(node->node.ReceiveCase.dataNames));
+	}
+	processNodes(node->node.ReceiveCase.statements);
+	closeScope();
 }

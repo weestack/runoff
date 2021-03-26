@@ -7,6 +7,7 @@
     extern int yylineno;
     extern int yylex(void);
     extern FILE* yyin;
+    extern char *filename;
     int yyerror(const char*);
     static AstNode *parseresult;
 %}
@@ -19,7 +20,7 @@
 }
 
 /* Define all non-terminals as type astNode */
-%type <astNode> Program Toplevel MessageIdentifiers MessageIdentifier StructMembers ParametersList Parameters ArgsList Args Type Statements Statement ElsePart SwitchCases SwitchCase ReceiveCases MaybeExpression Declaration Literal Expression Location Indexes Identifiers
+%type <astNode> Program Toplevel MessageIdentifiers MessageIdentifier StructMembers ParametersList Parameters ArgsList Args Type Statements Statement ElsePart SwitchCases SwitchCase ReceiveCases MaybeExpression Declaration Literal Expression Location Indexes Identifiers IdentifierList
 
 %token <astNode> identifier builtin_type pin_literal int_literal float_literal bool_literal
 
@@ -162,19 +163,21 @@ SwitchCase: case_keyword int_literal ':' Statements {$$ = mkSwitchCaseNode($2, $
           | default_keyword ':' Statements {$$ = mkSwitchCaseNode(NULL, $3);}
           ;
 
+IdentifierList: Identifiers {$$ = $1;}
+              | %empty {$$ = NULL;}
+              ;
 
-ReceiveCases: ReceiveCases case_keyword identifier ':' Statements {$$ = append_node($1, mkReceiveCaseNode($3, NULL, $5));}
-            | ReceiveCases case_keyword identifier '{' Parameters '}' ':' Statements {$$ = append_node($1, mkReceiveCaseNode($3, $5, $8));}
+Identifiers: Identifiers ',' identifier {$$ = append_node($1, $3);}
+           | identifier {$$ = $1;}
+           ;
+
+ReceiveCases: ReceiveCases case_keyword identifier '{' IdentifierList '}' ':' Statements {$$ = append_node($1, mkReceiveCaseNode($3, $5, $8));}
             | %empty {$$ = NULL;}
             ;
 
 MaybeExpression: Expression {$$ = $1;}
                | %empty {$$ = NULL;}
                ;
-
-Identifiers: Identifiers identifier {$$ = append_node($1, $2);}
-           | %empty {$$ = NULL;}
-           ;
 
 Declaration: Type identifier {$$ = mkVarDeclNode($1, $2, NULL, 0);}
            | Type identifier '=' Expression {$$ = mkVarDeclNode($1, $2, $4, 0);}
@@ -184,7 +187,7 @@ Literal: pin_literal {$$ = $1;}
        | int_literal {$$ = $1;}
        | float_literal {$$ = $1;}
        | bool_literal {$$ = $1;}
-       | identifier '{' Identifiers '}' {$$ = mkMessageLiteralNode($1, $3);}
+       | identifier '{' ArgsList '}' {$$ = mkMessageLiteralNode($1, $3);}
        ;
 
 Expression: Location {$$ = $1;}
@@ -234,7 +237,7 @@ Indexes: Indexes '[' Expression ']' {$$ = append_node($1, $3);}
 
 int
 yyerror(const char *err) {
-    printf("Parse error at line %d: %s\n", yylineno, err);
+    printf("%s:%d: %s\n", filename, yylineno, err);
 }
 
 AstNode *parse(char *file){

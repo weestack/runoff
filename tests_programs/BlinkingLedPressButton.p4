@@ -10,8 +10,8 @@ messages {
 task A() {
     while(true){
         receive {
-            case ButtonClick : turnOn(BUTTONLEDPIN);
-            case ButtonRelase : turnOff(BUTTONLEDPIN);
+            case ButtonClick{} : turnOn(BUTTONLEDPIN);
+            case ButtonRelase{} : turnOff(BUTTONLEDPIN);
         }
     }
 }

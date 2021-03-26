@@ -109,15 +109,11 @@ void typeCheckNode(AstNode *node){
 			free(errorMessage);
 		}
         break;
-	case BinaryOperation: /*Nothing*/
-        break;
 	case VariableLocation: /*Nothing*/
         break;
 	case StructLocation: /*Nothing*/
         break;
 	case ArrayLocation: /*Nothing*/
-        break;
-	case UnaryOperation: /*Nothing*/
         break;
 	case FunctionCall: /* GET BACK TO IT LATER :) */
         break;
@@ -157,7 +153,7 @@ void typeCheckNode(AstNode *node){
         break;
 	case BoolLiteral: /*Nothing*/
         break;
-    case MessageLiteral: /* a bit like function call. */
+    case MessageLiteral: /* a bit like function call. Check the args match the "prototype" */
         break;
     case Return: /* should check that the expression type matches the return type of the enclosing function */
         break;
@@ -171,6 +167,8 @@ void typeCheckNode(AstNode *node){
 		if(!buildinTypeMatch(typeB, builtintype_taskid))
 			printTypeFail("receiver of send should be a taskid", node->node.Send.receiver, typeB);
         break;
+    case BinaryOperation: /* Fall through */
+    case UnaryOperation: /* Fall through */
 	case ExprStmt:
 		typeof(node); /* typeof will check that the expression is ok (it tries to find its type) */
         break;

@@ -11,8 +11,8 @@ task ledhandler() {
 
 	for(;;) {
 		receive {
-		case ButtonPressed: turnOn(LEDPin);
-		case ButtonReleased: turnOff(LEDPin);
+		case ButtonPressed{}: turnOn(LEDPin);
+		case ButtonReleased{}: turnOff(LEDPin);
 		}
 	}
 }

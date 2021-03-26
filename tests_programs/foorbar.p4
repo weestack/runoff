@@ -11,9 +11,9 @@ task printer() {
     while(true){
         int print_statement;
         receive {
-            case print_foo : print_statement = 0;
-            case print_bar : print_statement = 1;
-            case print_foobar : print_statement = 2;
+            case print_foo{} : print_statement = 0;
+            case print_bar{} : print_statement = 1;
+            case print_foobar{} : print_statement = 2;
         }
 
 		int foo;

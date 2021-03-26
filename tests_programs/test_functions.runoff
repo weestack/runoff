@@ -1,6 +1,6 @@
 messages {
   Ping;
-  Pong;
+  Pong{int a, int b, bool c};
 }
 
 struct hello {
@@ -47,8 +47,11 @@ function dummy(int a) -> int {
   }
 
   receive {
-    case Ping: print(1);
-    case Pong{int a, int b, int c}: print(a);
+    case Ping{}: print(1);
+    case Pong{a, b, c}:
+    	b++;
+    	a++;
+    	print(a);
   }
 
   float so123;
