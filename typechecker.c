@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "auxiliary.h"
 #include "symbol.h"
@@ -158,8 +159,7 @@ Type *typeof(AstNode *node){
             id = node->node.ArrayLocation.identifier;
             return id->node.Identifier.symbol->type;
         case StructLocation:
-            id = node->node.StructLocation.identifier;
-            return id->node.Identifier.symbol->type;
+            return typeof(node->node.StructLocation.location);
         case VariableLocation:
             id = node->node.VariableLocation.identifier;
             return id->node.Identifier.symbol->type;
@@ -252,6 +252,12 @@ int typeMatch(Type *a, Type *b){
 	if (a->tag == BuiltinTypeTag)
 		return buildinTypeMatch(b, a->tags.typeBuiltin.builtinType);
 
+	if(a->tag == StructTypeTag){
+		if(strcmp(a->tags.typeStruct.name, b->tags.typeStruct.name) == 0)
+			return 1;
+		else
+			return 0;
+	}
 	/*mangler at sammenligne alle andre typer end builtin typer hehexd*/
 	return 0;
 }
@@ -292,7 +298,7 @@ char *typeString(Type *type){
 	case BuiltinTypeTag:
         return smprintf("%s", builtintypeNames[type->tags.typeBuiltin.builtinType]);
 	case StructTypeTag:
-        return smprintf("Struct Type");
+        return smprintf("struct %s", type->tags.typeStruct.name);
 	case MessageTypeTag:
         return smprintf("Message Type");
     }

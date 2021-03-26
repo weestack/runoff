@@ -130,11 +130,11 @@ Type* mkFunctionTypeDiscriptor(int arity, Type **parameterTypes, Type *returnTyp
 	return t;
 }
 
-Type* mkStructTypeDiscriptor(SymbolTable *fields){
+Type* mkStructTypeDiscriptor(char *name, SymbolTable *fields){
 	Type *t = malloc(sizeof(Type));
 	t->tag = StructTypeTag;
+	t->tags.typeStruct.name = name;
 	t->tags.typeStruct.fields = fields;
-
 	return t;
 }
 

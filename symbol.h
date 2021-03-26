@@ -11,7 +11,7 @@ Type* mkBuiltinTypeDiscriptor(int);
 Type* mkArrayTypeDiscriptor(Type *, int);
 Type* mkFunctionTypeDiscriptor(int, Type **, Type *);
 Type* mkTaskTypeDiscriptor(int, Type **);
-Type* mkStructTypeDiscriptor(SymbolTable *);
+Type* mkStructTypeDiscriptor(char *name, SymbolTable *);
 Type* mkMessageTypeDiscriptor(int, Type**);
 
 struct AstNode; /* declared fully in ast.h */
@@ -51,6 +51,7 @@ struct BuiltinTypeDiscriptor {
 };
 
 struct StructTypeDiscriptor {
+	char *name;
 	SymbolTable *fields;
 };
 

@@ -74,7 +74,7 @@ Type *processNode(AstNode *node){
 		errors += insertSymbol(node->node.DefineStruct.identifier, 0);
 		sym = retrieveSymbol(node->node.DefineStruct.identifier);
 		openScope();
-		sym->type = mkStructTypeDiscriptor(getCurrentSymbolTable());
+		sym->type = mkStructTypeDiscriptor(sym->name, getCurrentSymbolTable());
 		scopeopened = 1;
 		break;
 	case DefineMessage: break; /* Nothing */
