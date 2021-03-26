@@ -136,13 +136,17 @@ void typeCheckNode(AstNode *node){
         break;
 	case Identifier:
         break;
+    case PinLiteral:
+        break;
 	case IntLiteral:
         break;
 	case FloatLiteral:
         break;
 	case BoolLiteral:
         break;
-	case Return:
+    case MessageLiteral:
+        break;
+    case Return:
         break;
 	case Spawn:
         break;
