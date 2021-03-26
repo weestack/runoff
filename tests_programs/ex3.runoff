@@ -3,8 +3,8 @@ function useless() -> void {
 }
 
 function absorb(int a, float b) -> void {
-	int c = a + 5;
-	float d = b * 4;
+	int c = a + 4;
+	float d = b * 5;
 }
 
 function produce() -> int {

@@ -59,6 +59,9 @@ void typeCheckNode(AstNode *node){
 
         break;
 	case For:
+		if(node->node.For.expressionTest == NULL){
+			break;
+		}		
         type = typeof(node->node.For.expressionTest);
         if(!buildinTypeMatch(type, builtintype_bool))
             printTypeFail("For loop test expected bool", node->node.For.expressionTest, type);
@@ -126,6 +129,9 @@ void typeCheckNode(AstNode *node){
 
 Type *typeof(AstNode *node){
     AstNode *id;
+	if(node == NULL){
+		return NULL;
+	}
     switch(node->tag){
         case ArrayLocation:
             id = node->node.ArrayLocation.identifier;
@@ -245,49 +251,58 @@ Type *binaryOperatorType(AstNode *node){
     char *other_error = NULL;
 
     switch(node->node.BinaryOperation.operator){
-    case elogical_and:
+    case elogical_and: /*Fall through*/
+    case elogical_or:  
         expected_left = expected_right = return_type = builtintype_bool;
         break;
-	case elogical_or:
-        expected_left = expected_right = return_type = builtintype_bool;
-        break;
-	case egreater_equal:
+    case esmaller_equal: /*Fall through*/
+	case egreater_equal: /*Fall through*/
+    case esmaller_than:  /*Fall through*/
+    case ebigger_than:
         return_type = builtintype_bool;
         if(!numericType(left)){
             other_error = "Expected numeric types";
+			break;
         }
 		expected_left = left->tags.typeBuiltin.builtinType;
 		expected_right = expected_left;
         break;
-	case esmaller_equal:
-        break;
-	case eequal:
-        break;
+	case eequal: /*Fall through*/
 	case enot_equal:
+		return_type = builtintype_bool;
+		if(left == NULL || left->tag != BuiltinTypeTag){
+			other_error = "Expected builtin types";
+			break;
+		}
+		expected_left = left->tags.typeBuiltin.builtinType;
+		expected_right = expected_left;
         break;
-	case esmaller_than:
-        break;
-	case ebigger_than:
-        break;
-	case emod:
-        break;
-	case eplus:
-        break;
-	case eminus:
-        break;
-	case etimes:
-        break;
+	case eplus: /*Fall through*/
+	case eminus:/*Fall through*/
+	case etimes:/*Fall through*/
 	case edivid:
+        if(!numericType(left)){
+            other_error = "Expected numeric types";
+			break;
+        }
+		expected_left = left->tags.typeBuiltin.builtinType;
+		expected_right = expected_left;
+		return_type = expected_right;
         break;
-	case ebit_and:
-        break;
-	case ebit_or:
-        break;
-	case eright_shift:
-        break;
-	case eleft_shift:
-        break;
+	case emod:         /*Fall through*/
+	case ebit_and:     /*Fall through*/
+	case ebit_or:      /*Fall through*/
+	case eright_shift: /*Fall through*/
+	case eleft_shift:  /*Fall through*/
 	case ebit_xor:
+		if(!buildinTypeMatchInt(left)){
+        	other_error = "Expected integer types";
+			break;
+		}
+
+		expected_left = left->tags.typeBuiltin.builtinType;
+		expected_right = expected_left;
+		return_type = expected_right;
         break;
     default:
         return NULL;
