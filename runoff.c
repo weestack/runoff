@@ -10,6 +10,7 @@ char *filename;
 int
 main(int argc, char *argv[])
 {
+	int errors = 0;
 	AstNode *tree;
 
 	/* the file name is always the first argument. Rewrite this some day */
@@ -31,6 +32,9 @@ main(int argc, char *argv[])
 
 	if(tree == NULL)
 		return -1;
-	else
-		return buildSymbolTable(tree);
+	else {
+		errors += buildSymbolTable(tree);
+		errors += typeCheck(tree);
+		return errors;
+	}
 }
