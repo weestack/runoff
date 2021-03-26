@@ -27,7 +27,7 @@ int typeCheck(AstNode *tree){
 }
 
 void typeCheckNode(AstNode *node){
-    Type *type, *typeA, *typeB;
+    Type *typeA, *typeB, *typeC;
     AstNode *children;
 
     switch(node->tag){
@@ -56,38 +56,38 @@ void typeCheckNode(AstNode *node){
 	case ArrayType: /* Nothing */
         break;
 	case While:
-        type = typeof(node->node.While.expression);
-        if(!buildinTypeMatch(type, builtintype_bool))
-            printTypeFail("While loop expected bool", node->node.While.expression, type);
+        typeA = typeof(node->node.While.expression);
+        if(!buildinTypeMatch(typeA, builtintype_bool))
+            printTypeFail("While loop expected bool", node->node.While.expression, typeA);
 
         break;
 	case For:
 		if(node->node.For.expressionTest == NULL){
 			break;
 		}
-        type = typeof(node->node.For.expressionTest);
-        if(!buildinTypeMatch(type, builtintype_bool))
-            printTypeFail("For loop test expected bool", node->node.For.expressionTest, type);
+        typeA = typeof(node->node.For.expressionTest);
+        if(!buildinTypeMatch(typeA, builtintype_bool))
+            printTypeFail("For loop test expected bool", node->node.For.expressionTest, typeA);
 
         break;
 	case Switch:
-        type = typeof(node->node.Switch.expression);
-        if(!buildinTypeMatchInt(type))
-            printTypeFail("Switch expression expected int", node->node.Switch.expression, type);
+        typeA = typeof(node->node.Switch.expression);
+        if(!buildinTypeMatchInt(typeA))
+            printTypeFail("Switch expression expected int", node->node.Switch.expression, typeA);
 
         break;
 	case SwitchCase: /*Nothing*/
         break;
 	case If:
-		type = typeof(node->node.If.expression);
-        if(!buildinTypeMatch(type, builtintype_bool))
-            printTypeFail("if statement expected bool", node->node.If.expression, type);
+		typeA = typeof(node->node.If.expression);
+        if(!buildinTypeMatch(typeA, builtintype_bool))
+            printTypeFail("if statement expected bool", node->node.If.expression, typeA);
 
         break;
 	case ElseIf:
-		type = typeof(node->node.ElseIf.expression);
-        if(!buildinTypeMatch(type, builtintype_bool))
-            printTypeFail("if statement expected bool", node->node.ElseIf.expression, type);
+		typeA = typeof(node->node.ElseIf.expression);
+        if(!buildinTypeMatch(typeA, builtintype_bool))
+            printTypeFail("if statement expected bool", node->node.ElseIf.expression, typeA);
         break;
 	case Else: /*Nothing*/
         break;
@@ -133,16 +133,29 @@ void typeCheckNode(AstNode *node){
 		}
         break;
 	case TernaryOperator:
+		typeA = typeof(node->node.TernaryOperator.expressionTest);
+		typeB = typeof(node->node.TernaryOperator.expressionTrue);
+		typeC = typeof(node->node.TernaryOperator.expressionFalse);
+		if(!typeMatch(typeB, typeC)){
+			char* typeBString = typeString(typeB);
+			char* errorMessage = smprintf("incompatible types expected %s", typeBString);
+			printTypeFail(errorMessage, node->node.TernaryOperator.expressionTrue, typeC);
+			free(typeBString);
+			free(errorMessage);
+		}
+		if(!buildinTypeMatch(typeA, builtintype_bool)){
+			printTypeFail("ternary operator test must be boolean", node->node.TernaryOperator.expressionTest, typeA);
+		}
         break;
-	case Identifier:
+	case Identifier: /*Nothing*/
         break;
-    case PinLiteral:
+    case PinLiteral: /*Nothing*/
         break;
-	case IntLiteral:
+	case IntLiteral: /*Nothing*/
         break;
-	case FloatLiteral:
+	case FloatLiteral: /*Nothing*/
         break;
-	case BoolLiteral:
+	case BoolLiteral: /*Nothing*/
         break;
     case MessageLiteral:
         break;

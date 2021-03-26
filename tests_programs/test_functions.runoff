@@ -77,8 +77,10 @@ function dummy(int a) -> int {
   int hej;
   float last;
   (true) ? print(hej) : print(last);
-  1+2 ? print(hej) : print(last);
-  1*2+3/123 ? print(hej) : print(last);
+  1<2 ? print(hej) : print(last);
+  (1*2+3/123) == 1 ? print(hej) : print(last);
+
+  int value = true ? 1 : 2;
 
   int[3] array;
   int[3][5] b;
