@@ -53,8 +53,8 @@ function dummy(int a) -> int {
 
   float so123;
 
-  if (so123) {
-  	float abc;
+  if (so123 == 123.456) {
+  	int64 abc;
     print(abc);
     int a = 123;
     int64 c = abc;
