@@ -49,7 +49,7 @@ void typeCheckNode(AstNode *node){
         type = typeof(node->node.While.expression);
         if(!buildinTypeMatch(type, builtintype_bool)){
             errors++;
-            printFailMessage("While loop expression was not bool", node);
+            printFailMessage("While loop expression was not bool", node->node.While.expression);
         }
         break;
 	case For:
