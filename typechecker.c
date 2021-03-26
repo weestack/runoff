@@ -111,17 +111,26 @@ void typeCheckNode(AstNode *node){
         break;
 	case BinaryOperation: /*Nothing*/
         break;
-	case VariableLocation:
+	case VariableLocation: /*Nothing*/
         break;
-	case StructLocation:
+	case StructLocation: /*Nothing*/
         break;
-	case ArrayLocation:
+	case ArrayLocation: /*Nothing*/
         break;
 	case UnaryOperation: /*Nothing*/
         break;
-	case FunctionCall:
+	case FunctionCall: /* GET BACK TO IT LATER :) */
         break;
 	case Assignment:
+		typeA = typeof(node->node.Assignment.location);
+		typeB = typeof(node->node.Assignment.expression);
+		if(!typeMatch(typeA, typeB)){
+			char* typeAString = typeString(typeA);
+			char* errorMessage = smprintf("incompatible types expected %s", typeAString);
+			printTypeFail(errorMessage, node->node.Assignment.location, typeB);
+			free(typeAString);
+			free(errorMessage);
+		}
         break;
 	case TernaryOperator:
         break;
@@ -151,13 +160,27 @@ void typeCheckNode(AstNode *node){
 
 Type *typeof(AstNode *node){
     AstNode *id;
+    Type *tmp;
+    AstNode *index;
+
 	if(node == NULL){
 		return NULL;
 	}
     switch(node->tag){
         case ArrayLocation:
             id = node->node.ArrayLocation.identifier;
-            return id->node.Identifier.symbol->type->tags.typeArray.elementType;
+            index = node->node.ArrayLocation.indicies;
+            for(tmp = id->node.Identifier.symbol->type;
+            	index != NULL;
+            	tmp = tmp->tags.typeArray.elementType, index = index->next){
+
+            	if(tmp->tag != ArrayTypeTag){
+            		errors++;
+            		printf("%s:%d: Index in array %s too deep\n", filename, id->linenum, id->node.Identifier.identifier);
+            		return NULL;
+            	}
+            }
+            return tmp;
         case StructLocation:
             return typeof(node->node.StructLocation.location);
         case VariableLocation:
@@ -285,12 +308,20 @@ void printTypeFail(char *fail_message, AstNode *node, Type *type){
 }
 
 char *typeString(Type *type){
+	char *elementtype, *result;
+
     if(type == NULL)
         return smprintf("undefined");
 
     switch(type->tag){
     case ArrayTypeTag:
-        return smprintf("Array Type");
+    	elementtype = typeString(type->tags.typeArray.elementType);
+    	if(type->tags.typeArray.size == -1)
+    		result = smprintf("%s[]", elementtype);
+    	else
+    		result = smprintf("%s[%d]", elementtype, type->tags.typeArray.size);
+    	free(elementtype);
+        return result;
 	case FunctionTypeTag:
         return smprintf("Function Type");
 	case TaskTypeTag:
