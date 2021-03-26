@@ -17,8 +17,8 @@ task ledhandler() {
 	}
 }
 
-function otherway() -> int {
-	int state = readInput(ButtonPin);
+function otherway() -> bool {
+	bool state = readInput(ButtonPin);
 	return state;
 }
 
