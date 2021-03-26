@@ -409,6 +409,7 @@ enum builtintypes {
 	builtintype_int32,
 	builtintype_int64,
 	builtintype_int,
+	builtintype_unknownInt, /*used for integer literals*/
 	builtintype_float,
 	builtintype_void,
 	builtintype_bool,

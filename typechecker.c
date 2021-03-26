@@ -147,7 +147,7 @@ Type *typeof(AstNode *node){
 		case Identifier:
 			return node->node.Identifier.symbol->type;
         case IntLiteral: /* We'll be back! */
-            break;
+			return mkBuiltinTypeDiscriptor(builtintype_unknownInt);
         case FloatLiteral:
             return mkBuiltinTypeDiscriptor(builtintype_float);
         case BoolLiteral:
@@ -157,15 +157,17 @@ Type *typeof(AstNode *node){
         case UnaryOperation:
 			return unaryOperatorType(node);
         case FunctionCall:
-            break;
+            id = node->node.FunctionCall.identifier;
+			return id->node.Identifier.symbol->type->tags.typeFunction.returnType;
         case Assignment:
-            break;
+            return typeof(node->node.Assignment.location);
         case VarDecl:
-            break;
+            id = node->node.VarDecl.identifier;
+			return id->node.Identifier.symbol->type;
         case TernaryOperator:
-            break;
+			return typeof(node->node.TernaryOperator.expressionTrue);
         case Spawn:
-            break;
+            return mkBuiltinTypeDiscriptor(builtintype_taskid);
         default:
             return NULL;
     }
@@ -173,13 +175,24 @@ Type *typeof(AstNode *node){
 }
 
 int buildinTypeMatch(Type *a, int b){
+	Type *bType = mkBuiltinTypeDiscriptor(b); 
     if(a == NULL)
         return 0;
 
-    if(a->tag == BuiltinTypeTag && a->tags.typeBuiltin.builtinType == b)
-        return 1;
-    else
-        return 0;
+    if(a->tag == BuiltinTypeTag){
+		if (a->tags.typeBuiltin.builtinType == b){
+			return 1;
+		}
+		else if(a->tags.typeBuiltin.builtinType == builtintype_unknownInt && buildinTypeMatchInt(bType)){
+			return 1;
+		}
+		else if (b == builtintype_unknownInt && buildinTypeMatchInt(a)){
+			return 1;
+		}
+		return 0;		
+	}
+	else
+		return 0;
 }
 
 int buildinTypeMatchInt(Type *a){
@@ -206,18 +219,21 @@ int buildinTypeMatchInt(Type *a){
 }
 
 int numericType(Type *type){
-    if(type == NULL)
-        return 0;
-    if(type->tag != BuiltinTypeTag)
-        return 0;
+	if(type == NULL)
+		return 0;
+	if(type->tag != BuiltinTypeTag)
+		return 0;
 
-    if(buildinTypeMatchInt(type))
-        return 1;
+	if(buildinTypeMatchInt(type))
+		return 1;
 
-    if(type->tags.typeBuiltin.builtinType == builtintype_float)
-        return 1;
+	if(type->tags.typeBuiltin.builtinType == builtintype_float)
+		return 1;
 
-    return 0;
+	if(type->tags.typeBuiltin.builtinType == builtintype_unknownInt)
+		return 1;
+
+	return 0;
 }
 
 void printTypeFail(char *fail_message, AstNode *node, Type *type){

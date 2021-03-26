@@ -15,3 +15,7 @@ function produce() -> int {
 function add(int a, int b) -> int {
 	return a + b;
 }
+
+function hej() -> void {
+	float i = add(2,2);
+}
