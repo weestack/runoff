@@ -157,7 +157,7 @@ Type *typeof(AstNode *node){
     switch(node->tag){
         case ArrayLocation:
             id = node->node.ArrayLocation.identifier;
-            return id->node.Identifier.symbol->type;
+            return id->node.Identifier.symbol->type->tags.typeArray.elementType;
         case StructLocation:
             return typeof(node->node.StructLocation.location);
         case VariableLocation:
