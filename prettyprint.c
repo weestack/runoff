@@ -49,7 +49,7 @@ static char *ppExprStmt(ExprStmtNode node);
 
 /* GLOBAL VARIABLES HEHE */
 /* follows the order of the operators enum */
-static char *operatorNames[] = {
+char *operatorNames[] = {
 	"&&",
 	"||",
 	">=",
@@ -75,7 +75,7 @@ static char *operatorNames[] = {
 };
 
 /* follows the order of the builintypes enum */
-static char *builtintypeNames[] = {
+char *builtintypeNames[] = {
 	"uint8",
 	"uint16",
 	"uint32",

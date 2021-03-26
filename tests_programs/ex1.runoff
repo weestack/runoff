@@ -23,6 +23,7 @@ function setPartyLight(bool state) -> void {
 
 task A() {
 	int i = 0;
+	int j;
 	while(true) {
 		receive {
 		case Button1Click: turnOn(LED2Pin);
@@ -30,7 +31,8 @@ task A() {
 		case PartyTime(bool s): setPartyLight(s);
 		}
 	}
-	i + i;
+	i >= j;
+	i + j;
 }
 
 task B() {
