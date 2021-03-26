@@ -157,7 +157,7 @@ void typeCheckNode(AstNode *node){
         break;
     case Return: /* should check that the expression type matches the return type of the enclosing function */
         break;
-	case Spawn:
+	case Spawn: /* check that it is a task and check the args match the prototype */
         break;
 	case Send:
 		typeA = typeof(node->node.Send.message);
