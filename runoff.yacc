@@ -160,7 +160,7 @@ SwitchCases: SwitchCases SwitchCase {$$ = append_node($1, $2);}
            | %empty {$$ = NULL;}
            ;
 
-SwitchCase: case_keyword Literal ':' Statements {$$ = mkSwitchCaseNode($2, $4);}
+SwitchCase: case_keyword int_literal ':' Statements {$$ = mkSwitchCaseNode($2, $4);}
           | default_keyword ':' Statements {$$ = mkSwitchCaseNode(NULL, $3);}
           ;
 
