@@ -5,14 +5,15 @@
 #include "symbol.h"
 #include "ast.h"
 
-void typeCheckNode(AstNode *node);
-Type *typeof(AstNode *node);
+void typeCheckNode(AstNode *);
+Type *typeof(AstNode *);
 int buildinTypeMatch(Type *, int);
 int buildinTypeMatchInt(Type *);
 int numericType(Type *);
-void printTypeFail(char *, AstNode *, Type *type);
-char *typeString(Type *type);
-Type *binaryOperatorType(AstNode *node);
+void printTypeFail(char *, AstNode *, Type *);
+char *typeString(Type *);
+Type *binaryOperatorType(AstNode *);
+Type *unaryOperatorType(AstNode *);
 
 
 static int errors;
@@ -20,7 +21,7 @@ extern char* filename;
 
 int typeCheck(AstNode *tree){
     typeCheckNode(tree);
-    return 0;
+    return errors;
 }
 
 void typeCheckNode(AstNode *node){
@@ -97,6 +98,7 @@ void typeCheckNode(AstNode *node){
 	case ArrayLocation:
         break;
 	case UnaryOperation:
+		typeof(node);
         break;
 	case FunctionCall:
         break;
@@ -142,6 +144,8 @@ Type *typeof(AstNode *node){
         case VariableLocation:
             id = node->node.VariableLocation.identifier;
             return id->node.Identifier.symbol->type;
+		case Identifier:
+			return node->node.Identifier.symbol->type;
         case IntLiteral: /* We'll be back! */
             break;
         case FloatLiteral:
@@ -151,7 +155,7 @@ Type *typeof(AstNode *node){
         case BinaryOperation:
             return binaryOperatorType(node);
         case UnaryOperation:
-            break;
+			return unaryOperatorType(node);
         case FunctionCall:
             break;
         case Assignment:
@@ -338,7 +342,46 @@ Type *binaryOperatorType(AstNode *node){
         printTypeFail(fail_message, node->node.BinaryOperation.expression_right, right);
         free(fail_message);
         return NULL;
-    } else {
-        return mkBuiltinTypeDiscriptor(return_type);
     }
+    return mkBuiltinTypeDiscriptor(return_type);
+
+}
+
+Type *unaryOperatorType(AstNode *node){
+	Type *operandType = typeof(node->node.UnaryOperation.expression);
+	char *otherError = NULL;
+	int expected = 0, returnType = 0;
+	switch (node->node.UnaryOperation.operator){
+	case elogical_not:
+		expected = builtintype_bool;
+		returnType = expected;
+		break;
+	case edecrement: /*Fall through*/
+	case eincrement: /*Fall through*/
+	case ebit_not:
+		if(!buildinTypeMatchInt(operandType)){
+			otherError = "Expected integer type";
+			break;
+		}
+		expected = operandType->tags.typeBuiltin.builtinType;
+		returnType = expected;
+		break;
+	
+	default:
+		return NULL;
+	}
+
+	if (otherError != NULL){
+		char* errorMessage = smprintf("%s %s", operatorNames[node->node.UnaryOperation.operator], otherError);
+		printTypeFail(errorMessage, node->node.UnaryOperation.expression, operandType);
+		free(errorMessage);
+		return NULL;
+	}
+	if (!buildinTypeMatch(operandType, expected)){
+		char *errorMessage = smprintf("%s expected operand of type %s", operatorNames[node->node.UnaryOperation.operator], builtintypeNames[expected]);
+		printTypeFail(errorMessage, node->node.UnaryOperation.expression, operandType);
+		free(errorMessage);
+		return NULL;
+	}
+	return mkBuiltinTypeDiscriptor(returnType);	
 }
