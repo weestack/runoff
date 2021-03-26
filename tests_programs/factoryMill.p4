@@ -16,11 +16,11 @@ function analyse_factory_mill() -> struct placement {
     # Should return a placement, with aprpriate values.
 }
 
-task detect_plastic() {
+task detect_plastic(taskid blower) {
     while(true){
         struct placement new_plastic = analyse_factory_mill();
         if(new_plastic.exist){
-            send detected_plactic{new_plastic} to 1234; # This makes no sense :)
+            send detected_plactic{new_plastic} to blower;
         }
     }
 }

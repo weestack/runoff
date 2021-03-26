@@ -35,16 +35,14 @@ task printer() {
 }
 
 
-function calculator(int f) -> void {
-
-
+function calculator(int f, taskid who) -> void {
     for(int i = f; i > 0; i--){
         if(i % 7 == 0 && i % 5 == 0){
-            send print_foobar to 1234; # TO WHO?
+            send print_foobar{} to who;
         } elseif(i % 7 == 0){
-            send print_foo to 1234; # TO WHO?
+            send print_foo{} to who;
         } elseif(i % 5 == 0){
-            send print_bar to 1234; # TO WHO?
+            send print_bar{} to who;
         }
     }
 

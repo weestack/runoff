@@ -6,15 +6,14 @@ pinid pin123 = 94P;
 pinid pin9 = 23P;
 
 messages {
-	Ping{int i};
+	Ping{taskid i};
 	Pong;
 }
 
 task pong() {
-
 	for(;;) {
 		receive {
-		case Ping{int pingtaskid}: send pong to pingtaskid;
+		case Ping{taskid pingtaskid}: send Pong{} to pingtaskid;
 		}
 	}
 }

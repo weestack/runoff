@@ -36,13 +36,13 @@ task A() {
 
 }
 
-task B() {
+task B(taskid other) {
 	bool party = false;
 	while(true) {
 		delay(500);
 		party = !party;
-		send PartyTime{party} to A; # Should give an error since A is not a task id
-		send Button1Click to A;
+		send PartyTime{party} to other;
+		send Button1Click{} to other;
 	}
 }
 

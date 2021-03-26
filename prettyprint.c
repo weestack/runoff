@@ -529,13 +529,9 @@ static char *ppMessageLiteral(MessageLiteralNode node){
 	char *args;
 	char *result;
 
-	if(node.arguments == NULL)
-		result = smprintf("%s", idstr);
-	else{
-		args = prettyprintlist(node.arguments, ", ", 0);
-		result = smprintf("%s{%s}", idstr, args);
-		free(args);
-	}
+	args = prettyprintlist(node.arguments, ", ", 0);
+	result = smprintf("%s{%s}", idstr, args);
+	free(args);
 	return result;
 }
 

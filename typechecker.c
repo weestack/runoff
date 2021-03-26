@@ -157,13 +157,19 @@ void typeCheckNode(AstNode *node){
         break;
 	case BoolLiteral: /*Nothing*/
         break;
-    case MessageLiteral:
+    case MessageLiteral: /* a bit like function call. */
         break;
-    case Return:
+    case Return: /* should check that the expression type matches the return type of the enclosing function */
         break;
 	case Spawn:
         break;
 	case Send:
+		typeA = typeof(node->node.Send.message);
+		typeB = typeof(node->node.Send.receiver);
+		if(!buildinTypeMatch(typeA, builtintype_msg))
+			printTypeFail("body of send should be a message", node->node.Send.message, typeA);
+		if(!buildinTypeMatch(typeB, builtintype_taskid))
+			printTypeFail("receiver of send should be a taskid", node->node.Send.receiver, typeB);
         break;
 	case ExprStmt:
 		typeof(node); /* typeof will check that the expression is ok (it tries to find its type) */

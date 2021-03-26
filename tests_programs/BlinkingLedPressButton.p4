@@ -16,14 +16,14 @@ task A() {
     }
 }
 
-task B() {
+task B(taskid other) {
     while(true){
         bool button_status = readInput(BUTTONPIN);
 
         if(button_status){
-            send ButtonClick to 1234; # FIXME who to send to??
+            send ButtonClick{} to other; # FIXME who to send to??
         } else{
-            send ButtonRelase to 1234; # FIXME who to send to??
+            send ButtonRelase{} to other; # FIXME who to send to??
         }
     }
 }

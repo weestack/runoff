@@ -173,7 +173,7 @@ MaybeExpression: Expression {$$ = $1;}
                ;
 
 Identifiers: Identifiers identifier {$$ = append_node($1, $2);}
-           | identifier {$$ = $1;}
+           | %empty {$$ = NULL;}
            ;
 
 Declaration: Type identifier {$$ = mkVarDeclNode($1, $2, NULL, 0);}
@@ -220,7 +220,6 @@ Expression: Location {$$ = $1;}
           | Expression '?' Expression ':' Expression {$$ = mkTernaryOperatorNode($1, $3, $5);}
           | spawn_keyword identifier '(' ArgsList ')' {$$ = mkSpawnNode($2, $4);}
           ;
-
 
 Location: identifier {$$ = mkVariableLocationNode($1);}
         | identifier '.' Location {$$ = mkStructLocationNode($1, $3);}
