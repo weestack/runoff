@@ -173,6 +173,8 @@ Type *typeof(AstNode *node){
             return mkBuiltinTypeDiscriptor(builtintype_float);
         case BoolLiteral:
             return mkBuiltinTypeDiscriptor(builtintype_bool);
+        case MessageLiteral:
+        	return mkBuiltinTypeDiscriptor(builtintype_msg);
         case BinaryOperation:
             return binaryOperatorType(node);
         case UnaryOperation:
