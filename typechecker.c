@@ -26,7 +26,7 @@ int typeCheck(AstNode *tree){
 void typeCheckNode(AstNode *node){
     Type *type;
     AstNode *children;
-    
+
     switch(node->tag){
     case Prog: /* Nothing */
         break;
@@ -52,23 +52,23 @@ void typeCheckNode(AstNode *node){
         break;
 	case ArrayType: /* Nothing */
         break;
-	case While: 
+	case While:
         type = typeof(node->node.While.expression);
         if(!buildinTypeMatch(type, builtintype_bool))
             printTypeFail("While loop expected bool", node->node.While.expression, type);
-        
+
         break;
 	case For:
         type = typeof(node->node.For.expressionTest);
         if(!buildinTypeMatch(type, builtintype_bool))
             printTypeFail("For loop test expected bool", node->node.For.expressionTest, type);
-        
+
         break;
 	case Switch:
         type = typeof(node->node.Switch.expression);
         if(!buildinTypeMatchInt(type))
             printTypeFail("Switch expression expected int", node->node.Switch.expression, type);
-        
+
         break;
 	case SwitchCase:
         break;
@@ -116,7 +116,7 @@ void typeCheckNode(AstNode *node){
 	case Send:
         break;
 	case ExprStmt:
-        break;    
+        break;
     }
 
     children = getChildren(node);
@@ -165,7 +165,7 @@ Type *typeof(AstNode *node){
 int buildinTypeMatch(Type *a, int b){
     if(a == NULL)
         return 0;
-    
+
     if(a->tag == BuiltinTypeTag && a->tags.typeBuiltin.builtinType == b)
         return 1;
     else
@@ -178,7 +178,7 @@ int buildinTypeMatchInt(Type *a){
 
     if(a->tag != BuiltinTypeTag)
         return 0;
-    
+
     switch(a->tags.typeBuiltin.builtinType){
     case builtintype_uint8: /* Fall through */
 	case builtintype_uint16: /* Fall through */
@@ -200,13 +200,13 @@ int numericType(Type *type){
         return 0;
     if(type->tag != BuiltinTypeTag)
         return 0;
-    
-    if(buildinTypeMatchInt(type)) 
+
+    if(buildinTypeMatchInt(type))
         return 1;
 
     if(type->tags.typeBuiltin.builtinType == builtintype_float)
         return 1;
-    
+
     return 0;
 }
 
@@ -244,8 +244,6 @@ Type *binaryOperatorType(AstNode *node){
     int expected_right, expected_left, return_type;
     char *other_error = NULL;
 
-    printf("binary operator found!");
-
     switch(node->node.BinaryOperation.operator){
     case elogical_and:
         expected_left = expected_right = return_type = builtintype_bool;
@@ -258,6 +256,8 @@ Type *binaryOperatorType(AstNode *node){
         if(!numericType(left)){
             other_error = "Expected numeric types";
         }
+		expected_left = left->tags.typeBuiltin.builtinType;
+		expected_right = expected_left;
         break;
 	case esmaller_equal:
         break;
@@ -272,7 +272,6 @@ Type *binaryOperatorType(AstNode *node){
 	case emod:
         break;
 	case eplus:
-        other_error = "hehe";
         break;
 	case eminus:
         break;
@@ -291,36 +290,35 @@ Type *binaryOperatorType(AstNode *node){
 	case ebit_xor:
         break;
     default:
-        return NULL; 
+        return NULL;
     }
 
-    if(other_error  != NULL){
+    if(other_error != NULL){
         char *text_type_right = typeString(right);
         char *text_type_left = typeString(left);
         errors++;
-        printf("%s:%d: binary operator %s %s.\n\tActual type for left: %s\n\tActual type for right: %s \n", 
+        printf("%s:%d: binary operator %s %s.\n\tActual type for left: %s\n\tActual type for right: %s \n",
             filename, node->linenum,
             operatorNames[node->node.BinaryOperation.operator], other_error,
             text_type_left, text_type_right);
-        
+
         free(text_type_left);
         free(text_type_right);
-        return NULL;   
+        return NULL;
     }
 
     if(!buildinTypeMatch(left, expected_left)){
-        char *fail_message = smprintf("left hand side of %s expected type %s", 
-            operatorNames[node->node.BinaryOperation.operator], 
+        char *fail_message = smprintf("left hand side of %s expected type %s",
+            operatorNames[node->node.BinaryOperation.operator],
             builtintypeNames[expected_left]);
 
         printTypeFail(fail_message, node->node.BinaryOperation.expression_left, left);
         free(fail_message);
         return NULL;
-    } else if(buildinTypeMatch(right, expected_right)){
-        char *fail_message = smprintf("right hand side of %s expected type %s", 
-            operatorNames[node->node.BinaryOperation.operator], 
+    } else if(!buildinTypeMatch(right, expected_right)){
+        char *fail_message = smprintf("right hand side of %s expected type %s",
+            operatorNames[node->node.BinaryOperation.operator],
             builtintypeNames[expected_right]);
-
         printTypeFail(fail_message, node->node.BinaryOperation.expression_right, right);
         free(fail_message);
         return NULL;
