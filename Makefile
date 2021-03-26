@@ -29,7 +29,7 @@ $(PROG): $(OBJECTS)
 	@echo "There you go $(shell whoami), I have compiled $(PROG) for you :)"
 
 # How to generate parser.c from our yacc file
-parser.c: runoff.yacc
+parser.c: runoff.yacc $(HEADERS)
 	@bison --defines=parser.h -o parser.c -t runoff.yacc
 	@echo [BISON] $<
 
@@ -39,7 +39,7 @@ parser.c: runoff.yacc
 parser.h: parser.c
 
 # Generate lexer.c from our lex file
-lexer.c: runoff.lex
+lexer.c: runoff.lex $(HEADERS)
 	@flex -o lexer.c runoff.lex
 	@echo [FLEX] $<
 

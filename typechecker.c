@@ -146,7 +146,7 @@ Type *typeof(AstNode *node){
             return id->node.Identifier.symbol->type;
 		case Identifier:
 			return node->node.Identifier.symbol->type;
-        case IntLiteral: /* We'll be back! */
+        case IntLiteral:
 			return mkBuiltinTypeDiscriptor(builtintype_unknownInt);
         case FloatLiteral:
             return mkBuiltinTypeDiscriptor(builtintype_float);
@@ -207,11 +207,12 @@ int buildinTypeMatchInt(Type *a){
 	case builtintype_uint16: /* Fall through */
 	case builtintype_uint32: /* Fall through */
 	case builtintype_uint64: /* Fall through */
-	case builtintype_int8: /* Fall through */
+	case builtintype_int8:  /* Fall through */
 	case builtintype_int16: /* Fall through */
 	case builtintype_int32: /* Fall through */
 	case builtintype_int64: /* Fall through */
-	case builtintype_int:
+	case builtintype_int:   /* Fall through */
+	case builtintype_unknownInt:
         return 1;
     default:
         return 0;
@@ -228,9 +229,6 @@ int numericType(Type *type){
 		return 1;
 
 	if(type->tags.typeBuiltin.builtinType == builtintype_float)
-		return 1;
-
-	if(type->tags.typeBuiltin.builtinType == builtintype_unknownInt)
 		return 1;
 
 	return 0;
