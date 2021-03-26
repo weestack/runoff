@@ -5,8 +5,7 @@
 #include "symbol.h"
 #include "ast.h"
 #include "phases.h"
-
-static char *smprintf(char *fmt, ...);
+#include "auxiliary.h"
 
 static char *prettyprintlist(AstNode *node, char *sep, int end);
 static char *ppProg(ProgNode node);
@@ -90,7 +89,7 @@ static char *builtintypeNames[] = {
 	"void",
 	"bool",
 	"msg",
-  "taskid",
+	"taskid",
 	"pinid"
 };
 
@@ -554,7 +553,7 @@ static char *ppExprStmt(ExprStmtNode node){
 }
 
 /* printf but it returns a string allocated by malloc */
-static char *smprintf(char *fmt, ...){
+char *smprintf(char *fmt, ...){
 	va_list args;
 	char *str = malloc(1000000);
 	va_start(args, fmt);

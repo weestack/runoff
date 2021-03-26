@@ -1,12 +1,15 @@
 #include <stdio.h>
+#include <stdlib.h>
 
+#include "auxiliary.h"
 #include "symbol.h"
 #include "ast.h"
 
 void typeCheckNode(AstNode *node);
 Type *typeof(AstNode *node);
 int buildinTypeMatch(Type *a, int b);
-void printFailMessage(char *, AstNode *);
+void printTypeFail(char *, AstNode *, Type *type);
+char *typeString(Type *type);
 
 static int errors;
 extern char* filename;
@@ -49,7 +52,7 @@ void typeCheckNode(AstNode *node){
         type = typeof(node->node.While.expression);
         if(!buildinTypeMatch(type, builtintype_bool)){
             errors++;
-            printFailMessage("While loop expression was not bool", node->node.While.expression);
+            printTypeFail("While loop expected bool", node->node.While.expression, type);
         }
         break;
 	case For:
@@ -153,6 +156,29 @@ int buildinTypeMatch(Type *a, int b){
         return 0;
 }
 
-void printFailMessage(char *fail_message, AstNode *node){
-    printf("%s:%d: %s \n", filename, node->linenum, fail_message);
+void printTypeFail(char *fail_message, AstNode *node, Type *type){
+    char *text_type = typeString(type);
+    printf("%s:%d: %s. Actual type: %s \n", filename, node->linenum, fail_message, text_type);
+    free(text_type);
+}
+
+char *typeString(Type *type){
+    if(type == NULL)
+        return smprintf("undefined");
+
+    switch(type->tag){
+    case ArrayTypeTag:
+        return smprintf("Array Type");
+	case FunctionTypeTag:
+        return smprintf("Function Type");
+	case TaskTypeTag:
+        return smprintf("Task Type");
+	case BuiltinTypeTag:
+        return smprintf("Builtin Type");
+	case StructTypeTag:
+        return smprintf("Struct Type");
+	case MessageTypeTag:
+        return smprintf("Message Type");
+    }
+    return smprintf("undefined");
 }
