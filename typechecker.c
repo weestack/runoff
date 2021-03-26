@@ -241,7 +241,7 @@ char *typeString(Type *type){
 Type *binaryOperatorType(AstNode *node){
     Type *left = typeof(node->node.BinaryOperation.expression_left);
     Type *right = typeof(node->node.BinaryOperation.expression_right);
-    int expected_right, expected_left, return_type;
+    int expected_right = 0, expected_left = 0, return_type = 0;
     char *other_error = NULL;
 
     switch(node->node.BinaryOperation.operator){
@@ -314,6 +314,7 @@ Type *binaryOperatorType(AstNode *node){
 
         printTypeFail(fail_message, node->node.BinaryOperation.expression_left, left);
         free(fail_message);
+        
         return NULL;
     } else if(!buildinTypeMatch(right, expected_right)){
         char *fail_message = smprintf("right hand side of %s expected type %s",
