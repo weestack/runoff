@@ -14,6 +14,7 @@ void printTypeFail(char *, AstNode *, Type *);
 char *typeString(Type *);
 Type *binaryOperatorType(AstNode *);
 Type *unaryOperatorType(AstNode *);
+int typeMatch(Type *, Type *);
 
 
 static int errors;
@@ -25,7 +26,7 @@ int typeCheck(AstNode *tree){
 }
 
 void typeCheckNode(AstNode *node){
-    Type *type;
+    Type *type, *typeA, *typeB;
     AstNode *children;
 
     switch(node->tag){
@@ -74,19 +75,39 @@ void typeCheckNode(AstNode *node){
             printTypeFail("Switch expression expected int", node->node.Switch.expression, type);
 
         break;
-	case SwitchCase:
+	case SwitchCase: /*Nothing*/
         break;
 	case If:
+		type = typeof(node->node.If.expression);
+        if(!buildinTypeMatch(type, builtintype_bool))
+            printTypeFail("if statement expected bool", node->node.If.expression, type);
+
         break;
 	case ElseIf:
+		type = typeof(node->node.ElseIf.expression);
+        if(!buildinTypeMatch(type, builtintype_bool))
+            printTypeFail("if statement expected bool", node->node.ElseIf.expression, type);
         break;
-	case Else:
+	case Else: /*Nothing*/
         break;
-	case Receive:
+	case Receive: /*Nothing*/
         break;
-	case ReceiveCase:
+	case ReceiveCase: /*Nothing*/
         break;
 	case VarDecl:
+		if(node->node.VarDecl.expression == NULL)
+			break;
+			
+		typeA = typeof(node->node.VarDecl.identifier);
+		typeB = typeof(node->node.VarDecl.expression);
+		if (!typeMatch(typeA, typeB)){
+			char* typeAString = typeString(typeA);
+			char* errorMessage = smprintf("incompatible types expected %s", typeAString);
+			printTypeFail(errorMessage, node->node.VarDecl.expression, typeB);
+			free(typeAString);
+			free(errorMessage);
+		}
+		
         break;
 	case BinaryOperation:
         typeof(node);
@@ -217,6 +238,20 @@ int buildinTypeMatchInt(Type *a){
     default:
         return 0;
     }
+}
+
+int typeMatch(Type *a, Type *b){
+	if(a == NULL || b == NULL)
+		return 0;
+
+	if(a->tag != b->tag)
+		return 0;
+	
+	if (a->tag == BuiltinTypeTag)
+		return buildinTypeMatch(b, a->tags.typeBuiltin.builtinType);
+	
+	/*mangler at sammenligne alle andre typer end builtin typer hehexd*/
+	return 0;	
 }
 
 int numericType(Type *type){

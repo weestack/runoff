@@ -104,7 +104,7 @@ pinid {yylval.astNode = mkBuiltinTypeNode(builtintype_pinid); return builtin_typ
 
 
 {identifier} {yylval.astNode = mkIdentifierNode(strdup(yytext)); return identifier;}
-[ \t\n]+ /* skip whitespce, tab and newline */
+[ \t\n\r]+ /* skip whitespce, tab and newline */
 . {yyerror("Unexpected input LEXIS");} /* Skip bad chars */
 
 %%

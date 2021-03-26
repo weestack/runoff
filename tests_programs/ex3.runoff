@@ -4,7 +4,7 @@ function useless() -> void {
 
 function absorb(int a, float b) -> void {
 	int c = a + 4;
-	float d = b * 5;
+	float d = b * 5.0;
 }
 
 function produce() -> int {
@@ -17,5 +17,5 @@ function add(int a, int b) -> int {
 }
 
 function hej() -> void {
-	float i = add(2,2);
+	int i = add(2,2);
 }
