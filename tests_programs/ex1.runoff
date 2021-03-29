@@ -33,7 +33,7 @@ task A() {
 	}
 	i >= j;
 	i + j;
-
+	j(1);
 }
 
 task B(taskid other) {

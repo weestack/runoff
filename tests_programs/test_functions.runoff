@@ -57,10 +57,10 @@ function dummy(int a) -> int {
   float so123;
 
   if (so123 == 123.456) {
-  	int64 abc;
+  	int abc;
     print(abc);
     int a = 123;
-    int64 c = abc;
+    int c = abc;
   } else {
   	int a = 1234;
     print(a);
@@ -78,7 +78,7 @@ function dummy(int a) -> int {
     print(444);
   }
   int hej;
-  float last;
+  int last;
   (true) ? print(hej) : print(last);
   1<2 ? print(hej) : print(last);
   (1*2+3/123) == 1 ? print(hej) : print(last);
@@ -88,6 +88,7 @@ function dummy(int a) -> int {
   int[3] array;
   int[3][5] b;
   b[1][1] = 15;
+  print();
 
   int abe = 123 ^ 123; # should be 0
   int bil = 1 | 1;

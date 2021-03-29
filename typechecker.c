@@ -16,6 +16,7 @@ char *typeString(Type *);
 Type *binaryOperatorType(AstNode *);
 Type *unaryOperatorType(AstNode *);
 int typeMatch(Type *, Type *);
+void checkFunctionCall(AstNode *node);
 
 
 static int errors;
@@ -115,7 +116,8 @@ void typeCheckNode(AstNode *node){
         break;
 	case ArrayLocation: /*Nothing*/
         break;
-	case FunctionCall: /* GET BACK TO IT LATER :) */
+	case FunctionCall:
+		checkFunctionCall(node);
         break;
 	case Assignment:
 		typeA = typeof(node->node.Assignment.location);
@@ -240,6 +242,8 @@ Type *typeof(AstNode *node){
     }
     return NULL;
 }
+
+
 
 int buildinTypeMatch(Type *a, int b){
 	Type *bType = mkBuiltinTypeDiscriptor(b);
@@ -493,4 +497,38 @@ Type *unaryOperatorType(AstNode *node){
 		return NULL;
 	}
 	return mkBuiltinTypeDiscriptor(returnType);
+}
+
+
+void checkFunctionCall(AstNode *node){	
+	AstNode *id = node->node.FunctionCall.identifier;
+	Type *t = id->node.Identifier.symbol->type;
+	int parametercount;
+	Type **parameters;
+	AstNode *arg = node->node.FunctionCall.arguments;
+	int paramnr = 0;
+
+	if (t->tag != FunctionTypeTag){
+		errors++;
+		printf("%s:%d: %s is not a function\n", filename, id->linenum, id->node.Identifier.identifier);
+		return;
+	}
+	parametercount = t->tags.typeFunction.arity;
+	parameters = t->tags.typeFunction.parameterTypes;
+
+	for(; paramnr < parametercount && arg != NULL; paramnr++ , arg = arg->next){
+		Type *ptype = parameters[paramnr];
+		Type *atype = typeof(arg);
+		if(!typeMatch(ptype, atype)){
+			char *expected = typeString(ptype);	
+			char *errorMsg = smprintf("Expected argument %d to have type %s", paramnr + 1, expected);
+			printTypeFail(errorMsg, arg, atype);
+			free(expected);
+			free(errorMsg);
+		}
+	}
+	if(paramnr != parametercount|| arg != NULL){
+		errors++;
+		printf("%s:%d: Number of arguments in functioncall \"%s\" does not match the prototype. Expected %d, but got %d\n", filename, id->linenum, id->node.Identifier.identifier, parametercount, nodeLength(node->node.FunctionCall.arguments));
+	}
 }
