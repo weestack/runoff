@@ -8,49 +8,9 @@
 #include "auxiliary.h"
 
 static char *prettyprintlist(AstNode *node, char *sep, int end);
-static char *ppProg(ProgNode node);
-static char *ppDefineFunction(DefineFunctionNode node);
-static char *ppDefineTask(DefineTaskNode node);
-static char *ppDefineStruct(DefineStructNode node);
-static char *ppDefineMessage(DefineMessageNode node);
-static char *ppIncludeRunoffFile(IncludeRunoffFileNode node);
-static char *ppMessageIdentifier(MessageIdentifierNode node);
-static char *ppStructMember(StructMemberNode node);
-static char *ppParameter(ParameterNode node);
-static char *ppBuiltinType(BuiltinTypeNode node);
-static char *ppStructType(StructTypeNode node);
-static char *ppArrayType(ArrayTypeNode node);
-static char *ppWhile(WhileNode node);
-static char *ppFor(ForNode node);
-static char *ppSwitch(SwitchNode node);
-static char *ppSwitchCase(SwitchCaseNode node);
-static char *ppIf(IfNode node);
-static char *ppElseIf(ElseIfNode node);
-static char *ppElse(ElseNode node);
-static char *ppReceive(ReceiveNode node);
-static char *ppReceiveCase(ReceiveCaseNode node);
-static char *ppVarDecl(VarDeclNode node);
-static char *ppBinaryOperation(BinaryOperationNode node);
-static char *ppVariableLocation(VariableLocationNode node);
-static char *ppStructLocation(StructLocationNode node);
-static char *ppArrayLocation(ArrayLocationNode node);
-static char *ppUnaryOperation(UnaryOperationNode node);
-static char *ppFunctionCall(FunctionCallNode node);
-static char *ppAssignment(AssignmentNode node);
-static char *ppTernaryOperator(TernaryOperatorNode node);
-static char *ppIdentifier(IdentifierNode node);
-static char *ppPinLiteral(PinLiteralNode node);
-static char *ppIntLiteral(IntLiteralNode node);
-static char *ppFloatLiteral(FloatLiteralNode node);
-static char *ppBoolLiteral(BoolLiteralNode node);
-static char *ppMessageLiteral(MessageLiteralNode node);
-static char *ppReturn(ReturnNode node);
-static char *ppSpawn(SpawnNode node);
-static char *ppSend(SendNode node);
-static char *ppExprStmt(ExprStmtNode node);
 
-/* GLOBAL VARIABLES HEHE */
-/* follows the order of the operators enum */
+/* GLOBAL VARIABLES */
+/* follows the order of the operators enum from ast.h */
 char *operatorNames[] = {
 	"&&",
 	"||",
@@ -76,7 +36,7 @@ char *operatorNames[] = {
 	"~"
 };
 
-/* follows the order of the builintypes enum */
+/* follows the order of the builintypes enum from ast.h */
 char *builtintypeNames[] = {
 	"uint8",
 	"uint16",
@@ -97,93 +57,266 @@ char *builtintypeNames[] = {
 
 char *prettyprint(AstNode *node)
 {
+	/* temporary variables used by the prints.
+	   they are all free'd at the end of this function. */
+	char *id = NULL;
+	char *params = NULL;
+	char *type = NULL;
+	char *stmts = NULL;
+	char *fields = NULL;
+	char *messages = NULL;
+	char *intlit = NULL;
+	char *exprA = NULL;
+	char *exprB = NULL;
+	char *exprC = NULL;
+	char *cases = NULL;
+	char *elsepart = NULL;
+	char *message = NULL;
+	char *tmp = NULL;
+	char *op = NULL;
+	char *location = NULL;
+	char *indices = NULL;
+	char *args = NULL;
+
+	/* this is the return value of the prettyprint */
+	char *result = NULL;
+
 	if(node == NULL)
 		return smprintf("");
 
 	switch(node->tag){
 	case Prog:
-		return ppProg(node->node.Prog);
+		result = prettyprintlist(node->node.Prog.toplevels, "\n\n", 0);
+		break;
 	case DefineFunction:
-		return ppDefineFunction(node->node.DefineFunction);
+		id = prettyprint(node->node.DefineFunction.identifier);
+		params = prettyprintlist(node->node.DefineFunction.parameters, ", ", 0);
+		type = prettyprint(node->node.DefineFunction.type);
+		stmts = prettyprintlist(node->node.DefineFunction.statements, "\n", 1);
+		result = smprintf("function %s(%s) -> %s {\n%s}", id, params, type, stmts);
+		break;
 	case DefineTask:
-		return ppDefineTask(node->node.DefineTask);
+		id = prettyprint(node->node.DefineTask.identifier);
+		params = prettyprintlist(node->node.DefineTask.parameters, ", ", 0);
+		stmts = prettyprintlist(node->node.DefineTask.statements, "\n", 1);
+		result = smprintf("task %s(%s) {\n%s}", id, params, stmts);
+		break;
 	case DefineStruct:
-		return ppDefineStruct(node->node.DefineStruct);
+		id = prettyprint(node->node.DefineStruct.identifier);
+		fields = prettyprintlist(node->node.DefineStruct.fields, ";\n", 1);
+		result = smprintf("struct %s {\n%s}", id, fields);
+		break;
 	case DefineMessage:
-		return ppDefineMessage(node->node.DefineMessage);
+		messages = prettyprintlist(node->node.DefineMessage.messagesIdentifiers, ";\n", 1);
+		result = smprintf("messages {\n%s}", messages);
+		break;
 	case IncludeRunoffFile:
-		return ppIncludeRunoffFile(node->node.IncludeRunoffFile);
+		id = prettyprint(node->node.IncludeRunoffFile.identifier);
+		result = smprintf("include(%s);", id);
+		break;
 	case MessageIdentifier:
-		return ppMessageIdentifier(node->node.MessageIdentifier);
+		id = prettyprint(node->node.MessageIdentifier.identifier);
+		if(node->node.MessageIdentifier.parameters == NULL)
+			result = smprintf("%s", id);
+		else{
+			params = prettyprintlist(node->node.MessageIdentifier.parameters, ", ", 0);
+			result = smprintf("%s{%s}", id, params);
+		}
+		break;
 	case StructMember:
-		return ppStructMember(node->node.StructMember);
+		id = prettyprint(node->node.StructMember.identifier);
+		type = prettyprint(node->node.StructMember.type);
+		result = smprintf("%s %s", type, id);
+		break;
 	case Parameter:
-		return ppParameter(node->node.Parameter);
+		type = prettyprint(node->node.Parameter.type);
+		id = prettyprint(node->node.Parameter.identifier);
+		result = smprintf("%s %s", type, id);
+		break;
 	case BuiltinType:
-		return ppBuiltinType(node->node.BuiltinType);
+		result = smprintf("%s", builtintypeNames[node->node.BuiltinType.type]);
+		break;
 	case StructType:
-		return ppStructType(node->node.StructType);
+		id = prettyprint(node->node.StructType.identifier);
+		result = smprintf("struct %s", id);
+		break;
 	case ArrayType:
-		return ppArrayType(node->node.ArrayType);
+		type = prettyprint(node->node.ArrayType.type);
+		intlit = prettyprint(node->node.ArrayType.int_literal);
+		result = smprintf("%s[%s]", type, intlit);
+		break;
 	case While:
-		return ppWhile(node->node.While);
+		exprA = prettyprint(node->node.While.expression);
+		stmts = prettyprintlist(node->node.While.statements, "\n", 1);
+		result = smprintf("while(%s) {\n%s}", exprA, stmts);
+		break;
 	case For:
-		return ppFor(node->node.For);
+		exprA = prettyprint(node->node.For.expressionInit);
+		exprB = prettyprint(node->node.For.expressionTest);
+		exprC = prettyprint(node->node.For.expressionUpdate);
+		stmts = prettyprintlist(node->node.For.statements, "\n", 1);
+		result = smprintf("for(%s; %s; %s) {\n%s}", exprA, exprB, exprC, stmts);
+		break;
 	case Switch:
-		return ppSwitch(node->node.Switch);
+		exprA = prettyprint(node->node.Switch.expression);
+		cases = prettyprint(node->node.Switch.cases);
+		result = smprintf("switch(%s) {\n%s}", exprA, cases);
+		break;
 	case SwitchCase:
-		return ppSwitchCase(node->node.SwitchCase);
+		intlit = prettyprint(node->node.SwitchCase.literal);
+		stmts = prettyprintlist(node->node.SwitchCase.statements, "\n", 1);
+		result = smprintf("case %s: %s", intlit, stmts);
+		break;
 	case If:
-		return ppIf(node->node.If);
+		exprA = prettyprint(node->node.If.expression);
+		stmts = prettyprintlist(node->node.If.statements, "\n", 1);
+		if(node->node.If.elsePart != NULL)
+			elsepart = prettyprint(node->node.If.elsePart);
+		else
+			elsepart = smprintf("");
+		result = smprintf("if(%s) {\n%s} %s", exprA, stmts, elsepart);
+		break;
 	case ElseIf:
-		return ppElseIf(node->node.ElseIf);
+		exprA = prettyprint(node->node.ElseIf.expression);
+		stmts = prettyprintlist(node->node.ElseIf.statements, "\n", 1);
+		elsepart = prettyprint(node->node.ElseIf.elsePart);
+		result = smprintf("elseif(%s) {\n%s} %s", exprA, stmts, elsepart);
+		break;
 	case Else:
-		return ppElse(node->node.Else);
+		stmts = prettyprintlist(node->node.Else.statements, "\n", 1);
+		result = smprintf("else {\n%s}", stmts);
+		break;
 	case Receive:
-		return ppReceive(node->node.Receive);
+		cases = prettyprintlist(node->node.Receive.cases, "\n", 1);
+		result = smprintf("receive {\n%s}", cases);
+		break;
 	case ReceiveCase:
-		return ppReceiveCase(node->node.ReceiveCase);
+		message = prettyprint(node->node.ReceiveCase.messageName);
+		args = prettyprintlist(node->node.ReceiveCase.dataNames, ", ", 0);
+		stmts = prettyprintlist(node->node.ReceiveCase.statements, "\n", 1);
+		result = smprintf("case %s{%s}: %s", message, args, stmts);
+		break;
 	case VarDecl:
-		return ppVarDecl(node->node.VarDecl);
+		type = prettyprint(node->node.VarDecl.type);
+		id = prettyprint(node->node.VarDecl.identifier);
+		if(node->node.VarDecl.expression != NULL){
+			exprA = prettyprint(node->node.VarDecl.expression);
+			tmp = smprintf("%s %s = %s", type, id, exprA);
+		}else
+			tmp = smprintf("%s %s", type, id);
+		if(node->node.VarDecl.toplevel)
+			result = smprintf("%s;", tmp);
+		else
+			result = smprintf("%s", tmp);
+		break;
 	case BinaryOperation:
-		return ppBinaryOperation(node->node.BinaryOperation);
+		exprA = prettyprint(node->node.BinaryOperation.expression_left);
+		op = smprintf("%s", operatorNames[node->node.BinaryOperation.operator]);
+		exprB = prettyprint(node->node.BinaryOperation.expression_right);
+		result = smprintf("(%s %s %s)", exprA, op, exprB);
+		break;
 	case VariableLocation:
-		return ppVariableLocation(node->node.VariableLocation);
+		id = prettyprint(node->node.VariableLocation.identifier);
+		result = smprintf("%s", id);
+		break;
 	case StructLocation:
-		return ppStructLocation(node->node.StructLocation);
+		id = prettyprint(node->node.StructLocation.identifier);
+		location = prettyprint(node->node.StructLocation.location);
+		result = smprintf("%s.%s", id, location);
+		break;
 	case ArrayLocation:
-		return ppArrayLocation(node->node.ArrayLocation);
+		id = prettyprint(node->node.ArrayLocation.identifier);
+		indices = prettyprintlist(node->node.ArrayLocation.indicies, "][", 0);
+		result = smprintf("%s[%s]", id, indices);
+		break;
 	case UnaryOperation:
-		return ppUnaryOperation(node->node.UnaryOperation);
+		op = smprintf("%s", operatorNames[node->node.UnaryOperation.operator]);
+		exprA = prettyprint(node->node.UnaryOperation.expression);
+		if(node->node.UnaryOperation.fix == prefix)
+			result = smprintf("(%s%s)", op, exprA);
+		else
+			result = smprintf("(%s%s)", exprA, op);
+		break;
 	case FunctionCall:
-		return ppFunctionCall(node->node.FunctionCall);
+		id = prettyprint(node->node.FunctionCall.identifier);
+		args = prettyprintlist(node->node.FunctionCall.arguments, ", ", 0);
+		result = smprintf("%s(%s)", id, args);
+		break;
 	case Assignment:
-		return ppAssignment(node->node.Assignment);
+		location = prettyprint(node->node.Assignment.location);
+		exprA = prettyprint(node->node.Assignment.expression);
+		result = smprintf("%s = %s", location, exprA);
+		break;
 	case TernaryOperator:
-		return ppTernaryOperator(node->node.TernaryOperator);
+		exprA = prettyprint(node->node.TernaryOperator.expressionTest);
+		exprB = prettyprint(node->node.TernaryOperator.expressionTrue);
+		exprC = prettyprint(node->node.TernaryOperator.expressionFalse);
+		result = smprintf("%s ? %s : %s", exprA, exprB, exprC);
+		break;
 	case Identifier:
-		return ppIdentifier(node->node.Identifier);
+		result = smprintf(node->node.Identifier.identifier);
+		break;
 	case PinLiteral:
-		return ppPinLiteral(node->node.PinLiteral);
+		result = smprintf("%ldP", node->node.PinLiteral.value);
+		break;
 	case IntLiteral:
-		return ppIntLiteral(node->node.IntLiteral);
+		result = smprintf("%ld", node->node.IntLiteral.value);
+		break;
 	case FloatLiteral:
-		return ppFloatLiteral(node->node.FloatLiteral);
+		result = smprintf("%f", node->node.FloatLiteral.value);
+		break;
 	case BoolLiteral:
-		return ppBoolLiteral(node->node.BoolLiteral);
+		result = smprintf("%s", node->node.BoolLiteral.value ? "true" : "false");
+		break;
 	case MessageLiteral:
-		return ppMessageLiteral(node->node.MessageLiteral);
+		id = prettyprint(node->node.MessageLiteral.identifier);
+		args = prettyprintlist(node->node.MessageLiteral.arguments, ", ", 0);
+		result = smprintf("%s{%s}", id, args);
+		break;
 	case Return:
-		return ppReturn(node->node.Return);
+		if(node->node.Return.expression != NULL){
+			exprA = prettyprint(node->node.Return.expression);
+			result = smprintf("return %s;", exprA);
+		}else
+			result = smprintf("return;");
+		break;
 	case Spawn:
-		return ppSpawn(node->node.Spawn);
+		id = prettyprint(node->node.Spawn.identifier);
+		args = prettyprintlist(node->node.Spawn.arguments, ", ", 0);
+		result = smprintf("spawn %s(%s)", id, args);
+		break;
 	case Send:
-		return ppSend(node->node.Send);
+		exprA = prettyprint(node->node.Send.message);
+		exprB = prettyprint(node->node.Send.receiver);
+		result = smprintf("send %s to %s;", exprA, exprB);
+		break;
 	case ExprStmt:
-		return ppExprStmt(node->node.ExprStmt);
+		exprA = prettyprint(node->node.ExprStmt.expression);
+		result = smprintf("%s;", exprA);
+		break;
 	default:
-		return "";
+		result = smprintf("");
 	}
+	
+	free(id);
+	free(params);
+	free(type);
+	free(stmts);
+	free(fields);
+	free(messages);
+	free(intlit);
+	free(exprA);
+	free(exprB);
+	free(exprC);
+	free(cases);
+	free(elsepart);
+	free(message);
+	free(tmp);
+	free(op);
+	free(location);
+	free(indices);
+	free(args);
+	return result;
 }
 
 static char *prettyprintlist(AstNode *node, char *sep, int end){
@@ -211,362 +344,6 @@ static char *prettyprintlist(AstNode *node, char *sep, int end){
 		result = smprintf("%s%s", prev, sep);
 		free(prev);
 	}
-	return result;
-}
-
-static char *ppProg(ProgNode node){
-	return prettyprintlist(node.toplevels, "\n\n", 0);
-}
-
-static char *ppDefineFunction(DefineFunctionNode node){
-	char *idstr = prettyprint(node.identifier);
-	char *paramsstr = prettyprintlist(node.parameters, ", ", 0);
-	char *typestr = prettyprint(node.type);
-	char *stmtsstr = prettyprintlist(node.statements, "\n", 1);
-	char *result = smprintf("function %s(%s) -> %s {\n%s}", idstr, paramsstr, typestr, stmtsstr);
-	free(idstr);
-	free(paramsstr);
-	free(typestr);
-	free(stmtsstr);
-	return result;
-}
-
-static char *ppDefineTask(DefineTaskNode node){
-	char *idstr = prettyprint(node.identifier);
-	char *paramsstr = prettyprintlist(node.parameters, ", ", 0);
-	char *stmtsstr = prettyprintlist(node.statements, "\n", 1);
-	char *result = smprintf("task %s(%s) {\n%s}", idstr, paramsstr, stmtsstr);
-	free(idstr);
-	free(paramsstr);
-	free(stmtsstr);
-	return result;
-}
-
-static char *ppDefineStruct(DefineStructNode node){
-	char *idstr = prettyprint(node.identifier);
-	char *fieldsstr = prettyprintlist(node.fields, ";\n", 1);
-	char *result = smprintf("struct %s {\n%s}", idstr, fieldsstr);
-	free(idstr);
-	free(fieldsstr);
-	return result;
-}
-
-
-static char *ppDefineMessage(DefineMessageNode node){
-	char *messagesstr = prettyprintlist(node.messagesIdentifiers, ";\n", 1);
-	char *result = smprintf("messages {\n%s}", messagesstr);
-	free(messagesstr);
-	return result;
-}
-
-static char *ppIncludeRunoffFile(IncludeRunoffFileNode node){
-	char *idstr = prettyprint(node.identifier);
-	char *result = smprintf("include(%s);", idstr);
-	free(idstr);
-	return result;
-}
-
-static char *ppMessageIdentifier(MessageIdentifierNode node){
-	char *idstr = prettyprint(node.identifier);
-	char *params;
-	char *result;
-
-	if(node.parameters == NULL)
-		result = smprintf("%s", idstr);
-	else{
-		params = prettyprintlist(node.parameters, ", ", 0);
-		result = smprintf("%s{%s}", idstr, params);
-		free(params);
-	}
-	return result;
-}
-
-static char *ppStructMember(StructMemberNode node){
-	char *idstr = prettyprint(node.identifier);
-	char *typestr = prettyprint(node.type);
-	char *result = smprintf("%s %s", typestr, idstr);
-	free(idstr);
-	free(typestr);
-	return result;
-}
-
-static char *ppParameter(ParameterNode node){
-	char *typestr = prettyprint(node.type);
-	char *idstr = prettyprint(node.identifier);
-	char *result = smprintf("%s %s", typestr, idstr);
-	free(typestr);
-	free(idstr);
-	return result;
-}
-
-static char *ppBuiltinType(BuiltinTypeNode node){
-	char *typestr = smprintf("%s", builtintypeNames[node.type]);
-	return typestr;
-}
-
-static char *ppStructType(StructTypeNode node){
-	char *idstr = prettyprint(node.identifier);
-	char *result = smprintf("struct %s", idstr);
-	free(idstr);
-	return result;
-}
-
-static char *ppArrayType(ArrayTypeNode node){
-	char *typeStr = prettyprint(node.type);
-	char *int_literalStr = prettyprint(node.int_literal);
-	char *result = smprintf("%s[%s]", typeStr, int_literalStr);
-	free(typeStr); free(int_literalStr);
-	return result;
-}
-
-static char *ppWhile(WhileNode node){
-	char *expressionStr = prettyprint(node.expression);
-	char *statementsStr = prettyprintlist(node.statements, "\n", 1);
-	char *result = smprintf("while(%s) {\n%s}", expressionStr, statementsStr);
-	free(expressionStr); free(statementsStr);
-	return result;
-}
-
-static char *ppFor(ForNode node){
-	char *expressionInitStr = prettyprint(node.expressionInit);
-	char *expressionTestStr = prettyprint(node.expressionTest);
-	char *expressionUpdateStr = prettyprint(node.expressionUpdate);
-	char *statementsStr = prettyprintlist(node.statements, "\n", 1);
-	char *result = smprintf("for(%s; %s; %s) {\n%s}", expressionInitStr, expressionTestStr, expressionUpdateStr, statementsStr);
-	free(expressionInitStr); free(expressionTestStr);
-	free(expressionUpdateStr); free(statementsStr);
-	return result;
-}
-
-static char *ppSwitch(SwitchNode node){
-	char *expressionStr = prettyprint(node.expression);
-	char *casesStr = prettyprint(node.cases);
-	char *result = smprintf("switch(%s) {\n%s}", expressionStr, casesStr);
-	free(expressionStr); free(casesStr);
-	return result;
-}
-
-static char *ppSwitchCase(SwitchCaseNode node){
-	char *literalStr = prettyprint(node.literal);
-	char *statementsStr = prettyprintlist(node.statements, "\n", 1);
-	char *result = smprintf("case %s: %s", literalStr, statementsStr);
-	free(literalStr); free(statementsStr);
-	return result;
-}
-
-static char *ppIf(IfNode node){
-	char *expressionStr = prettyprint(node.expression);
-	char *statementsStr = prettyprintlist(node.statements, "\n", 1);
-	char *elsePartStr;
-	char *result;
-
-	if(node.elsePart)
-		elsePartStr = prettyprint(node.elsePart);
-	else
-		elsePartStr = smprintf("");
-	result = smprintf("if(%s) {\n%s} %s", expressionStr, statementsStr, elsePartStr);
-	free(expressionStr); free(statementsStr);  free(elsePartStr);
-	return result;
-}
-
-static char *ppElseIf(ElseIfNode node){
-	char *expressionStr = prettyprint(node.expression);
-	char *statementsStr = prettyprintlist(node.statements, "\n", 1);
-	char *elsePartStr = prettyprint(node.elsePart);
-	char *result = smprintf("elseif(%s) {\n%s} %s", expressionStr, statementsStr, elsePartStr);
-	free(expressionStr); free(statementsStr);  free(elsePartStr);
-	return result;
-}
-
-static char *ppElse(ElseNode node){
-	char *statementsStr = prettyprintlist(node.statements, "\n", 1);
-	char *result = smprintf("else {\n%s}", statementsStr);
-	free(statementsStr);
-	return result;
-}
-
-static char *ppReceive(ReceiveNode node){
-	char *casesStr = prettyprintlist(node.cases, "\n", 1);
-	char *result = smprintf("receive {\n%s}", casesStr);
-	free(casesStr);
-	return result;
-}
-
-static char *ppReceiveCase(ReceiveCaseNode node){
-	char *messageNameStr = prettyprint(node.messageName);
-	char *dataNamesStr = prettyprintlist(node.dataNames, ", ", 0);
-	char *statementsStr = prettyprintlist(node.statements, "\n", 1);
-	char *result = smprintf("case %s{%s}:%s", messageNameStr, dataNamesStr, statementsStr);
-	free(messageNameStr);
-	free(dataNamesStr);
-	free(statementsStr);
-	return result;
-}
-
-static char *ppVarDecl(VarDeclNode node){
-	char *typestr = prettyprint(node.type);
-	char *identifierStr = prettyprint(node.identifier);
-	char *expressionStr;
-	char *result;
-
-	if(node.expression){
-		expressionStr = prettyprint(node.expression);
-		result = smprintf("%s %s = %s", typestr, identifierStr, expressionStr);
-		free(expressionStr);
-	}else{
-		result = smprintf("%s %s", typestr, identifierStr);
-	}
-	if (node.toplevel) {
-		char *tmp = result;
-		result = smprintf("%s;", result);
-		free(tmp);
-	}
-	free(typestr);
-	free(identifierStr);
-	return result;
-}
-
-static char *ppBinaryOperation(BinaryOperationNode node){
-	char *expressionLeftStr = prettyprint(node.expression_left);
-	char *operatorStr = operatorNames[node.operator];
-	char *expressionRightStr = prettyprint(node.expression_right);
-	char *result = smprintf("(%s %s %s)", expressionLeftStr, operatorStr, expressionRightStr);
-	free(expressionLeftStr);
-	free(expressionRightStr);
-	return result;
-}
-
-static char *ppVariableLocation(VariableLocationNode node){
-	char *identifierStr = prettyprint(node.identifier);
-	char *result = smprintf("%s", identifierStr);
-	free(identifierStr);
-	return result;
-}
-
-static char *ppStructLocation(StructLocationNode node){
-	char *identifier = prettyprint(node.identifier);
-	char *location = prettyprint(node.location);
-	char *result = smprintf("%s.%s", identifier, location);
-	free(identifier); free(location);
-	return result;
-}
-
-static char *ppArrayLocation(ArrayLocationNode node){
-	char *identifier = prettyprint(node.identifier);
-	char *indices = prettyprintlist(node.indicies, "][", 0);
-	char *result = smprintf("%s[%s]", identifier, indices);
-	free(identifier); free(indices);
-	return result;
-}
-
-static char *ppUnaryOperation(UnaryOperationNode node){
-	char *operatorStr = operatorNames[node.operator];
-	char *expressionStr = prettyprint(node.expression);
-	char *result;
-
-	if(node.fix == prefix)
-		result = smprintf("(%s%s)", operatorStr, expressionStr);
-	else
-		result = smprintf("(%s%s)", expressionStr, operatorStr);
-	free(expressionStr);
-	return result;
-}
-
-static char *ppFunctionCall(FunctionCallNode node){
-	char *identifierStr = prettyprint(node.identifier);
-	char *argumentsStr = prettyprint(node.arguments);
-	char *result = smprintf("%s(%s)", identifierStr, argumentsStr);
-	free(identifierStr); free(argumentsStr);
-	return result;
-}
-
-static char *ppAssignment(AssignmentNode node){
-	char *locationStr = prettyprint(node.location);
-	char *expressionStr = prettyprint(node.expression);
-	char *result = smprintf("%s = %s", locationStr, expressionStr);
-	free(locationStr); free(expressionStr);
-	return result;
-}
-
-static char *ppTernaryOperator(TernaryOperatorNode node){
-	char *expressionTestStr = prettyprint(node.expressionTest);
-	char *expressionTrueStr = prettyprint(node.expressionTrue);
-	char *expressionFalseStr = prettyprint(node.expressionFalse);
-	char *result = smprintf("%s ? %s : %s", expressionTestStr,
-	 expressionTrueStr, expressionFalseStr);
-
-	free(expressionTestStr);free(expressionTrueStr);free(expressionFalseStr);
-	return result;
-}
-
-static char *ppIdentifier(IdentifierNode node){
-	return smprintf(node.identifier);
-}
-
-static char *ppPinLiteral(PinLiteralNode node){
-	return smprintf("%ldP", node.value);
-}
-
-static char *ppIntLiteral(IntLiteralNode node){
-	return smprintf("%ld", node.value);
-}
-
-static char *ppFloatLiteral(FloatLiteralNode node){
-	return smprintf("%f", node.value);
-}
-
-static char *ppBoolLiteral(BoolLiteralNode node){
-	return smprintf("%s", node.value ? "true" : "false");
-}
-
-static char *ppMessageLiteral(MessageLiteralNode node){
-	char *idstr = prettyprint(node.identifier);
-	char *args;
-	char *result;
-
-	args = prettyprintlist(node.arguments, ", ", 0);
-	result = smprintf("%s{%s}", idstr, args);
-	free(args);
-	return result;
-}
-
-
-static char *ppReturn(ReturnNode node){
-	char *exprstr;
-	char *result;
-
-	if(node.expression)
-		exprstr = prettyprint(node.expression);
-	else
-		exprstr = smprintf("");
-
-	result = smprintf("return %s;", exprstr);
-	free(exprstr);
-	return result;
-}
-
-static char *ppSpawn(SpawnNode node){
-	char *idstr = prettyprint(node.identifier);
-	char *argsstr = prettyprintlist(node.arguments, ", ", 0);
-	char *result = smprintf("spawn %s(%s)", idstr, argsstr);
-	free(idstr);
-	free(argsstr);
-	return result;
-}
-
-static char *ppSend(SendNode node){
-	char *msgstr = prettyprint(node.message);
-	char *receiverstr = prettyprint(node.receiver);
-	char *result = smprintf("send %s to %s;", msgstr, receiverstr);
-	free(msgstr);
-	free(receiverstr);
-	return result;
-}
-
-static char *ppExprStmt(ExprStmtNode node){
-	char *exprstr = prettyprint(node.expression);
-	char *result = smprintf("%s;", exprstr);
-	free(exprstr);
 	return result;
 }
 
