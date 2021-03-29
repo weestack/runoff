@@ -161,6 +161,33 @@ void typeCheckNode(AstNode *node){
 		checkMessageLiteral(node);
 		break;
 	case Return:
+		typeA = typeof(node->node.Return.expression);
+		
+		if(*node->node.Return.functionsym == NULL){
+			if(typeA != NULL){
+				errors++;
+				printf("%s:%d: Unexpected expession in return of task\n", filename, node->linenum);
+				break;
+			}
+			break;
+		}
+
+		typeB = (*node->node.Return.functionsym)->type->tags.typeFunction.returnType;
+
+		if(typeA == NULL && !buildinTypeMatch(typeB, builtintype_void)){
+			char *expected = typeString(typeB);
+			errors++;
+			printf("%s:%d: Missing expression of type %s in return statement\n", filename, node->linenum, expected);
+			free(expected);
+			break;
+		}
+		if(typeA != NULL && !typeMatch(typeA, typeB)){
+			char* typeBString = typeString(typeB);
+			char* errorMessage = smprintf("incompatible types in return. Expected: %s", typeBString);
+			printTypeFail(errorMessage, node->node.Return.expression, typeA);
+			free(typeBString);
+			free(errorMessage);
+		}
 		break;
 	case Spawn:
 		checkSpawnNode(node);
@@ -337,9 +364,6 @@ void printTypeFail(char *fail_message, AstNode *node, Type *type){
 
 char *typeString(Type *type){
 	char *elementtype, *result;
-
-	if(type == NULL)
-		return smprintf("undefined");
 
 	switch(type->tag){
 	case ArrayTypeTag:

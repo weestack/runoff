@@ -17,7 +17,6 @@ function setup() -> void {
 
 function ss(int a) -> struct hello {
     struct hello test;
-    return 1+2+3*(3+7) + 12;
     return test;
 }
 

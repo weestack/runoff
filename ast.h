@@ -232,6 +232,10 @@ struct MessageLiteralNode {
 
 struct ReturnNode {
 	AstNode *expression; /* might be null for empty return*/
+	 /* the symbol of the wrapping function. Note that it has
+	    to be a pointer to a pointer, since the return nodes are handled via copies,
+	    so modifications to them doesn't affect the original. */
+	Symbol **functionsym;
 };
 
 struct SpawnNode {

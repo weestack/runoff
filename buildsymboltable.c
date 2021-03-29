@@ -16,6 +16,7 @@ void handleReceiveCase(AstNode *node);
 void checkIdentifierTypes(AstNode *tree);
 static int errors;
 extern char *filename; /* defined and set in runoff.c */
+static Symbol *currentfunc; /* the symbol of the current function */
 
 int buildSymbolTable(AstNode *tree){
 	initializeSymbolTables();
@@ -66,7 +67,6 @@ Type *processNode(AstNode *node){
 	case Prog: break; /* Nothing */
 	case DefineFunction:
 		handleDefineFunction(node);
-
 		return NULL;
 	case DefineTask:
 		handleDefineTask(node);
@@ -187,7 +187,9 @@ Type *processNode(AstNode *node){
 		else
 			updateSymbolId(node->node.MessageLiteral.identifier, sym);
 		break;
-	case Return: break; /* Nothing */
+	case Return:
+		*node->node.Return.functionsym = currentfunc;
+		break;
 	case Spawn:
 		sym = retrieveSymbol(node->node.Spawn.identifier);
 		if(sym == NULL)
@@ -269,11 +271,12 @@ void handleDefineFunction(AstNode *function){
 	AstNode *Children;
 	AstNode *tmp;
 	Type **para_types;
-	Type *t;
 	Symbol *sym;
 	int i = 0, parameter_length;
 
 	errors += insertSymbol(function->node.DefineFunction.identifier, NULL);
+	sym = retrieveSymbol(function->node.DefineFunction.identifier);
+	currentfunc = sym;
 
 	openScope();
 	Children = concat_node(function->node.DefineFunction.parameters, function->node.DefineFunction.statements);
@@ -287,13 +290,11 @@ void handleDefineFunction(AstNode *function){
 		para_types[i] = identifier->node.Identifier.symbol->type;
 		i++;
 	}
-
-	t = mkFunctionTypeDiscriptor(parameter_length, para_types, processNode(function->node.DefineFunction.type));
+	
+	sym->type = mkFunctionTypeDiscriptor(parameter_length, para_types, processNode(function->node.DefineFunction.type));;
 
 	closeScope();
-
-	sym = retrieveSymbol(function->node.DefineFunction.identifier);
-	sym->type = t;
+	currentfunc = NULL;
 }
 
 void handleDefineTask(AstNode *function){

@@ -324,6 +324,8 @@ AstNode *mkMessageLiteralNode(AstNode *identifier, AstNode *arguments){
 AstNode *mkReturnNode(AstNode *expression){
 	AstNode *node = mkNode(Return);
 	node->node.Return.expression = expression;
+	node->node.Return.functionsym = malloc(sizeof(Symbol*));
+	*node->node.Return.functionsym = NULL;
 	return node;
 }
 
