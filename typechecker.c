@@ -18,6 +18,7 @@ Type *unaryOperatorType(AstNode *);
 int typeMatch(Type *, Type *);
 void checkFunctionCall(AstNode *node);
 void checkSpawnNode(AstNode *node);
+void checkMessageLiteral(AstNode *node);
 
 
 static int errors;
@@ -156,7 +157,8 @@ void typeCheckNode(AstNode *node){
         break;
 	case BoolLiteral: /*Nothing*/
         break;
-    case MessageLiteral: /* a bit like function call. Check the args match the "prototype" */
+    case MessageLiteral:
+		checkMessageLiteral(node);
         break;
     case Return: /* should check that the expression type matches the return type of the enclosing function */
         break;
@@ -566,5 +568,39 @@ void checkSpawnNode(AstNode *node){
 	if(paramnr != parametercount|| arg != NULL){
 		errors++;
 		printf("%s:%d: Number of arguments in taskspawn \"%s\" is incorrect. Expected %d, but got %d\n", filename, id->linenum, id->node.Identifier.identifier, parametercount, nodeLength(node->node.Spawn.arguments));
+	}
+}
+
+/*checkMessageLiteral is copy pasted from checkSpawnNode because they are syntactically similar*/
+void checkMessageLiteral(AstNode *node){	
+	AstNode *id = node->node.MessageLiteral.identifier;
+	Type *t = id->node.Identifier.symbol->type;
+	int parametercount;
+	Type **parameters;
+	AstNode *arg = node->node.MessageLiteral.arguments;
+	int paramnr = 0;
+
+	if (t->tag != MessageTypeTag){
+		errors++;
+		printf("%s:%d: %s is not a message\n", filename, id->linenum, id->node.Identifier.identifier);
+		return;
+	}
+	parametercount = t->tags.typeMessage.arity;
+	parameters = t->tags.typeMessage.parameterTypes;
+
+	for(; paramnr < parametercount && arg != NULL; paramnr++ , arg = arg->next){
+		Type *ptype = parameters[paramnr];
+		Type *atype = typeof(arg);
+		if(!typeMatch(ptype, atype)){
+			char *expected = typeString(ptype);	
+			char *errorMsg = smprintf("Expected argument %d of message \"%s\" to have type %s", paramnr + 1, id->node.Identifier.identifier, expected);
+			printTypeFail(errorMsg, arg, atype);
+			free(expected);
+			free(errorMsg);
+		}
+	}
+	if(paramnr != parametercount|| arg != NULL){
+		errors++;
+		printf("%s:%d: Number of arguments in message literal \"%s\" is incorrect. Expected %d, but got %d\n", filename, id->linenum, id->node.Identifier.identifier, parametercount, nodeLength(node->node.MessageLiteral.arguments));
 	}
 }

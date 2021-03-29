@@ -458,6 +458,9 @@ AstNode *getChildren(AstNode *node){
 		break;
 	case BoolLiteral:
 		break;
+	case MessageLiteral:
+		result = concat_node(node->node.MessageLiteral.identifier, node->node.MessageLiteral.arguments);
+		break;
 	case Return:
 		result = node->node.Return.expression;
 		break;

@@ -180,6 +180,13 @@ Type *processNode(AstNode *node){
 	case IntLiteral: break; /* Nothing */
 	case FloatLiteral: break; /* Nothing */
 	case BoolLiteral: break; /* Nothing */
+	case MessageLiteral: 
+		sym = retrieveSymbol(node->node.MessageLiteral.identifier);
+		if(sym == NULL)
+			undeclaredError(node->node.MessageLiteral.identifier);
+		else
+			updateSymbolId(node->node.MessageLiteral.identifier, sym);
+		break;
 	case Return: break; /* Nothing */
 	case Spawn:
 		sym = retrieveSymbol(node->node.Spawn.identifier);
