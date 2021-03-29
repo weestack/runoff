@@ -11,11 +11,11 @@ AstNode *append_node(AstNode* siblingA, AstNode* siblingB) {
 	if(siblingA == NULL)
 		return siblingB;
 
-    for (tmp = siblingA; tmp->next != NULL; tmp = tmp->next);
+	for (tmp = siblingA; tmp->next != NULL; tmp = tmp->next);
 
-    tmp->next = siblingB;
+	tmp->next = siblingB;
 
-    return siblingA;
+	return siblingA;
 }
 
 AstNode *concat_node(AstNode *siblingA, AstNode* siblingB){

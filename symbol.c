@@ -18,7 +18,7 @@ int insertSymbol(AstNode *node, Type *type) {
 	if(symbol != NULL){
 		printf("%s:%d: Name \"%s\" is already declared on line %d\n", filename, node->linenum, name, symbol->node->linenum);
 		return 1;
-    }
+	}
 
 	symbol = enterSymbol(name, type);
 	symbol->node = node;
