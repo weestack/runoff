@@ -286,7 +286,6 @@ int buildinTypeMatchInt(Type *a){
 	case builtintype_int16: /* Fall through */
 	case builtintype_int32: /* Fall through */
 	case builtintype_int64: /* Fall through */
-	case builtintype_int:   /* Fall through */
 	case builtintype_unknownInt:
         return 1;
     default:

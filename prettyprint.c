@@ -86,7 +86,6 @@ char *builtintypeNames[] = {
 	"int16",
 	"int32",
 	"int64",
-	"int",
 	"unknownInt",
 	"float",
 	"void",
