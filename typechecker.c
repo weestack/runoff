@@ -17,6 +17,7 @@ Type *binaryOperatorType(AstNode *);
 Type *unaryOperatorType(AstNode *);
 int typeMatch(Type *, Type *);
 void checkFunctionCall(AstNode *node);
+void checkSpawnNode(AstNode *node);
 
 
 static int errors;
@@ -159,7 +160,8 @@ void typeCheckNode(AstNode *node){
         break;
     case Return: /* should check that the expression type matches the return type of the enclosing function */
         break;
-	case Spawn: /* check that it is a task and check the args match the prototype */
+	case Spawn:
+		checkSpawnNode(node);
         break;
 	case Send:
 		typeA = typeof(node->node.Send.message);
@@ -521,7 +523,7 @@ void checkFunctionCall(AstNode *node){
 		Type *atype = typeof(arg);
 		if(!typeMatch(ptype, atype)){
 			char *expected = typeString(ptype);	
-			char *errorMsg = smprintf("Expected argument %d to have type %s", paramnr + 1, expected);
+			char *errorMsg = smprintf("Expected argument %d of function \"%s\" to have type %s", paramnr + 1, id->node.Identifier.identifier, expected);
 			printTypeFail(errorMsg, arg, atype);
 			free(expected);
 			free(errorMsg);
@@ -530,5 +532,39 @@ void checkFunctionCall(AstNode *node){
 	if(paramnr != parametercount|| arg != NULL){
 		errors++;
 		printf("%s:%d: Number of arguments in functioncall \"%s\" does not match the prototype. Expected %d, but got %d\n", filename, id->linenum, id->node.Identifier.identifier, parametercount, nodeLength(node->node.FunctionCall.arguments));
+	}
+}
+
+/*checkSpawnNode is copy pasted from checkFunctionCall because they are syntactically similar*/
+void checkSpawnNode(AstNode *node){	
+	AstNode *id = node->node.Spawn.identifier;
+	Type *t = id->node.Identifier.symbol->type;
+	int parametercount;
+	Type **parameters;
+	AstNode *arg = node->node.Spawn.arguments;
+	int paramnr = 0;
+
+	if (t->tag != TaskTypeTag){
+		errors++;
+		printf("%s:%d: %s is not a task\n", filename, id->linenum, id->node.Identifier.identifier);
+		return;
+	}
+	parametercount = t->tags.typeTask.arity;
+	parameters = t->tags.typeTask.parameterTypes;
+
+	for(; paramnr < parametercount && arg != NULL; paramnr++ , arg = arg->next){
+		Type *ptype = parameters[paramnr];
+		Type *atype = typeof(arg);
+		if(!typeMatch(ptype, atype)){
+			char *expected = typeString(ptype);	
+			char *errorMsg = smprintf("Expected argument %d of task \"%s\" to have type %s", paramnr + 1, id->node.Identifier.identifier, expected);
+			printTypeFail(errorMsg, arg, atype);
+			free(expected);
+			free(errorMsg);
+		}
+	}
+	if(paramnr != parametercount|| arg != NULL){
+		errors++;
+		printf("%s:%d: Number of arguments in taskspawn \"%s\" is incorrect. Expected %d, but got %d\n", filename, id->linenum, id->node.Identifier.identifier, parametercount, nodeLength(node->node.Spawn.arguments));
 	}
 }
