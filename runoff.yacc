@@ -1,22 +1,22 @@
 %{
-    #include <stdio.h>
-    #include "symbol.h"
-    #include "ast.h"
-    #include "phases.h"
-    #include "auxiliary.h"
+	#include <stdio.h>
+	#include "symbol.h"
+	#include "ast.h"
+	#include "phases.h"
+	#include "auxiliary.h"
 
-    extern int yylineno;
-    extern int yylex(void);
-    extern FILE* yyin;
-    int yyerror(const char*);
-    static AstNode *parseresult;
+	extern int yylineno;
+	extern int yylex(void);
+	extern FILE* yyin;
+	int yyerror(const char*);
+	static AstNode *parseresult;
 %}
 
 /* Give me the good errors please */
 %define parse.error verbose
 
 %union {
-    struct AstNode* astNode;
+	struct AstNode* astNode;
 }
 
 /* Define all non-terminals as type astNode */
@@ -25,47 +25,47 @@
 %token <astNode> identifier builtin_type pin_literal int_literal float_literal bool_literal
 
 %token
-    struct_keyword
-    messages
+	struct_keyword
+	messages
 
-    and_op
-    or_op
-    greater_than
-    greater_equal
-    less_than
-    less_equal
-    equal
-    not_equal
-    modulo
+	and_op
+	or_op
+	greater_than
+	greater_equal
+	less_than
+	less_equal
+	equal
+	not_equal
+	modulo
 
-    increment
-    decrement
+	increment
+	decrement
 
-    function
-    task
-    while_keyword
-    for_keyword
-    if_keyword
-    else_keyword
-    elseif_keyword
-    switch_keyword
-    receive
-    case_keyword
-    default_keyword
-    right_arrow
-    return_keyword
-    spawn_keyword
-    send_keyword
-    to_keyword
+	function
+	task
+	while_keyword
+	for_keyword
+	if_keyword
+	else_keyword
+	elseif_keyword
+	switch_keyword
+	receive
+	case_keyword
+	default_keyword
+	right_arrow
+	return_keyword
+	spawn_keyword
+	send_keyword
+	to_keyword
 
-    include_keyword
+	include_keyword
 
-    bitwise_and
-    bitwise_or
-    bitwise_xor
-    bitwise_not
-    right_shift
-    left_shift
+	bitwise_and
+	bitwise_or
+	bitwise_xor
+	bitwise_not
+	right_shift
+	left_shift
 
 %right '='
 %right '?' ':'
@@ -86,158 +86,157 @@
 %%
 
 Program: Toplevel {$$ = mkProgNode($1); parseresult = $$;}
-       | Program Toplevel {
-       		$$ = append_node($1->node.Prog.toplevels, $2);
-       		$$ = mkProgNode($$);
-       		parseresult = $$;
-       		}
-       ;
+	| Program Toplevel {
+		$$ = append_node($1->node.Prog.toplevels, $2);
+		$$ = mkProgNode($$);
+		parseresult = $$;
+	}
+	;
 
 Toplevel: function identifier '(' ParametersList ')' right_arrow Type '{' Statements '}' { $$=mkDefineFunctionNode($2, $4, $7, $9); }
-        | task identifier '(' ParametersList ')' '{' Statements '}' {$$ = mkDefineTaskNode($2, $4, $7);}
-        | struct_keyword identifier '{' StructMembers '}' {$$=mkDefineStructNode($2, $4);}
-        | messages '{' MessageIdentifiers '}' {$$ = mkDefineMessageNode($3);}
-        | Type identifier '=' Expression ';' {$$ = mkVarDeclNode($1, $2, $4, 1);}
-        /*| include_keyword '(' identifier ')' ';'*/
-        ;
+	| task identifier '(' ParametersList ')' '{' Statements '}' {$$ = mkDefineTaskNode($2, $4, $7);}
+	| struct_keyword identifier '{' StructMembers '}' {$$=mkDefineStructNode($2, $4);}
+	| messages '{' MessageIdentifiers '}' {$$ = mkDefineMessageNode($3);}
+	| Type identifier '=' Expression ';' {$$ = mkVarDeclNode($1, $2, $4, 1);}
+	/*| include_keyword '(' identifier ')' ';'*/
+	;
 
 MessageIdentifiers: MessageIdentifiers MessageIdentifier {$$ = append_node($1, $2);}
-                  | MessageIdentifier {$$ = $1;}
-                  ;
+	| MessageIdentifier {$$ = $1;}
+	;
 
 MessageIdentifier: identifier '{' Parameters '}' ';' {$$ = mkMessageIdentifierNode($1, $3);}
-                 | identifier ';' {$$ = mkMessageIdentifierNode($1, NULL);}
-                 ;
+	| identifier ';' {$$ = mkMessageIdentifierNode($1, NULL);}
+	;
 
 StructMembers: StructMembers Type identifier ';' {$$ = append_node($1, mkStructMemberNode($3, $2));}
-             | Type identifier ';' {$$ = mkStructMemberNode($2, $1);}
-             ;
+	| Type identifier ';' {$$ = mkStructMemberNode($2, $1);}
+	;
 
 ParametersList: Parameters {$$ = $1;}
-              | %empty {$$ = NULL;}
-              ;
+	| %empty {$$ = NULL;}
+	;
 
 Parameters: Type identifier {$$ = mkParameterNode($1, $2);}
-          | Parameters ',' Type identifier {$$ = append_node($1, mkParameterNode($3, $4));}
-          ;
+	| Parameters ',' Type identifier {$$ = append_node($1, mkParameterNode($3, $4));}
+	;
 
 ArgsList: Args {$$ = $1;}
-        | %empty {$$ = NULL;}
-        ;
+	| %empty {$$ = NULL;}
+	;
 
 Args: Args ',' Expression {$$ = append_node($1, $3);}
-    | Expression {$$ = $1;}
-    ;
+	| Expression {$$ = $1;}
+	;
 
 Type: builtin_type {$$ = $1;}
-    | struct_keyword identifier {$$ = mkStructTypeNode($2);}
-    | Type '[' int_literal ']' {$$ = mkArrayTypeNode($1, $3);}
-    | Type '[' ']' {$$ = mkArrayTypeNode($1, NULL); }
-    ;
+	| struct_keyword identifier {$$ = mkStructTypeNode($2);}
+	| Type '[' int_literal ']' {$$ = mkArrayTypeNode($1, $3);}
+	| Type '[' ']' {$$ = mkArrayTypeNode($1, NULL); }
+	;
 
 Statements: Statements Statement {$$ = append_node($1, $2);}
-          | %empty {$$ = NULL;}
-          ;
+	| %empty {$$ = NULL;}
+	;
 
 Statement: Expression ';' {$$ = mkExprStmtNode($1);}
-         | while_keyword '(' Expression ')' '{' Statements '}' {$$ = mkWhileNode($3, $6);}
-         | for_keyword '(' MaybeExpression ';' MaybeExpression ';' MaybeExpression ')' '{' Statements '}'
-         {$$ = mkForNode($3, $5, $7, $10);}
-         | switch_keyword '(' Expression ')' '{' SwitchCases '}' {$$ = mkSwitchNode($3, $6);}
-         | if_keyword '(' Expression ')' '{' Statements '}' ElsePart {$$ = mkIfNode($3, $6, $8);}
-         | receive '{' ReceiveCases '}' {$$ = mkReceiveNode($3);}
-         | return_keyword MaybeExpression ';' {$$ = mkReturnNode($2);}
-         | send_keyword Expression to_keyword Expression ';' {$$ = mkSendNode($2, $4);}
-         ;
+	| while_keyword '(' Expression ')' '{' Statements '}' {$$ = mkWhileNode($3, $6);}
+	| for_keyword '(' MaybeExpression ';' MaybeExpression ';' MaybeExpression ')' '{' Statements '}' {
+		$$ = mkForNode($3, $5, $7, $10);
+	}
+	| switch_keyword '(' Expression ')' '{' SwitchCases '}' {$$ = mkSwitchNode($3, $6);}
+	| if_keyword '(' Expression ')' '{' Statements '}' ElsePart {$$ = mkIfNode($3, $6, $8);}
+	| receive '{' ReceiveCases '}' {$$ = mkReceiveNode($3);}
+	| return_keyword MaybeExpression ';' {$$ = mkReturnNode($2);}
+	| send_keyword Expression to_keyword Expression ';' {$$ = mkSendNode($2, $4);}
+	;
 
 ElsePart: else_keyword '{' Statements '}' {$$ = mkElseNode($3);}
-        | elseif_keyword '(' Expression ')' '{' Statements '}' ElsePart {$$ = mkElseIfNode($3, $6, $8);}
-        | %empty {$$ = NULL;}
-        ;
+	| elseif_keyword '(' Expression ')' '{' Statements '}' ElsePart {$$ = mkElseIfNode($3, $6, $8);}
+	| %empty {$$ = NULL;}
+	;
 
 SwitchCases: SwitchCases SwitchCase {$$ = append_node($1, $2);}
-           | %empty {$$ = NULL;}
-           ;
+	| %empty {$$ = NULL;}
+	;
 
 SwitchCase: case_keyword int_literal ':' Statements {$$ = mkSwitchCaseNode($2, $4);}
-          | default_keyword ':' Statements {$$ = mkSwitchCaseNode(NULL, $3);}
-          ;
+	| default_keyword ':' Statements {$$ = mkSwitchCaseNode(NULL, $3);}
+	;
 
 IdentifierList: Identifiers {$$ = $1;}
-              | %empty {$$ = NULL;}
-              ;
+	| %empty {$$ = NULL;}
+	;
 
 Identifiers: Identifiers ',' identifier {$$ = append_node($1, $3);}
-           | identifier {$$ = $1;}
-           ;
+	| identifier {$$ = $1;}
+	;
 
 ReceiveCases: ReceiveCases case_keyword identifier '{' IdentifierList '}' ':' Statements {$$ = append_node($1, mkReceiveCaseNode($3, $5, $8));}
-            | %empty {$$ = NULL;}
-            ;
+	| %empty {$$ = NULL;}
+	;
 
 MaybeExpression: Expression {$$ = $1;}
-               | %empty {$$ = NULL;}
-               ;
+	| %empty {$$ = NULL;}
+	;
 
 Declaration: Type identifier {$$ = mkVarDeclNode($1, $2, NULL, 0);}
-           | Type identifier '=' Expression {$$ = mkVarDeclNode($1, $2, $4, 0);}
-           ;
+	| Type identifier '=' Expression {$$ = mkVarDeclNode($1, $2, $4, 0);}
+	;
 
 Literal: pin_literal {$$ = $1;}
-       | int_literal {$$ = $1;}
-       | float_literal {$$ = $1;}
-       | bool_literal {$$ = $1;}
-       | identifier '{' ArgsList '}' {$$ = mkMessageLiteralNode($1, $3);}
-       ;
+	| int_literal {$$ = $1;}
+	| float_literal {$$ = $1;}
+	| bool_literal {$$ = $1;}
+	| identifier '{' ArgsList '}' {$$ = mkMessageLiteralNode($1, $3);}
+	;
 
 Expression: Location {$$ = $1;}
-          | Literal {$$ = $1;}
-          | Expression '+' Expression {$$ = mkBinaryOperationNode($1, eplus, $3);}
-          | Expression '-' Expression {$$ = mkBinaryOperationNode($1, eminus, $3);}
-          | Expression '*' Expression {$$ = mkBinaryOperationNode($1, etimes, $3);}
-          | Expression '/' Expression {$$ = mkBinaryOperationNode($1, edivid, $3);}
-          | Expression modulo Expression {$$ = mkBinaryOperationNode($1, emod, $3);}
-
-          | Expression and_op Expression {$$ = mkBinaryOperationNode($1, elogical_and, $3);}
-          | Expression or_op Expression {$$ = mkBinaryOperationNode($1, elogical_or, $3);}
-          | Expression equal Expression {$$ = mkBinaryOperationNode($1, eequal, $3);}
-          | Expression not_equal Expression {$$ = mkBinaryOperationNode($1, enot_equal, $3);}
-          | Expression greater_equal Expression {$$ = mkBinaryOperationNode($1, egreater_equal, $3);}
-          | Expression greater_than Expression {$$ = mkBinaryOperationNode($1, ebigger_than, $3);}
-          | Expression less_equal Expression {$$ = mkBinaryOperationNode($1, esmaller_equal, $3);}
-          | Expression less_than Expression {$$ = mkBinaryOperationNode($1, esmaller_than, $3);}
-
-          | '!' Expression {$$ = mkUnaryOperationNode(elogical_not, prefix, $2);}
-          | bitwise_not Expression {$$ = mkUnaryOperationNode(ebit_not, prefix, $2);}
-          | Expression bitwise_and Expression {$$ = mkBinaryOperationNode($1, ebit_and, $3);}
-          | Expression bitwise_or Expression {$$ = mkBinaryOperationNode($1, ebit_or, $3);}
-          | Expression bitwise_xor Expression {$$ = mkBinaryOperationNode($1, ebit_xor, $3);}
-          | Expression right_shift Expression {$$ = mkBinaryOperationNode($1, eright_shift, $3);}
-          | Expression left_shift Expression {$$ = mkBinaryOperationNode($1, eleft_shift, $3);}
-          | '(' Expression ')' {$$ = $2;}
-          | identifier '(' ArgsList ')' {$$ = mkFunctionCallNode($1, $3);}
-          | Location '=' Expression {$$ = mkAssignmentNode($1, $3);}
-          | identifier increment {$$ = mkUnaryOperationNode(eincrement, postfix, $1);}
-          | identifier decrement {$$ = mkUnaryOperationNode(edecrement, postfix, $1);}
-          | Declaration {$$ = $1;}
-          | Expression '?' Expression ':' Expression {$$ = mkTernaryOperatorNode($1, $3, $5);}
-          | spawn_keyword identifier '(' ArgsList ')' {$$ = mkSpawnNode($2, $4);}
-          ;
+	| Literal {$$ = $1;}
+	| Expression '+' Expression {$$ = mkBinaryOperationNode($1, eplus, $3);}
+	| Expression '-' Expression {$$ = mkBinaryOperationNode($1, eminus, $3);}
+	| Expression '*' Expression {$$ = mkBinaryOperationNode($1, etimes, $3);}
+	| Expression '/' Expression {$$ = mkBinaryOperationNode($1, edivid, $3);}
+	| Expression modulo Expression {$$ = mkBinaryOperationNode($1, emod, $3);}
+	| Expression and_op Expression {$$ = mkBinaryOperationNode($1, elogical_and, $3);}
+	| Expression or_op Expression {$$ = mkBinaryOperationNode($1, elogical_or, $3);}
+	| Expression equal Expression {$$ = mkBinaryOperationNode($1, eequal, $3);}
+	| Expression not_equal Expression {$$ = mkBinaryOperationNode($1, enot_equal, $3);}
+	| Expression greater_equal Expression {$$ = mkBinaryOperationNode($1, egreater_equal, $3);}
+	| Expression greater_than Expression {$$ = mkBinaryOperationNode($1, ebigger_than, $3);}
+	| Expression less_equal Expression {$$ = mkBinaryOperationNode($1, esmaller_equal, $3);}
+	| Expression less_than Expression {$$ = mkBinaryOperationNode($1, esmaller_than, $3);}
+	| '!' Expression {$$ = mkUnaryOperationNode(elogical_not, prefix, $2);}
+	| bitwise_not Expression {$$ = mkUnaryOperationNode(ebit_not, prefix, $2);}
+	| Expression bitwise_and Expression {$$ = mkBinaryOperationNode($1, ebit_and, $3);}
+	| Expression bitwise_or Expression {$$ = mkBinaryOperationNode($1, ebit_or, $3);}
+	| Expression bitwise_xor Expression {$$ = mkBinaryOperationNode($1, ebit_xor, $3);}
+	| Expression right_shift Expression {$$ = mkBinaryOperationNode($1, eright_shift, $3);}
+	| Expression left_shift Expression {$$ = mkBinaryOperationNode($1, eleft_shift, $3);}
+	| '(' Expression ')' {$$ = $2;}
+	| identifier '(' ArgsList ')' {$$ = mkFunctionCallNode($1, $3);}
+	| Location '=' Expression {$$ = mkAssignmentNode($1, $3);}
+	| identifier increment {$$ = mkUnaryOperationNode(eincrement, postfix, $1);}
+	| identifier decrement {$$ = mkUnaryOperationNode(edecrement, postfix, $1);}
+	| Declaration {$$ = $1;}
+	| Expression '?' Expression ':' Expression {$$ = mkTernaryOperatorNode($1, $3, $5);}
+	| spawn_keyword identifier '(' ArgsList ')' {$$ = mkSpawnNode($2, $4);}
+	;
 
 Location: identifier {$$ = mkVariableLocationNode($1);}
-        | identifier '.' Location {$$ = mkStructLocationNode($1, $3);}
-        | identifier Indexes {$$ = mkArrayLocationNode($1, $2);}
-        ;
+	| identifier '.' Location {$$ = mkStructLocationNode($1, $3);}
+	| identifier Indexes {$$ = mkArrayLocationNode($1, $2);}
+	;
 
 Indexes: Indexes '[' Expression ']' {$$ = append_node($1, $3);}
-       | '[' Expression ']' {$$ = $2;}
-       ;
+	| '[' Expression ']' {$$ = $2;}
+	;
 
 %%
 
 int
 yyerror(const char *err) {
-    eprintf(yylineno, "%s\n", err);
+	eprintf(yylineno, "%s\n", err);
 }
 
 AstNode *parse(char *file){
