@@ -1,7 +1,5 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdarg.h>
-#include <string.h>
 #include "symbol.h"
 #include "ast.h"
 #include "phases.h"
@@ -345,15 +343,4 @@ static char *prettyprintlist(AstNode *node, char *sep, int end){
 		free(prev);
 	}
 	return result;
-}
-
-/* printf but it returns a string allocated by malloc */
-char *smprintf(char *fmt, ...){
-	va_list args;
-	char *str = malloc(1000000);
-	va_start(args, fmt);
-	vsprintf(str, fmt, args);
-	va_end(args);
-	str = realloc(str, strlen(str) + 1);
-	return str;
 }

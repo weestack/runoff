@@ -3,11 +3,11 @@
     #include "symbol.h"
     #include "ast.h"
     #include "phases.h"
+    #include "auxiliary.h"
 
     extern int yylineno;
     extern int yylex(void);
     extern FILE* yyin;
-    extern char *filename;
     int yyerror(const char*);
     static AstNode *parseresult;
 %}
@@ -237,7 +237,7 @@ Indexes: Indexes '[' Expression ']' {$$ = append_node($1, $3);}
 
 int
 yyerror(const char *err) {
-    printf("%s:%d: %s\n", filename, yylineno, err);
+    eprintf(yylineno, "%s\n", err);
 }
 
 AstNode *parse(char *file){

@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
 #include "auxiliary.h"
 #include "symbol.h"
 #include "ast.h"
@@ -19,7 +18,6 @@ int typeMatch(Type *, Type *);
 void checkParameterList(AstNode *id, AstNode *args, int arity, Type **parameters, int typetag, char *desc);
 
 static int errors;
-extern char* filename;
 
 int typeCheck(AstNode *tree){
 	typeCheckNode(tree);
@@ -178,7 +176,7 @@ void typeCheckNode(AstNode *node){
 		if(*node->node.Return.functionsym == NULL){
 			if(typeA != NULL){
 				errors++;
-				printf("%s:%d: Unexpected expession in return of task\n", filename, node->linenum);
+				eprintf(node->linenum, "Unexpected expession in return of task\n");
 				break;
 			}
 			break;
@@ -189,7 +187,7 @@ void typeCheckNode(AstNode *node){
 		if(typeA == NULL && !buildinTypeMatch(typeB, builtintype_void)){
 			char *expected = typeString(typeB);
 			errors++;
-			printf("%s:%d: Missing expression of type %s in return statement\n", filename, node->linenum, expected);
+			eprintf(node->linenum, "Missing expression of type %s in return statement\n", expected);
 			free(expected);
 			break;
 		}
@@ -249,7 +247,7 @@ Type *typeof(AstNode *node){
 
 				if(tmp->tag != ArrayTypeTag){
 					errors++;
-					printf("%s:%d: Index in array %s too deep\n", filename, id->linenum, id->node.Identifier.identifier);
+					eprintf(id->linenum, "Index in array %s too deep\n", id->node.Identifier.identifier);
 					return NULL;
 				}
 			}
@@ -377,7 +375,7 @@ int numericType(Type *type){
 void printTypeFail(char *fail_message, AstNode *node, Type *type){
 	char *text_type = typeString(type);
 	errors++;
-	printf("%s:%d: %s. Actual type: %s \n", filename, node->linenum, fail_message, text_type);
+	eprintf(node->linenum, "%s. Actual type: %s \n", fail_message, text_type);
 	free(text_type);
 }
 
@@ -475,8 +473,7 @@ Type *binaryOperatorType(AstNode *node){
 		char *text_type_right = typeString(right);
 		char *text_type_left = typeString(left);
 		errors++;
-		printf("%s:%d: binary operator %s %s.\n\tActual type for left: %s\n\tActual type for right: %s \n",
-			filename, node->linenum,
+		eprintf(node->linenum, "binary operator %s %s.\n\tActual type for left: %s\n\tActual type for right: %s \n",
 			operatorNames[node->node.BinaryOperation.operator], other_error,
 			text_type_left, text_type_right);
 
@@ -553,7 +550,7 @@ void checkParameterList(AstNode *id, AstNode *args, int arity, Type **parameters
 	
 	if(t->tag != typetag){
 		errors++;
-		printf("%s:%d: %s is not a %s\n", filename, id->linenum, name, desc);
+		eprintf(id->linenum, "%s is not a %s\n", name, desc);
 		return;
 	}
 	
@@ -562,7 +559,7 @@ void checkParameterList(AstNode *id, AstNode *args, int arity, Type **parameters
 		Type *atype = typeof(arg);
 		if(!typeMatch(ptype, atype)){
 			char *expected = typeString(ptype);
-			char *errmsg = smprintf("Expected argument %d of %s \"%s\" to have type %s\n", paramnr+1, desc, name, expected);
+			char *errmsg = smprintf("Expected argument %d of %s \"%s\" to have type %s", paramnr+1, desc, name, expected);
 			printTypeFail(errmsg, arg, atype);
 			free(expected);
 			free(errmsg);
@@ -570,6 +567,6 @@ void checkParameterList(AstNode *id, AstNode *args, int arity, Type **parameters
 	}
 	if(paramnr != arity || arg != NULL){
 		errors++;
-		printf("%s:%d: Number of argument in %s \"%s\" incorrect. Expected %d, got %d\n", filename, id->linenum, desc, name, arity, nodeLength(args));
+		eprintf(id->linenum, "Number of argument in %s \"%s\" incorrect. Expected %d, got %d\n", desc, name, arity, nodeLength(args));
 	}
 }

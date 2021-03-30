@@ -3,6 +3,7 @@
 #include "symbol.h"
 #include "ast.h"
 #include "phases.h"
+#include "auxiliary.h"
 
 Type *processNode(AstNode*);
 void processNodes(AstNode *);
@@ -15,7 +16,6 @@ void handleMessageIdentifier(AstNode *function);
 void handleReceiveCase(AstNode *node);
 void checkIdentifierTypes(AstNode *tree);
 static int errors;
-extern char *filename; /* defined and set in runoff.c */
 static Symbol *currentfunc; /* the symbol of the current function */
 
 int buildSymbolTable(AstNode *tree){
@@ -219,7 +219,7 @@ void processNodes(AstNode *nodes){
 void undeclaredError(AstNode *node){
 	char *name = node->node.Identifier.identifier;
 	errors++;
-	printf("%s:%d: Undeclared symbol \"%s\"\n", filename, node->linenum, name);
+	eprintf(node->linenum, "Undeclared symbol \"%s\"\n", name);
 }
 
 void updateSymbolId(AstNode *node, Symbol *s){
@@ -385,7 +385,7 @@ void handleReceiveCase(AstNode *node){
 	}
 	if(paramnr != paramcount || arg != NULL){
 		errors++;
-		printf("%s:%d: Arity of message in receive case does not match message prototype for %s (should be %d but is %d)\n", filename, node->linenum, sym->name, paramcount, nodeLength(node->node.ReceiveCase.dataNames));
+		eprintf(node->linenum,"Arity of message in receive case does not match message prototype for %s (should be %d but is %d)\n", sym->name, paramcount, nodeLength(node->node.ReceiveCase.dataNames));
 	}
 	processNodes(node->node.ReceiveCase.statements);
 	closeScope();

@@ -3,10 +3,10 @@
 #include <stdlib.h>
 #include "symbol.h"
 #include "ast.h"
+#include "auxiliary.h"
 
 static SymbolTable* symbolTable;
 static SymbolTable* current;
-extern char *filename; /* defined in runoff.c */
 
 Symbol *enterSymbol(char *, Type*);
 
@@ -16,7 +16,7 @@ int insertSymbol(AstNode *node, Type *type) {
 
 	symbol = declaredLocally(name);
 	if(symbol != NULL){
-		printf("%s:%d: Name \"%s\" is already declared on line %d\n", filename, node->linenum, name, symbol->node->linenum);
+		eprintf(node->linenum, "Name \"%s\" is already declared on line %d\n", name, symbol->node->linenum);
 		return 1;
 	}
 
