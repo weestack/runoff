@@ -16,10 +16,7 @@ char *typeString(Type *);
 Type *binaryOperatorType(AstNode *);
 Type *unaryOperatorType(AstNode *);
 int typeMatch(Type *, Type *);
-void checkFunctionCall(AstNode *node);
-void checkSpawnNode(AstNode *node);
-void checkMessageLiteral(AstNode *node);
-
+void checkParameterList(AstNode *id, AstNode *args, int arity, Type **parameters, int typetag, char *desc);
 
 static int errors;
 extern char* filename;
@@ -32,6 +29,7 @@ int typeCheck(AstNode *tree){
 void typeCheckNode(AstNode *node){
 	Type *typeA, *typeB, *typeC;
 	AstNode *children;
+	AstNode *id;
 
 	switch(node->tag){
 	case Prog: /* Nothing */
@@ -119,7 +117,14 @@ void typeCheckNode(AstNode *node){
 	case ArrayLocation: /*Nothing*/
 		break;
 	case FunctionCall:
-		checkFunctionCall(node);
+		id = node->node.FunctionCall.identifier;
+		typeA = id->node.Identifier.symbol->type;
+		checkParameterList(id,
+			node->node.FunctionCall.arguments,
+			typeA->tags.typeFunction.arity,
+			typeA->tags.typeFunction.parameterTypes,
+			FunctionTypeTag,
+			"function-call");
 		break;
 	case Assignment:
 		typeA = typeof(node->node.Assignment.location);
@@ -158,7 +163,14 @@ void typeCheckNode(AstNode *node){
 	case BoolLiteral: /*Nothing*/
 		break;
 	case MessageLiteral:
-		checkMessageLiteral(node);
+		id = node->node.MessageLiteral.identifier;
+		typeA = id->node.Identifier.symbol->type;
+		checkParameterList(id,
+			node->node.MessageLiteral.arguments,
+			typeA->tags.typeMessage.arity,
+			typeA->tags.typeMessage.parameterTypes,
+			MessageTypeTag,
+			"message literal");
 		break;
 	case Return:
 		typeA = typeof(node->node.Return.expression);
@@ -190,7 +202,14 @@ void typeCheckNode(AstNode *node){
 		}
 		break;
 	case Spawn:
-		checkSpawnNode(node);
+		id = node->node.Spawn.identifier;
+		typeA = id->node.Identifier.symbol->type;
+		checkParameterList(id,
+			node->node.Spawn.arguments,
+			typeA->tags.typeTask.arity,
+			typeA->tags.typeTask.parameterTypes,
+			TaskTypeTag,
+			"task");
 		break;
 	case Send:
 		typeA = typeof(node->node.Send.message);
@@ -526,104 +545,31 @@ Type *unaryOperatorType(AstNode *node){
 	return mkBuiltinTypeDiscriptor(returnType);
 }
 
-
-void checkFunctionCall(AstNode *node){	
-	AstNode *id = node->node.FunctionCall.identifier;
+void checkParameterList(AstNode *id, AstNode *args, int arity, Type **parameters, int typetag, char *desc){
 	Type *t = id->node.Identifier.symbol->type;
-	int parametercount;
-	Type **parameters;
-	AstNode *arg = node->node.FunctionCall.arguments;
-	int paramnr = 0;
-
-	if (t->tag != FunctionTypeTag){
+	AstNode *arg = args;
+	int paramnr;
+	char *name = id->node.Identifier.identifier;
+	
+	if(t->tag != typetag){
 		errors++;
-		printf("%s:%d: %s is not a function\n", filename, id->linenum, id->node.Identifier.identifier);
+		printf("%s:%d: %s is not a %s\n", filename, id->linenum, name, desc);
 		return;
 	}
-	parametercount = t->tags.typeFunction.arity;
-	parameters = t->tags.typeFunction.parameterTypes;
-
-	for(; paramnr < parametercount && arg != NULL; paramnr++ , arg = arg->next){
+	
+	for(paramnr = 0; paramnr < arity && arg != NULL; paramnr++, arg = arg->next){
 		Type *ptype = parameters[paramnr];
 		Type *atype = typeof(arg);
 		if(!typeMatch(ptype, atype)){
-			char *expected = typeString(ptype);	
-			char *errorMsg = smprintf("Expected argument %d of function \"%s\" to have type %s", paramnr + 1, id->node.Identifier.identifier, expected);
-			printTypeFail(errorMsg, arg, atype);
+			char *expected = typeString(ptype);
+			char *errmsg = smprintf("Expected argument %d of %s \"%s\" to have type %s\n", paramnr+1, desc, name, expected);
+			printTypeFail(errmsg, arg, atype);
 			free(expected);
-			free(errorMsg);
+			free(errmsg);
 		}
 	}
-	if(paramnr != parametercount|| arg != NULL){
+	if(paramnr != arity || arg != NULL){
 		errors++;
-		printf("%s:%d: Number of arguments in functioncall \"%s\" does not match the prototype. Expected %d, but got %d\n", filename, id->linenum, id->node.Identifier.identifier, parametercount, nodeLength(node->node.FunctionCall.arguments));
-	}
-}
-
-/*checkSpawnNode is copy pasted from checkFunctionCall because they are syntactically similar*/
-void checkSpawnNode(AstNode *node){	
-	AstNode *id = node->node.Spawn.identifier;
-	Type *t = id->node.Identifier.symbol->type;
-	int parametercount;
-	Type **parameters;
-	AstNode *arg = node->node.Spawn.arguments;
-	int paramnr = 0;
-
-	if (t->tag != TaskTypeTag){
-		errors++;
-		printf("%s:%d: %s is not a task\n", filename, id->linenum, id->node.Identifier.identifier);
-		return;
-	}
-	parametercount = t->tags.typeTask.arity;
-	parameters = t->tags.typeTask.parameterTypes;
-
-	for(; paramnr < parametercount && arg != NULL; paramnr++ , arg = arg->next){
-		Type *ptype = parameters[paramnr];
-		Type *atype = typeof(arg);
-		if(!typeMatch(ptype, atype)){
-			char *expected = typeString(ptype);	
-			char *errorMsg = smprintf("Expected argument %d of task \"%s\" to have type %s", paramnr + 1, id->node.Identifier.identifier, expected);
-			printTypeFail(errorMsg, arg, atype);
-			free(expected);
-			free(errorMsg);
-		}
-	}
-	if(paramnr != parametercount|| arg != NULL){
-		errors++;
-		printf("%s:%d: Number of arguments in taskspawn \"%s\" is incorrect. Expected %d, but got %d\n", filename, id->linenum, id->node.Identifier.identifier, parametercount, nodeLength(node->node.Spawn.arguments));
-	}
-}
-
-/*checkMessageLiteral is copy pasted from checkSpawnNode because they are syntactically similar*/
-void checkMessageLiteral(AstNode *node){	
-	AstNode *id = node->node.MessageLiteral.identifier;
-	Type *t = id->node.Identifier.symbol->type;
-	int parametercount;
-	Type **parameters;
-	AstNode *arg = node->node.MessageLiteral.arguments;
-	int paramnr = 0;
-
-	if (t->tag != MessageTypeTag){
-		errors++;
-		printf("%s:%d: %s is not a message\n", filename, id->linenum, id->node.Identifier.identifier);
-		return;
-	}
-	parametercount = t->tags.typeMessage.arity;
-	parameters = t->tags.typeMessage.parameterTypes;
-
-	for(; paramnr < parametercount && arg != NULL; paramnr++ , arg = arg->next){
-		Type *ptype = parameters[paramnr];
-		Type *atype = typeof(arg);
-		if(!typeMatch(ptype, atype)){
-			char *expected = typeString(ptype);	
-			char *errorMsg = smprintf("Expected argument %d of message \"%s\" to have type %s", paramnr + 1, id->node.Identifier.identifier, expected);
-			printTypeFail(errorMsg, arg, atype);
-			free(expected);
-			free(errorMsg);
-		}
-	}
-	if(paramnr != parametercount|| arg != NULL){
-		errors++;
-		printf("%s:%d: Number of arguments in message literal \"%s\" is incorrect. Expected %d, but got %d\n", filename, id->linenum, id->node.Identifier.identifier, parametercount, nodeLength(node->node.MessageLiteral.arguments));
+		printf("%s:%d: Number of argument in %s \"%s\" incorrect. Expected %d, got %d\n", filename, id->linenum, desc, name, arity, nodeLength(args));
 	}
 }
