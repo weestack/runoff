@@ -2,8 +2,8 @@ pinid AnalogInPin = 123P;
 pinid AnalogOutPin = 234P;
 
 function test() -> void {
-        int val =  readAnalogInput(AnalogInPin);
-        int outval = 100;
+        uint16 val =  readAnalogInput(AnalogInPin);
+        uint16 outval = 100;
         analogWrite(AnalogOutPin, outval);
 }
 

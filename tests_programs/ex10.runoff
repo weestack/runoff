@@ -7,7 +7,7 @@ messages {
 	ButtonReleased;
 }
 
-task ledhandler(float a) {
+task ledhandler() {
 
 	for(;;) {
 		receive {
@@ -24,7 +24,7 @@ function otherway() -> bool {
 
 function setup() -> void {
 	taskid nama = spawn ledhandler();
-	taskid mana = spawn ledhandler(2);
-	inputPin(ButtonPin, nama, ButtonPressed, ButtonReleased);
+	taskid mana = spawn ledhandler();
+	inputPin(ButtonPin, nama, ButtonPressed{}, ButtonReleased{});
 	outputPin(LEDPin);
 }

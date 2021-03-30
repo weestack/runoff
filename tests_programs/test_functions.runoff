@@ -27,7 +27,7 @@ function dummy(int a) -> int {
   print(a);
   bool state = true;
   while(true) {
-    int ledPin = 5;
+    pinid ledPin = 5P;
     setOutput(ledPin, state);
     state = !state;
     delay(1000);
@@ -87,7 +87,7 @@ function dummy(int a) -> int {
   int[3] array;
   int[3][5] b;
   b[1][1] = 15;
-  print();
+  print(b[1][1]);
 
   int abe = 123 ^ 123; # should be 0
   int bil = 1 | 1;

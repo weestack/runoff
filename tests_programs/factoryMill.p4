@@ -31,6 +31,6 @@ task blow_plastic_away() {
         receive {
             case detected_plactic{value} : target = value;
         }
-        blow_away_plastic_at_id(detected_plactic);
+        blow_away_plastic_at_id(target);
     }
 }

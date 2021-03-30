@@ -4,7 +4,7 @@ messages {
     print_foobar;
 }
 
-function print() -> void {
+function print(int wack) -> void {
 }
 
 task printer() {

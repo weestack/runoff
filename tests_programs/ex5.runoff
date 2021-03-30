@@ -18,7 +18,7 @@ task pong() {
 	}
 }
 
-task ping(int pongtaskid) {
+task ping(taskid pongtaskid) {
 	taskid last = spawn pong();
 	msg pingmsg = Ping{last}; # the msg type can contain any of the messages
 

@@ -1,7 +1,7 @@
 # Struct
 struct hej {
     int a;
-    int wuut;
+    int64 wuut;
 }
 
 struct test {
@@ -17,7 +17,7 @@ messages {
   puuuhaa;
 }
 
-function print() -> void {
+function print(int64 wack) -> void {
 
 }
 

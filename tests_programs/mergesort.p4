@@ -1,4 +1,4 @@
-function CopyPart() -> void {
+function CopyPart(int[] a, int[] b, int start, int end) -> void {
 
 }
 

@@ -38,7 +38,7 @@ task C(){
 }
 
 function setup() -> void {
-    inputPin(BUTTONPIN);
+    simpleInputPin(BUTTONPIN);
     outputPin(BUTTONLEDPIN);
     outputPin(BLINKLEDPIN);
 }

@@ -381,7 +381,9 @@ void printTypeFail(char *fail_message, AstNode *node, Type *type){
 
 char *typeString(Type *type){
 	char *elementtype, *result;
-
+	if (type == NULL)  {
+		return smprintf("TYPENULL");
+	}
 	switch(type->tag){
 	case ArrayTypeTag:
 		elementtype = typeString(type->tags.typeArray.elementType);
