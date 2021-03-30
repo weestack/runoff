@@ -75,7 +75,7 @@ Type *processNode(AstNode *node){
 		errors += insertSymbol(node->node.DefineStruct.identifier, 0);
 		sym = retrieveSymbol(node->node.DefineStruct.identifier);
 		openScope();
-		sym->type = mkStructTypeDiscriptor(sym->name, getCurrentSymbolTable());
+		sym->type = mkStructTypeDescriptor(sym->name, getCurrentSymbolTable());
 		scopeopened = 1;
 		break;
 	case DefineMessage: break; /* Nothing */
@@ -92,7 +92,7 @@ Type *processNode(AstNode *node){
 		errors += insertSymbol(node->node.Parameter.identifier, vartype);
 		break;
 	case BuiltinType:
-		return mkBuiltinTypeDiscriptor(node->node.BuiltinType.type);
+		return mkBuiltinTypeDescriptor(node->node.BuiltinType.type);
 	case StructType:
 		sym = retrieveSymbol(node->node.StructType.identifier);
 		if(sym == NULL)
@@ -105,9 +105,9 @@ Type *processNode(AstNode *node){
 	case ArrayType:
 		vartype = processNode(node->node.ArrayType.type);
 		if(node->node.ArrayType.int_literal == NULL){
-			return mkArrayTypeDiscriptor(vartype, -1);
+			return mkArrayTypeDescriptor(vartype, -1);
 		} else {
-			return mkArrayTypeDiscriptor(vartype, node->node.ArrayType.int_literal->node.IntLiteral.value);
+			return mkArrayTypeDescriptor(vartype, node->node.ArrayType.int_literal->node.IntLiteral.value);
 		}
 	case While:
 	case For:  /* fallthrough */
@@ -291,7 +291,7 @@ void handleDefineFunction(AstNode *function){
 		i++;
 	}
 	
-	sym->type = mkFunctionTypeDiscriptor(parameter_length, para_types, processNode(function->node.DefineFunction.type));;
+	sym->type = mkFunctionTypeDescriptor(parameter_length, para_types, processNode(function->node.DefineFunction.type));;
 
 	closeScope();
 	currentfunc = NULL;
@@ -321,7 +321,7 @@ void handleDefineTask(AstNode *function){
 		i++;
 	}
 
-	t = mkTaskTypeDiscriptor(parameter_length, para_types);
+	t = mkTaskTypeDescriptor(parameter_length, para_types);
 
 	closeScope();
 
@@ -351,7 +351,7 @@ void handleMessageIdentifier(AstNode *function){
 		i++;
 	}
 
-	t = mkMessageTypeDiscriptor(parameter_length, para_types);
+	t = mkMessageTypeDescriptor(parameter_length, para_types);
 
 	closeScope();
 

@@ -260,15 +260,15 @@ Type *typeof(AstNode *node){
 		case Identifier:
 			return node->node.Identifier.symbol->type;
 		case PinLiteral:
-			return mkBuiltinTypeDiscriptor(builtintype_pinid);
+			return mkBuiltinTypeDescriptor(builtintype_pinid);
 		case IntLiteral:
-			return mkBuiltinTypeDiscriptor(builtintype_unknownInt);
+			return mkBuiltinTypeDescriptor(builtintype_unknownInt);
 		case FloatLiteral:
-			return mkBuiltinTypeDiscriptor(builtintype_float);
+			return mkBuiltinTypeDescriptor(builtintype_float);
 		case BoolLiteral:
-			return mkBuiltinTypeDiscriptor(builtintype_bool);
+			return mkBuiltinTypeDescriptor(builtintype_bool);
 		case MessageLiteral:
-			return mkBuiltinTypeDiscriptor(builtintype_msg);
+			return mkBuiltinTypeDescriptor(builtintype_msg);
 		case BinaryOperation:
 			return binaryOperatorType(node);
 		case UnaryOperation:
@@ -284,7 +284,7 @@ Type *typeof(AstNode *node){
 		case TernaryOperator:
 			return typeof(node->node.TernaryOperator.expressionTrue);
 		case Spawn:
-			return mkBuiltinTypeDiscriptor(builtintype_taskid);
+			return mkBuiltinTypeDescriptor(builtintype_taskid);
 		default:
 			return NULL;
 	}
@@ -294,7 +294,7 @@ Type *typeof(AstNode *node){
 
 
 int buildinTypeMatch(Type *a, int b){
-	Type *bType = mkBuiltinTypeDiscriptor(b);
+	Type *bType = mkBuiltinTypeDescriptor(b);
 	if(a == NULL)
 		return 0;
 
@@ -501,7 +501,7 @@ Type *binaryOperatorType(AstNode *node){
 		free(fail_message);
 		return NULL;
 	}
-	return mkBuiltinTypeDiscriptor(return_type);
+	return mkBuiltinTypeDescriptor(return_type);
 
 }
 
@@ -541,7 +541,7 @@ Type *unaryOperatorType(AstNode *node){
 		free(errorMessage);
 		return NULL;
 	}
-	return mkBuiltinTypeDiscriptor(returnType);
+	return mkBuiltinTypeDescriptor(returnType);
 }
 
 void checkParameterList(AstNode *id, AstNode *args, int arity, Type **parameters, int typetag, char *desc){

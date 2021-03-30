@@ -92,7 +92,7 @@ SymbolTable *getCurrentSymbolTable(void){
 	return current;
 }
 
-Type* mkBuiltinTypeDiscriptor(int type){
+Type* mkBuiltinTypeDescriptor(int type){
 	Type *t = malloc(sizeof(Type));
 	t->tag = BuiltinTypeTag;
 	t->tags.typeBuiltin.builtinType = type;
@@ -100,7 +100,7 @@ Type* mkBuiltinTypeDiscriptor(int type){
 	return t;
 }
 
-Type* mkArrayTypeDiscriptor(Type *elementType, int size){
+Type* mkArrayTypeDescriptor(Type *elementType, int size){
 	Type *t = malloc(sizeof(Type));
 	t->tag = ArrayTypeTag;
 	t->tags.typeArray.elementType = elementType;
@@ -109,7 +109,7 @@ Type* mkArrayTypeDiscriptor(Type *elementType, int size){
 	return t;
 }
 
-Type* mkFunctionTypeDiscriptor(int arity, Type **parameterTypes, Type *returnType){
+Type* mkFunctionTypeDescriptor(int arity, Type **parameterTypes, Type *returnType){
 	Type *t = malloc(sizeof(Type));
 	t->tag = FunctionTypeTag;
 	t->tags.typeFunction.arity = arity;
@@ -119,7 +119,7 @@ Type* mkFunctionTypeDiscriptor(int arity, Type **parameterTypes, Type *returnTyp
 	return t;
 }
 
-Type* mkStructTypeDiscriptor(char *name, SymbolTable *fields){
+Type* mkStructTypeDescriptor(char *name, SymbolTable *fields){
 	Type *t = malloc(sizeof(Type));
 	t->tag = StructTypeTag;
 	t->tags.typeStruct.name = name;
@@ -127,7 +127,7 @@ Type* mkStructTypeDiscriptor(char *name, SymbolTable *fields){
 	return t;
 }
 
-Type* mkTaskTypeDiscriptor(int arity, Type **parameterTypes){
+Type* mkTaskTypeDescriptor(int arity, Type **parameterTypes){
 	Type *t = malloc(sizeof(Type));
 	t->tag = TaskTypeTag;
 	t->tags.typeTask.arity = arity;
@@ -136,7 +136,7 @@ Type* mkTaskTypeDiscriptor(int arity, Type **parameterTypes){
 	return t;
 }
 
-Type* mkMessageTypeDiscriptor(int arity, Type **parameterTypes){
+Type* mkMessageTypeDescriptor(int arity, Type **parameterTypes){
 	Type *t = malloc(sizeof(Type));
 	t->tag = MessageTypeTag;
 	t->tags.typeMessage.arity = arity;
@@ -161,36 +161,36 @@ void insertBuiltinFunctions(void) {
 	Type **analogWriteParameters = malloc(sizeof(Type*) * 2);
 	Type **lengthParameters = malloc(sizeof(Type*) * 1);
 
-	turnOnParameters[0] = mkBuiltinTypeDiscriptor(builtintype_pinid);
-	turnOffParameters[0] = mkBuiltinTypeDiscriptor(builtintype_pinid);
-	readInputParameters[0] = mkBuiltinTypeDiscriptor(builtintype_pinid);
-	readAnalogInputParameters[0] = mkBuiltinTypeDiscriptor(builtintype_pinid);
-	delayParameters[0] = mkBuiltinTypeDiscriptor(builtintype_uint32);
-	inputPinParameters[0] = mkBuiltinTypeDiscriptor(builtintype_pinid);
-	inputPinParameters[1] = mkBuiltinTypeDiscriptor(builtintype_taskid);
-	inputPinParameters[2] = mkBuiltinTypeDiscriptor(builtintype_msg);
-	inputPinParameters[3] = mkBuiltinTypeDiscriptor(builtintype_msg);
-	simpleInputPinParameters[0] = mkBuiltinTypeDiscriptor(builtintype_pinid);
-	outputPinParameters[0] = mkBuiltinTypeDiscriptor(builtintype_pinid);
-	analogInputPinParameters[0] = mkBuiltinTypeDiscriptor(builtintype_pinid);
-	analogOutputPinParameters[0] = mkBuiltinTypeDiscriptor(builtintype_pinid);
-	setOutputParameters[0] = mkBuiltinTypeDiscriptor(builtintype_pinid);
-	setOutputParameters[1] = mkBuiltinTypeDiscriptor(builtintype_bool);
-	analogWriteParameters[0] = mkBuiltinTypeDiscriptor(builtintype_pinid);
-	analogWriteParameters[1] = mkBuiltinTypeDiscriptor(builtintype_uint16);
-	lengthParameters[0] = mkArrayTypeDiscriptor(NULL, -1); /* Funny mans */
+	turnOnParameters[0] = mkBuiltinTypeDescriptor(builtintype_pinid);
+	turnOffParameters[0] = mkBuiltinTypeDescriptor(builtintype_pinid);
+	readInputParameters[0] = mkBuiltinTypeDescriptor(builtintype_pinid);
+	readAnalogInputParameters[0] = mkBuiltinTypeDescriptor(builtintype_pinid);
+	delayParameters[0] = mkBuiltinTypeDescriptor(builtintype_uint32);
+	inputPinParameters[0] = mkBuiltinTypeDescriptor(builtintype_pinid);
+	inputPinParameters[1] = mkBuiltinTypeDescriptor(builtintype_taskid);
+	inputPinParameters[2] = mkBuiltinTypeDescriptor(builtintype_msg);
+	inputPinParameters[3] = mkBuiltinTypeDescriptor(builtintype_msg);
+	simpleInputPinParameters[0] = mkBuiltinTypeDescriptor(builtintype_pinid);
+	outputPinParameters[0] = mkBuiltinTypeDescriptor(builtintype_pinid);
+	analogInputPinParameters[0] = mkBuiltinTypeDescriptor(builtintype_pinid);
+	analogOutputPinParameters[0] = mkBuiltinTypeDescriptor(builtintype_pinid);
+	setOutputParameters[0] = mkBuiltinTypeDescriptor(builtintype_pinid);
+	setOutputParameters[1] = mkBuiltinTypeDescriptor(builtintype_bool);
+	analogWriteParameters[0] = mkBuiltinTypeDescriptor(builtintype_pinid);
+	analogWriteParameters[1] = mkBuiltinTypeDescriptor(builtintype_uint16);
+	lengthParameters[0] = mkArrayTypeDescriptor(NULL, -1); /* Funny mans */
 
-	enterSymbol("turnOn", mkFunctionTypeDiscriptor(1,turnOnParameters,mkBuiltinTypeDiscriptor(builtintype_void)));
-	enterSymbol("turnOff", mkFunctionTypeDiscriptor(1,turnOffParameters,mkBuiltinTypeDiscriptor(builtintype_void)));
-	enterSymbol("readInput", mkFunctionTypeDiscriptor(1,readInputParameters,mkBuiltinTypeDiscriptor(builtintype_bool)));
-	enterSymbol("readAnalogInput", mkFunctionTypeDiscriptor(1,readAnalogInputParameters,mkBuiltinTypeDiscriptor(builtintype_uint16)));
-	enterSymbol("delay", mkFunctionTypeDiscriptor(1,delayParameters,mkBuiltinTypeDiscriptor(builtintype_void)));
-	enterSymbol("inputPin", mkFunctionTypeDiscriptor(4,inputPinParameters,mkBuiltinTypeDiscriptor(builtintype_void)));
-	enterSymbol("simpleInputPin", mkFunctionTypeDiscriptor(1,simpleInputPinParameters,mkBuiltinTypeDiscriptor(builtintype_void)));
-	enterSymbol("outputPin", mkFunctionTypeDiscriptor(1,outputPinParameters,mkBuiltinTypeDiscriptor(builtintype_void)));
-	enterSymbol("analogInputPin", mkFunctionTypeDiscriptor(1,analogInputPinParameters,mkBuiltinTypeDiscriptor(builtintype_void)));
-	enterSymbol("analogOutputPin", mkFunctionTypeDiscriptor(1,analogOutputPinParameters,mkBuiltinTypeDiscriptor(builtintype_void)));
-	enterSymbol("setOutput", mkFunctionTypeDiscriptor(2,setOutputParameters,mkBuiltinTypeDiscriptor(builtintype_void)));
-	enterSymbol("analogWrite", mkFunctionTypeDiscriptor(2,analogWriteParameters,mkBuiltinTypeDiscriptor(builtintype_void)));
-	enterSymbol("length", mkFunctionTypeDiscriptor(1,lengthParameters,mkBuiltinTypeDiscriptor(builtintype_unknownInt))); /* funny */
+	enterSymbol("turnOn", mkFunctionTypeDescriptor(1,turnOnParameters,mkBuiltinTypeDescriptor(builtintype_void)));
+	enterSymbol("turnOff", mkFunctionTypeDescriptor(1,turnOffParameters,mkBuiltinTypeDescriptor(builtintype_void)));
+	enterSymbol("readInput", mkFunctionTypeDescriptor(1,readInputParameters,mkBuiltinTypeDescriptor(builtintype_bool)));
+	enterSymbol("readAnalogInput", mkFunctionTypeDescriptor(1,readAnalogInputParameters,mkBuiltinTypeDescriptor(builtintype_uint16)));
+	enterSymbol("delay", mkFunctionTypeDescriptor(1,delayParameters,mkBuiltinTypeDescriptor(builtintype_void)));
+	enterSymbol("inputPin", mkFunctionTypeDescriptor(4,inputPinParameters,mkBuiltinTypeDescriptor(builtintype_void)));
+	enterSymbol("simpleInputPin", mkFunctionTypeDescriptor(1,simpleInputPinParameters,mkBuiltinTypeDescriptor(builtintype_void)));
+	enterSymbol("outputPin", mkFunctionTypeDescriptor(1,outputPinParameters,mkBuiltinTypeDescriptor(builtintype_void)));
+	enterSymbol("analogInputPin", mkFunctionTypeDescriptor(1,analogInputPinParameters,mkBuiltinTypeDescriptor(builtintype_void)));
+	enterSymbol("analogOutputPin", mkFunctionTypeDescriptor(1,analogOutputPinParameters,mkBuiltinTypeDescriptor(builtintype_void)));
+	enterSymbol("setOutput", mkFunctionTypeDescriptor(2,setOutputParameters,mkBuiltinTypeDescriptor(builtintype_void)));
+	enterSymbol("analogWrite", mkFunctionTypeDescriptor(2,analogWriteParameters,mkBuiltinTypeDescriptor(builtintype_void)));
+	enterSymbol("length", mkFunctionTypeDescriptor(1,lengthParameters,mkBuiltinTypeDescriptor(builtintype_unknownInt))); /* funny */
 }
