@@ -145,6 +145,13 @@ Type* mkMessageTypeDescriptor(int arity, Type **parameterTypes){
 	return t;
 }
 
+Type* mkAnyTypeDescriptor(void) {
+	Type *t = malloc(sizeof(Type));
+	t->tag = AnyTypeTag;
+	
+	return t;
+}
+
 void insertBuiltinFunctions(void) {
 	/* insert symbols for builin funcions here :) 8))) */
 	Type **turnOnParameters = malloc(sizeof(Type*) * 1);
@@ -178,7 +185,7 @@ void insertBuiltinFunctions(void) {
 	setOutputParameters[1] = mkBuiltinTypeDescriptor(builtintype_bool);
 	analogWriteParameters[0] = mkBuiltinTypeDescriptor(builtintype_pinid);
 	analogWriteParameters[1] = mkBuiltinTypeDescriptor(builtintype_uint16);
-	lengthParameters[0] = mkArrayTypeDescriptor(NULL, -1); /* Funny mans */
+	lengthParameters[0] = mkArrayTypeDescriptor(mkAnyTypeDescriptor(), -1); /* Funny mans */
 
 	enterSymbol("turnOn", mkFunctionTypeDescriptor(1,turnOnParameters,mkBuiltinTypeDescriptor(builtintype_void)));
 	enterSymbol("turnOff", mkFunctionTypeDescriptor(1,turnOffParameters,mkBuiltinTypeDescriptor(builtintype_void)));

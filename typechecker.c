@@ -341,6 +341,9 @@ int typeMatch(Type *a, Type *b){
 	if(a == NULL || b == NULL)
 		return 0;
 
+	if(a->tag == AnyTypeTag || b->tag == AnyTypeTag) 
+		return 1;
+
 	if(a->tag != b->tag)
 		return 0;
 
@@ -353,6 +356,16 @@ int typeMatch(Type *a, Type *b){
 		else
 			return 0;
 	}
+
+	if(a->tag == ArrayTypeTag){
+		if (typeMatch(a->tags.typeArray.elementType, b->tags.typeArray.elementType)) {
+			if (a->tags.typeArray.size == b->tags.typeArray.size || a->tags.typeArray.size == -1 || b->tags.typeArray.size == -1) {
+				return 1;
+			}
+		}
+		return 0;
+	}
+
 	/*mangler at sammenligne alle andre typer end builtin typer hehexd*/
 	return 0;
 }
@@ -381,9 +394,6 @@ void printTypeFail(char *fail_message, AstNode *node, Type *type){
 
 char *typeString(Type *type){
 	char *elementtype, *result;
-	if (type == NULL)  {
-		return smprintf("TYPENULL");
-	}
 	switch(type->tag){
 	case ArrayTypeTag:
 		elementtype = typeString(type->tags.typeArray.elementType);
@@ -403,6 +413,8 @@ char *typeString(Type *type){
 		return smprintf("struct %s", type->tags.typeStruct.name);
 	case MessageTypeTag:
 		return smprintf("Message Type");
+	case AnyTypeTag:
+		return smprintf("AnyType");
 	}
 	return smprintf("undefined");
 }

@@ -13,6 +13,7 @@ Type* mkFunctionTypeDescriptor(int, Type **, Type *);
 Type* mkTaskTypeDescriptor(int, Type **);
 Type* mkStructTypeDescriptor(char *name, SymbolTable *);
 Type* mkMessageTypeDescriptor(int, Type**);
+Type* mkAnyTypeDescriptor(void);
 
 struct AstNode; /* declared fully in ast.h */
 
@@ -79,7 +80,8 @@ enum {
 	TaskTypeTag,
 	BuiltinTypeTag,
 	StructTypeTag,
-	MessageTypeTag
+	MessageTypeTag,
+	AnyTypeTag /* Only used for length */
 };
 
 void initializeSymbolTables(void);
