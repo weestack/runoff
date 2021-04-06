@@ -35,6 +35,11 @@ main(int argc, char *argv[])
 	else {
 		errors += buildSymbolTable(tree);
 		errors += typeCheck(tree);
-		return errors;
 	}
+	
+	if(errors == 0){
+		char *code = codegen(tree);
+		printf("%s\n", code);
+	}
+	return 0;
 }

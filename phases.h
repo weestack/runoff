@@ -9,3 +9,6 @@ int buildSymbolTable(AstNode *tree);
 
 /* Checking for type errors defined in typechecker.c */
 int typeCheck(AstNode *tree);
+
+/* Code generation defined ind codegen.c */
+char *codegen(AstNode *tree);
