@@ -24,8 +24,6 @@
 #define	ARGEND		}
 #define	EARGF(x)	(_argt=_args, _args="",\
 				(*_argt? _argt: argv[1]? (argc--, *++argv): ((x), abort(), (char*)0)))
-#define	ARGC()		_argc
-
 
 char *filename;
 
@@ -52,7 +50,7 @@ main(int argc, char *argv[])
 		outfile = EARGF(usage());
 		break;
 	default:
-		printf("Default case with ARGC=%d\n", ARGC());
+		usage();
 	}ARGEND
 
 	/* the file name is the only argument left */
