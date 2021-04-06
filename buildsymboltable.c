@@ -104,11 +104,7 @@ Type *processNode(AstNode *node){
 		break;
 	case ArrayType:
 		vartype = processNode(node->node.ArrayType.type);
-		if(node->node.ArrayType.int_literal == NULL){
-			return mkArrayTypeDescriptor(vartype, -1);
-		} else {
-			return mkArrayTypeDescriptor(vartype, node->node.ArrayType.int_literal->node.IntLiteral.value);
-		}
+		return mkArrayTypeDescriptor(vartype, node->node.ArrayType.int_literal->node.IntLiteral.value);
 	case While:
 	case For:  /* fallthrough */
 	case Switch:  /* fallthrough */

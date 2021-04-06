@@ -145,13 +145,6 @@ Type* mkMessageTypeDescriptor(int arity, Type **parameterTypes){
 	return t;
 }
 
-Type* mkAnyTypeDescriptor(void) {
-	Type *t = malloc(sizeof(Type));
-	t->tag = AnyTypeTag;
-	
-	return t;
-}
-
 void insertBuiltinFunctions(void) {
 	/* insert symbols for builin funcions here :) 8))) */
 	Type **turnOnParameters = malloc(sizeof(Type*) * 1);
@@ -166,7 +159,6 @@ void insertBuiltinFunctions(void) {
 	Type **analogOutputPinParameters = malloc(sizeof(Type*) * 1);
 	Type **setOutputParameters = malloc(sizeof(Type*) * 2);
 	Type **analogWriteParameters = malloc(sizeof(Type*) * 2);
-	Type **lengthParameters = malloc(sizeof(Type*) * 1);
 
 	turnOnParameters[0] = mkBuiltinTypeDescriptor(builtintype_pinid);
 	turnOffParameters[0] = mkBuiltinTypeDescriptor(builtintype_pinid);
@@ -185,7 +177,6 @@ void insertBuiltinFunctions(void) {
 	setOutputParameters[1] = mkBuiltinTypeDescriptor(builtintype_bool);
 	analogWriteParameters[0] = mkBuiltinTypeDescriptor(builtintype_pinid);
 	analogWriteParameters[1] = mkBuiltinTypeDescriptor(builtintype_uint16);
-	lengthParameters[0] = mkArrayTypeDescriptor(mkAnyTypeDescriptor(), -1); /* Funny mans */
 
 	enterSymbol("turnOn", mkFunctionTypeDescriptor(1,turnOnParameters,mkBuiltinTypeDescriptor(builtintype_void)));
 	enterSymbol("turnOff", mkFunctionTypeDescriptor(1,turnOffParameters,mkBuiltinTypeDescriptor(builtintype_void)));
@@ -199,5 +190,4 @@ void insertBuiltinFunctions(void) {
 	enterSymbol("analogOutputPin", mkFunctionTypeDescriptor(1,analogOutputPinParameters,mkBuiltinTypeDescriptor(builtintype_void)));
 	enterSymbol("setOutput", mkFunctionTypeDescriptor(2,setOutputParameters,mkBuiltinTypeDescriptor(builtintype_void)));
 	enterSymbol("analogWrite", mkFunctionTypeDescriptor(2,analogWriteParameters,mkBuiltinTypeDescriptor(builtintype_void)));
-	enterSymbol("length", mkFunctionTypeDescriptor(1,lengthParameters,mkBuiltinTypeDescriptor(builtintype_unknownInt))); /* funny */
 }

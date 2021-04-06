@@ -132,7 +132,6 @@ Args: Args ',' Expression {$$ = append_node($1, $3);}
 Type: builtin_type {$$ = $1;}
 	| struct_keyword identifier {$$ = mkStructTypeNode($2);}
 	| Type '[' int_literal ']' {$$ = mkArrayTypeNode($1, $3);}
-	| Type '[' ']' {$$ = mkArrayTypeNode($1, NULL); }
 	;
 
 Statements: Statements Statement {$$ = append_node($1, $2);}

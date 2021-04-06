@@ -1,9 +1,7 @@
-function sum(int[] numbers) -> int {
+function sum(int[5] numbers) -> int {
 	int res;
 	int i;
-	# the builtin 'len' return the length of an array which is always
-	# known since they must be given a size when they are made
-	for(i = 0; i < length(numbers); i++){
+	for(i = 0; i < 5; i++){
 		res = res + numbers[i]; # Array indexing stats from 0
 	}
 	return res;

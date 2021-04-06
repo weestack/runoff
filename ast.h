@@ -96,7 +96,6 @@ struct StructTypeNode {
 
 struct ArrayTypeNode {
 	AstNode *type;
-	/* if int literal is null, then its eq to int a[]; */
 	AstNode *int_literal;
 };
 

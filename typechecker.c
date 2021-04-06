@@ -341,9 +341,6 @@ int typeMatch(Type *a, Type *b){
 	if(a == NULL || b == NULL)
 		return 0;
 
-	if(a->tag == AnyTypeTag || b->tag == AnyTypeTag) 
-		return 1;
-
 	if(a->tag != b->tag)
 		return 0;
 
@@ -359,7 +356,7 @@ int typeMatch(Type *a, Type *b){
 
 	if(a->tag == ArrayTypeTag){
 		if (typeMatch(a->tags.typeArray.elementType, b->tags.typeArray.elementType)) {
-			if (a->tags.typeArray.size == b->tags.typeArray.size || a->tags.typeArray.size == -1 || b->tags.typeArray.size == -1) {
+			if (a->tags.typeArray.size == b->tags.typeArray.size) {
 				return 1;
 			}
 		}
@@ -413,8 +410,6 @@ char *typeString(Type *type){
 		return smprintf("struct %s", type->tags.typeStruct.name);
 	case MessageTypeTag:
 		return smprintf("Message Type");
-	case AnyTypeTag:
-		return smprintf("AnyType");
 	}
 	return smprintf("undefined");
 }

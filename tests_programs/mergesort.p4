@@ -1,8 +1,8 @@
-function CopyPart(int[] a, int[] b, int start, int end) -> void {
+function CopyPart(int[5] a, int[10] b, int start, int end) -> void {
 
 }
 
-function merge(int[] arr, int left, int mid, int right) -> void {
+function merge(int[10] arr, int left, int mid, int right) -> void {
     int i; int j; int k;
     int n1 = mid - left + 1;
     int n2 = right - mid;
@@ -16,7 +16,7 @@ function merge(int[] arr, int left, int mid, int right) -> void {
     CopyPart(LeftHalf, arr, 0, n1);
 
     # Synes helt sikkert vi skal have Array.length.
-    CopyPart(RightHalf, arr, n1 + 1, length(arr));
+    CopyPart(RightHalf, arr, n1 + 1, 10);
     i = j = 0;
     k = left;
     while(i < n1 && j < n2){
@@ -43,7 +43,7 @@ function merge(int[] arr, int left, int mid, int right) -> void {
     }
 }
 
-function mergeSort(int[] arr, int left, int right) -> void {
+function mergeSort(int[10] arr, int left, int right) -> void {
 	int l;
 	int r;
 

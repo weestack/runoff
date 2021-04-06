@@ -80,8 +80,7 @@ enum {
 	TaskTypeTag,
 	BuiltinTypeTag,
 	StructTypeTag,
-	MessageTypeTag,
-	AnyTypeTag /* Only used for length */
+	MessageTypeTag
 };
 
 void initializeSymbolTables(void);
