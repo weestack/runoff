@@ -30,30 +30,6 @@ void typeCheckNode(AstNode *node){
 	AstNode *id;
 
 	switch(node->tag){
-	case Prog: /* Nothing */
-		break;
-	case DefineFunction: /* Nothing */
-		break;
-	case DefineTask: /* Nothing */
-		break;
-	case DefineStruct: /* Nothing */
-		break;
-	case DefineMessage: /* Nothing */
-		break;
-	case IncludeRunoffFile: /* Nothing */
-		break;
-	case MessageIdentifier: /* Nothing */
-		break;
-	case StructMember: /* Nothing */
-		break;
-	case Parameter: /* Nothing */
-		break;
-	case BuiltinType: /* Nothing */
-		break;
-	case StructType: /* Nothing */
-		break;
-	case ArrayType: /* Nothing */
-		break;
 	case While:
 		typeA = typeof(node->node.While.expression);
 		if(!buildinTypeMatch(typeA, builtintype_bool))
@@ -75,8 +51,6 @@ void typeCheckNode(AstNode *node){
 			printTypeFail("Switch expression expected int", node->node.Switch.expression, typeA);
 
 		break;
-	case SwitchCase: /*Nothing*/
-		break;
 	case If:
 		typeA = typeof(node->node.If.expression);
 		if(!buildinTypeMatch(typeA, builtintype_bool))
@@ -87,12 +61,6 @@ void typeCheckNode(AstNode *node){
 		typeA = typeof(node->node.ElseIf.expression);
 		if(!buildinTypeMatch(typeA, builtintype_bool))
 			printTypeFail("if statement expected bool", node->node.ElseIf.expression, typeA);
-		break;
-	case Else: /*Nothing*/
-		break;
-	case Receive: /*Nothing*/
-		break;
-	case ReceiveCase: /*Nothing*/
 		break;
 	case VarDecl:
 		if(node->node.VarDecl.expression == NULL)
@@ -107,12 +75,6 @@ void typeCheckNode(AstNode *node){
 			free(typeAString);
 			free(errorMessage);
 		}
-		break;
-	case VariableLocation: /*Nothing*/
-		break;
-	case StructLocation: /*Nothing*/
-		break;
-	case ArrayLocation: /*Nothing*/
 		break;
 	case FunctionCall:
 		id = node->node.FunctionCall.identifier;
@@ -149,16 +111,6 @@ void typeCheckNode(AstNode *node){
 		if(!buildinTypeMatch(typeA, builtintype_bool)){
 			printTypeFail("ternary operator test must be boolean", node->node.TernaryOperator.expressionTest, typeA);
 		}
-		break;
-	case Identifier: /*Nothing*/
-		break;
-	case PinLiteral: /*Nothing*/
-		break;
-	case IntLiteral: /*Nothing*/
-		break;
-	case FloatLiteral: /*Nothing*/
-		break;
-	case BoolLiteral: /*Nothing*/
 		break;
 	case MessageLiteral:
 		id = node->node.MessageLiteral.identifier;

@@ -64,7 +64,6 @@ Type *processNode(AstNode *node){
 		return NULL;
 
 	switch(node->tag){
-	case Prog: break; /* Nothing */
 	case DefineFunction:
 		handleDefineFunction(node);
 		return NULL;
@@ -78,8 +77,6 @@ Type *processNode(AstNode *node){
 		sym->type = mkStructTypeDescriptor(sym->name, getCurrentSymbolTable());
 		scopeopened = 1;
 		break;
-	case DefineMessage: break; /* Nothing */
-	case IncludeRunoffFile: break; /* Nothing */
 	case MessageIdentifier:
 		handleMessageIdentifier(node);
 		return NULL;
@@ -136,7 +133,6 @@ Type *processNode(AstNode *node){
 		processNode(node->node.VarDecl.expression);
 		errors += insertSymbol(node->node.VarDecl.identifier, vartype);
 		return NULL; /* special case */
-	case BinaryOperation: break; /* Nothing */
 	case VariableLocation:
 		sym = retrieveSymbol(node->node.VariableLocation.identifier);
 		if(sym == NULL)
@@ -155,7 +151,6 @@ Type *processNode(AstNode *node){
 		else
 			updateSymbolId(node->node.ArrayLocation.identifier, sym);
 		break;
-	case UnaryOperation: break; /* Nothing */
 	case FunctionCall:
 		sym = retrieveSymbol(node->node.FunctionCall.identifier);
 		if(sym == NULL)
@@ -163,19 +158,13 @@ Type *processNode(AstNode *node){
 		else
 			updateSymbolId(node->node.FunctionCall.identifier, sym);
 		break;
-	case Assignment: break; /* Nothing */
-	case TernaryOperator: break; /* Nothing */
 	case Identifier:
 		sym = retrieveSymbol(node);
 		if(sym == NULL)
 			undeclaredError(node);
 		else
 			updateSymbolId(node, sym);
-		break; /* Nothing */
-	case PinLiteral: break; /* Nothing */
-	case IntLiteral: break; /* Nothing */
-	case FloatLiteral: break; /* Nothing */
-	case BoolLiteral: break; /* Nothing */
+		break;
 	case MessageLiteral: 
 		sym = retrieveSymbol(node->node.MessageLiteral.identifier);
 		if(sym == NULL)
@@ -193,8 +182,6 @@ Type *processNode(AstNode *node){
 		else
 			updateSymbolId(node->node.Spawn.identifier, sym);
 		break;
-	case Send: break; /* Nothing */
-	case ExprStmt: break; /* Nothing */
 	}
 
 	child = getChildren(node);
