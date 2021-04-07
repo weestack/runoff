@@ -18,6 +18,7 @@ char *codegen(AstNode *tree) {
 	char *type = NULL;
 	char *params = NULL;
 	char *stmts = NULL;
+	char *intlit = NULL;
 
 	char *result = NULL;
 
@@ -28,16 +29,31 @@ char *codegen(AstNode *tree) {
 			result = processBlock(tree->node.Prog.toplevels, "\n", 0);
 			break;
 		case DefineFunction:
-			type = smprintf("%s", getBuiltInTypeLiteral(tree->node.DefineFunction.type->node.BuiltinType.type));
-			id = smprintf("%s", tree->node.DefineFunction.identifier->node.Identifier.symbol->name);
+			type = codegen(tree->node.DefineFunction.type);
+			id = codegen(tree->node.DefineFunction.identifier);
 			params = processBlock(tree->node.DefineFunction.parameters, ", ", 0);
 			stmts = processBlock(tree->node.DefineFunction.statements, ";", 1);
 			result = smprintf("%s %s(%s) {%s}", type, id, params, stmts);
 			break;
 		case Parameter:
-			type = smprintf("%s", getBuiltInTypeLiteral(tree->node.Parameter.type->node.BuiltinType.type));
-			id = smprintf("%s", tree->node.Parameter.identifier->node.Identifier.symbol->name);
-			result = smprintf("%s %s", type, id);
+			type = codegen(tree->node.Parameter.type);
+			id = codegen(tree->node.Parameter.identifier);
+			intlit = tree->node.Parameter.type->tag == ArrayType ? smprintf("[%s]", tree->node.Parameter.type->node.ArrayType.int_literal) : smprintf("");
+			result = smprintf("%s %s%s", type, id, intlit);
+			break;
+		case BuiltinType:
+			result = smprintf("%s", getBuiltInTypeLiteral(tree->node.BuiltinType.type));
+			break;
+		case StructType:
+			id = codegen(tree->node.StructType.identifier);
+			result = smprintf("struct %s", id);
+			break;
+		case ArrayType:
+			type = codegen(tree->node.ArrayType.type);
+			result = smprintf("%s", type);
+			break;
+		case Identifier:
+			result = smprintf("%s", tree->node.Identifier.symbol->name);
 			break;
 		default:
 			result = smprintf("");
@@ -47,6 +63,7 @@ char *codegen(AstNode *tree) {
 	free(type);
 	free(params);
 	free(stmts);
+	free(intlit);
 
 	return result;
 }
