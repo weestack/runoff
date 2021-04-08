@@ -87,7 +87,7 @@ char *codegen(AstNode *tree) {
 			id = codegen(tree->node.VarDecl.identifier);
 			intlit = tree->node.VarDecl.type->tag == ArrayType ? smprintf("[%s]", tree->node.VarDecl.type->node.ArrayType.int_literal) : smprintf("");
 			expr = tree->node.VarDecl.expression != NULL ? smprintf(" = %s", codegen(tree->node.VarDecl.expression)) : "";
-			result = smprintf("%s %s%s%s;", type, id, intlit, expr);
+			result = smprintf("%s %s%s%s", type, id, intlit, expr);
 			break;
 		case IntLiteral:
 			result = smprintf("%d", tree->node.IntLiteral.value);
