@@ -12,8 +12,9 @@
 
 char *processBlock(AstNode *node, char *sep, int end);
 char *getBuiltInTypeLiteral(int type);
+char *getHelperFunctionsCode(void);
 
-char *codegen(AstNode *tree) { 
+char *codegen(AstNode *tree) {
 	char *id = NULL;
 	char *type = NULL;
 	char *params = NULL;
@@ -30,7 +31,10 @@ char *codegen(AstNode *tree) {
 
 	switch (tree->tag) {
 		case Prog:
-			result = processBlock(tree->node.Prog.toplevels, "\n", 0);
+			/* Special case include helper functions! */
+
+			result =smprintf("%s%s",getHelperFunctionsCode(),  processBlock(tree->node.Prog.toplevels, "\n", 0));
+
 			break;
 		case DefineFunction:
 			type = codegen(tree->node.DefineFunction.type);
@@ -210,8 +214,36 @@ char *getBuiltInTypeLiteral(int type) {
 		case builtintype_taskid:
 		case builtintype_pinid:
 			return "int";
-			break;		
+			break;
 		default:
 			return "unknownType";
 	}
+}
+
+
+char *getHelperFunctionsCode(void) {
+	FILE *fp;
+	long length = 0;
+	char *code;
+
+	/* opening file for reading */
+	fp = fopen("arduino_helpers.c" , "r");
+
+	if(fp == NULL) {
+			return NULL;
+	}
+
+
+	if (fp) {
+	  fseek (fp, 0, SEEK_END);
+	  length = ftell(fp);
+	  fseek(fp, 0, SEEK_SET);
+	  code = malloc(length);
+	  if (code){
+	    fread(code, 1, length, fp);
+	  }
+	  fclose (fp);
+	}
+
+	return code;
 }
