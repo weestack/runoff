@@ -21,6 +21,8 @@ char *codegen(AstNode *tree) {
 	char *intlit = NULL;
 	char *expr = NULL;
 	char *elsepart = NULL;
+	char *location = NULL;
+	char *indicies = NULL;
 
 	char *result = NULL;
 
@@ -81,6 +83,19 @@ char *codegen(AstNode *tree) {
 			expr = processBlock(tree->node.Assignment.expression, "", 0);
 			result = smprintf("%s = %s", id, expr);
 			break;
+		case VariableLocation:
+			result = codegen(tree->node.VariableLocation.identifier);
+			break;
+		case StructLocation:
+			id = codegen(tree->node.StructLocation.identifier);
+			location = codegen(tree->node.StructLocation.location);
+			result = smprintf("%s.%s", id, location);
+			break;
+		case ArrayLocation:
+			id = codegen(tree->node.ArrayLocation.identifier);
+			indicies = processBlock(tree->node.ArrayLocation.indicies, "][", 0);
+			result = smprintf("%s[%s]", id, indicies);
+			break;
 		case Return:
 			result = smprintf("return%s;", "");
 			break;
@@ -93,7 +108,7 @@ char *codegen(AstNode *tree) {
 			type = smprintf("%s%s", tree->node.VarDecl.toplevel == 1 ? "const " : "", codegen(tree->node.VarDecl.type));
 			id = codegen(tree->node.VarDecl.identifier);
 			intlit = tree->node.VarDecl.type->tag == ArrayType ? smprintf("[%s]", tree->node.VarDecl.type->node.ArrayType.int_literal) : smprintf("");
-			expr = tree->node.VarDecl.expression != NULL ? smprintf(" = %s", codegen(tree->node.VarDecl.expression)) : "";
+			expr = tree->node.VarDecl.expression != NULL ? smprintf(" = %s", codegen(tree->node.VarDecl.expression)) : smprintf("");
 			result = smprintf("%s %s%s%s%s", type, id, intlit, expr, tree->node.VarDecl.toplevel == 1 ? ";" : "");
 			break;
 		case IntLiteral:
@@ -119,6 +134,8 @@ char *codegen(AstNode *tree) {
 	free(intlit);
 	free(expr);
 	free(elsepart);
+	free(location);
+	free(indicies);
 
 	return result;
 }
