@@ -13,6 +13,7 @@
 char *processBlock(AstNode *node, char *sep, int end);
 char *getBuiltInTypeLiteral(int type);
 char *getHelperFunctionsCode(void);
+char *buildArrayDeclIndices(AstNode *node);
 
 char *codegen(AstNode *tree) {
 	char *id = NULL;
@@ -32,9 +33,7 @@ char *codegen(AstNode *tree) {
 	switch (tree->tag) {
 		case Prog:
 			/* Special case include helper functions! */
-
-			result =smprintf("%s%s",getHelperFunctionsCode(),  processBlock(tree->node.Prog.toplevels, "\n", 0));
-
+			result = smprintf("%s%s",getHelperFunctionsCode(),  processBlock(tree->node.Prog.toplevels, "\n", 0));
 			break;
 		case DefineFunction:
 			type = codegen(tree->node.DefineFunction.type);
@@ -46,7 +45,7 @@ char *codegen(AstNode *tree) {
 		case Parameter:
 			type = codegen(tree->node.Parameter.type);
 			id = codegen(tree->node.Parameter.identifier);
-			intlit = tree->node.Parameter.type->tag == ArrayType ? smprintf("[%s]", tree->node.Parameter.type->node.ArrayType.int_literal) : smprintf("");
+			intlit = tree->node.Parameter.type->tag == ArrayType ? buildArrayDeclIndices(tree->node.Parameter.type) : smprintf("");
 			result = smprintf("%s %s%s", type, id, intlit);
 			break;
 		case ElseIf:
@@ -111,7 +110,7 @@ char *codegen(AstNode *tree) {
 		case VarDecl:
 			type = smprintf("%s%s", tree->node.VarDecl.toplevel == 1 ? "const " : "", codegen(tree->node.VarDecl.type));
 			id = codegen(tree->node.VarDecl.identifier);
-			intlit = tree->node.VarDecl.type->tag == ArrayType ? smprintf("[%s]", tree->node.VarDecl.type->node.ArrayType.int_literal) : smprintf("");
+			intlit = tree->node.VarDecl.type->tag == ArrayType ? buildArrayDeclIndices(tree->node.VarDecl.type) : smprintf("");
 			expr = tree->node.VarDecl.expression != NULL ? smprintf(" = %s", codegen(tree->node.VarDecl.expression)) : smprintf("");
 			result = smprintf("%s %s%s%s%s", type, id, intlit, expr, tree->node.VarDecl.toplevel == 1 ? ";" : "");
 			break;
@@ -142,6 +141,14 @@ char *codegen(AstNode *tree) {
 	free(indicies);
 
 	return result;
+}
+char *buildArrayDeclIndices(AstNode *node) {
+	char *buffer = smprintf("[%s]", codegen(node->node.ArrayType.int_literal));
+	while (node->node.ArrayType.type->tag == ArrayType) {
+		node = node->node.ArrayType.type;
+		buffer = smprintf("[%s]%s", codegen(node->node.ArrayType.int_literal), buffer);
+	}
+	return buffer;
 }
 /* prettyprinterlist copy :joyd: */
 char *processBlock(AstNode *node, char *sep, int end){
