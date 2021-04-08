@@ -53,6 +53,11 @@ function ad() -> void {
   float ff1 = 1.00;
   float ff2 = -1.00;
 
+  # test something funny which works
+  int abc = int def + def*2;
+  # The following does not work the left side comes first
+  #int cba = 2*fed + int fed;
+
   struct test peter1234;
   peter1234.a = 123;
   print(peter1234.b);

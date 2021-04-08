@@ -22,8 +22,9 @@ int buildSymbolTable(AstNode *tree){
 	initializeSymbolTables();
 	processNode(tree);
 
+	/* this next is mostly usefull for debugging and is thus disabled
 	checkIdentifierTypes(tree);
-
+	*/
 	if(errors)
 		printf("BuildSymbolTable failed with %d errors\n", errors);
 

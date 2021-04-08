@@ -72,13 +72,14 @@ main(int argc, char *argv[])
 	}
 
 	errors += buildSymbolTable(tree);
-	errors += typeCheck(tree);
+	if(errors != 0)
+		return errors;
 
+	errors += typeCheck(tree);
 	if(errors != 0)
 		return errors;
 
 	code = codegen(tree);
-	
 	if(outfile != NULL)
 		printf("Should output code to file %s but meh.\n", outfile);
 
