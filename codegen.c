@@ -19,6 +19,8 @@ char *codegen(AstNode *tree) {
 	char *params = NULL;
 	char *stmts = NULL;
 	char *intlit = NULL;
+	char *expr = NULL;
+	char *elsepart = NULL;
 
 	char *result = NULL;
 
@@ -32,7 +34,7 @@ char *codegen(AstNode *tree) {
 			type = codegen(tree->node.DefineFunction.type);
 			id = codegen(tree->node.DefineFunction.identifier);
 			params = processBlock(tree->node.DefineFunction.parameters, ", ", 0);
-			stmts = processBlock(tree->node.DefineFunction.statements, ";", 1);
+			stmts = processBlock(tree->node.DefineFunction.statements, "", 1);
 			result = smprintf("%s %s(%s) {%s}", type, id, params, stmts);
 			break;
 		case Parameter:
@@ -40,6 +42,22 @@ char *codegen(AstNode *tree) {
 			id = codegen(tree->node.Parameter.identifier);
 			intlit = tree->node.Parameter.type->tag == ArrayType ? smprintf("[%s]", tree->node.Parameter.type->node.ArrayType.int_literal) : smprintf("");
 			result = smprintf("%s %s%s", type, id, intlit);
+			break;
+		case ElseIf:
+			expr = codegen(tree->node.ElseIf.expression);
+			stmts = processBlock(tree->node.ElseIf.statements, "", 1);
+			elsepart = codegen(tree->node.ElseIf.elsePart);
+			result = smprintf("else if (%s) {%s} %s", expr, stmts, elsepart);
+			break;
+		case If:
+			expr = codegen(tree->node.If.expression);
+			stmts = processBlock(tree->node.If.statements, "", 1);
+			elsepart = codegen(tree->node.If.elsePart);
+			result = smprintf("if (%s) {%s} %s", expr, stmts, elsepart);
+			break;
+		case Else:
+			stmts = processBlock(tree->node.Else.statements, "", 1);
+			result = smprintf("else {%s}", stmts);
 			break;
 		case BuiltinType:
 			result = smprintf("%s", getBuiltInTypeLiteral(tree->node.BuiltinType.type));
@@ -55,6 +73,39 @@ char *codegen(AstNode *tree) {
 		case Identifier:
 			result = smprintf("%s", tree->node.Identifier.symbol->name);
 			break;
+		case ExprStmt:
+			result = smprintf("%s", processBlock(tree->node.ExprStmt.expression, "", 0));
+			break;
+		case Assignment:
+			result = smprintf("%s", "asspog");
+			break;
+		case Return:
+			result = smprintf("%s", "retpog");
+			break;
+		case VarDecl:
+			type = smprintf("%s%s", tree->node.VarDecl.toplevel == 1 ? "const " : "", codegen(tree->node.VarDecl.type));
+			id = codegen(tree->node.VarDecl.identifier);
+			intlit = tree->node.VarDecl.type->tag == ArrayType ? smprintf("[%s]", tree->node.VarDecl.type->node.ArrayType.int_literal) : smprintf("");
+			expr = tree->node.VarDecl.expression != NULL ? smprintf(" = %s", codegen(tree->node.VarDecl.expression)) : "";
+			result = smprintf("%s %s%s%s;", type, id, intlit, expr);
+			break;
+		case IntLiteral:
+			result = smprintf("%d", tree->node.IntLiteral.value);
+			break;
+		case PinLiteral:
+			result = smprintf("%d", tree->node.PinLiteral.value);
+			break;
+		case FloatLiteral:
+			result = smprintf("%lf", tree->node.FloatLiteral.value);
+			break;
+		case BoolLiteral:
+			result = smprintf("%s", tree->node.BoolLiteral.value ? "true" : "false");
+			break;
+		case FunctionCall:
+			id = codegen(tree->node.FunctionCall.identifier);
+			params = processBlock(tree->node.FunctionCall.arguments, ",", 0);
+			result = smprintf("%s(%s)", id, params);
+			break;
 		default:
 			result = smprintf("");
 	}
@@ -64,6 +115,8 @@ char *codegen(AstNode *tree) {
 	free(params);
 	free(stmts);
 	free(intlit);
+	free(expr);
+	free(elsepart);
 
 	return result;
 }
