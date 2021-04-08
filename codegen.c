@@ -145,8 +145,10 @@ char *codegen(AstNode *tree) {
 char *buildArrayDeclIndices(AstNode *node) {
 	char *buffer = smprintf("[%s]", codegen(node->node.ArrayType.int_literal));
 	while (node->node.ArrayType.type->tag == ArrayType) {
+		char *tmp = buffer;
 		node = node->node.ArrayType.type;
 		buffer = smprintf("[%s]%s", codegen(node->node.ArrayType.int_literal), buffer);
+		free(tmp);
 	}
 	return buffer;
 }
