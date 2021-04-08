@@ -4,4 +4,6 @@ function haha() -> void {
 	int i = 2; # so is this until the end of the line
 	float j = 2.2;
 	bool k = true;
+	i = 3;
+	i = 4 + 5;
 }

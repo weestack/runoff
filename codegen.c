@@ -77,10 +77,17 @@ char *codegen(AstNode *tree) {
 			result = smprintf("%s", processBlock(tree->node.ExprStmt.expression, "", 0));
 			break;
 		case Assignment:
-			result = smprintf("%s", "asspog");
+			id = codegen(tree->node.Assignment.location);
+			expr = processBlock(tree->node.Assignment.expression, "", 0);
+			result = smprintf("%s = %s", id, expr);
 			break;
 		case Return:
-			result = smprintf("%s", "retpog");
+			result = smprintf("%s", "");
+			break;
+		case FunctionCall:
+			id = codegen(tree->node.FunctionCall.identifier);
+			params = processBlock(tree->node.FunctionCall.arguments, ",", 0);
+			result = smprintf("%s(%s)", id, params);
 			break;
 		case VarDecl:
 			type = smprintf("%s%s", tree->node.VarDecl.toplevel == 1 ? "const " : "", codegen(tree->node.VarDecl.type));
@@ -100,11 +107,6 @@ char *codegen(AstNode *tree) {
 			break;
 		case BoolLiteral:
 			result = smprintf("%s", tree->node.BoolLiteral.value ? "true" : "false");
-			break;
-		case FunctionCall:
-			id = codegen(tree->node.FunctionCall.identifier);
-			params = processBlock(tree->node.FunctionCall.arguments, ",", 0);
-			result = smprintf("%s(%s)", id, params);
 			break;
 		default:
 			result = smprintf("");
