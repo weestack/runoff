@@ -87,6 +87,13 @@ char *codegen(AstNode *tree) {
 			expr = processBlock(tree->node.Assignment.expression, "", 0);
 			result = smprintf("%s = %s", id, expr);
 			break;
+		case TernaryOperator:
+			result = smprintf("(%s) ? %s: %s",
+			codegen(tree->node.TernaryOperator.expressionTest),
+			codegen(tree->node.TernaryOperator.expressionTrue),
+			codegen(tree->node.TernaryOperator.expressionFalse)
+		);
+			break;
 		case VariableLocation:
 			result = codegen(tree->node.VariableLocation.identifier);
 			break;

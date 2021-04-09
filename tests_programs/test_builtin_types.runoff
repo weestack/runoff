@@ -64,4 +64,5 @@ function ad() -> void {
   peter1234.c = true;
 
   print(peter1234.s.wuut);
+  v = ( (1+3) > 0 ) ? 4*5: 7*6;
 }
