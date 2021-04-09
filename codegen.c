@@ -12,6 +12,7 @@
 
 char *processBlock(AstNode *node, char *sep, int end);
 char *getBuiltInTypeLiteral(int type);
+char *getBinaryOperator(int operator);
 char *getHelperFunctionsCode(void);
 char *buildArrayDeclIndices(AstNode *node);
 
@@ -114,6 +115,12 @@ char *codegen(AstNode *tree) {
 			expr = tree->node.VarDecl.expression != NULL ? smprintf(" = %s", codegen(tree->node.VarDecl.expression)) : smprintf("");
 			result = smprintf("%s %s%s%s%s", type, id, intlit, expr, tree->node.VarDecl.toplevel == 1 ? ";" : "");
 			break;
+		case BinaryOperation:
+			result = smprintf("(%s %s %s)",
+			codegen(tree->node.BinaryOperation.expression_left),
+			getBinaryOperator(tree->node.BinaryOperation.operator),
+			codegen(tree->node.BinaryOperation.expression_right));
+			break;
 		case IntLiteral:
 			result = smprintf("%d", tree->node.IntLiteral.value);
 			break;
@@ -142,6 +149,81 @@ char *codegen(AstNode *tree) {
 
 	return result;
 }
+
+char *getBinaryOperator(int operator) {
+	switch (operator) {
+		case elogical_and:
+			return "&&";
+			break;
+		case elogical_or:
+			return "||";
+			break;
+		case egreater_equal:
+			return ">=";
+			break;
+		case esmaller_equal:
+			return "<=";
+			break;
+		case eequal:
+			return "==";
+			break;
+		case enot_equal:
+			return "!=";
+			break;
+		case edecrement:
+			return "--";
+			break;
+		case eincrement:
+			return "++";
+			break;
+		case esmaller_than:
+			return "<";
+			break;
+		case ebigger_than:
+			return ">";
+			break;
+		case emod:
+			return "%";
+			break;
+		case eplus:
+			return "+";
+			break;
+		case eminus:
+			return "-";
+			break;
+		case etimes:
+			return "*";
+			break;
+		case edivid:
+			return "/";
+			break;
+		case elogical_not:
+			return "!";
+			break;
+		case ebit_and:
+			return "&";
+			break;
+		case ebit_or:
+			return "|";
+			break;
+		case eright_shift:
+			return ">";
+			break;
+		case eleft_shift:
+			return "<";
+			break;
+		case ebit_xor:
+			return "^";
+			break;
+		case ebit_not:
+			return "~";
+			break;
+		default:
+			return "unknown_op";
+	}
+}
+
+
 char *buildArrayDeclIndices(AstNode *node) {
 	char *buffer = smprintf("[%s]", codegen(node->node.ArrayType.int_literal));
 	while (node->node.ArrayType.type->tag == ArrayType) {
