@@ -43,6 +43,20 @@ char *codegen(AstNode *tree) {
 			stmts = processBlock(tree->node.DefineFunction.statements, "\n", 1);
 			result = smprintf("%s %s(%s) {%s}", type, id, params, stmts);
 			break;
+		case DefineStruct:
+			result = smprintf(
+				"struct %s {%s}",
+				codegen(tree->node.DefineStruct.identifier),
+				processBlock(tree->node.DefineStruct.fields, "", 0)
+			);
+			break;
+		case StructMember:
+			result = smprintf(
+				"%s %s;",
+				codegen(tree->node.StructMember.type),
+				codegen(tree->node.StructMember.identifier)
+			);
+			break;
 		case Parameter:
 			type = codegen(tree->node.Parameter.type);
 			id = codegen(tree->node.Parameter.identifier);
