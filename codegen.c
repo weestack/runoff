@@ -162,7 +162,8 @@ char *codegen(AstNode *tree) {
 			}
 			break;
 		case Return:
-			result = smprintf("return%s;", "");
+			expr = codegen(tree->node.Return.expression);
+			result = smprintf("return %s;", expr);
 			break;
 		case FunctionCall:
 			id = codegen(tree->node.FunctionCall.identifier);

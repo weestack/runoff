@@ -16,4 +16,5 @@ function test() -> void {
 	numbers[4] = 5;
 	int s = sum(numbers);
 	# s is now = 15
+	return;
 }
