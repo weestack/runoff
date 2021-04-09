@@ -76,6 +76,38 @@ char *codegen(AstNode *tree) {
 			type = codegen(tree->node.ArrayType.type);
 			result = smprintf("%s", type);
 			break;
+		case While:
+			expr = codegen(tree->node.While.expression);
+			stmts = processBlock(tree->node.While.statements, "", 0);
+			result = smprintf("while(%s) {%s}", expr, stmts);
+		 	break;
+		case For:
+			result = smprintf(
+				"for(%s;%s;%s){%s}",
+				codegen(tree->node.For.expressionInit),
+				codegen(tree->node.For.expressionTest),
+				codegen(tree->node.For.expressionUpdate),
+				processBlock(tree->node.For.statements, "", 0)
+			);
+			break;
+		case Switch:
+			expr = codegen(tree->node.Switch.expression);
+			result = smprintf("switch(%s){%s}",
+				expr,
+				processBlock(tree->node.Switch.cases, "", 0)
+			);
+			break;
+		case SwitchCase:
+			stmts = processBlock(tree->node.SwitchCase.statements, "", 0);
+			if (tree->node.SwitchCase.literal != NULL) {
+				result = smprintf("case %s: %s break;",
+					codegen(tree->node.SwitchCase.literal),
+					stmts
+				);
+			}else {
+				result = smprintf("default: %s break;", stmts);
+			}
+		break;
 		case Identifier:
 			result = smprintf("%s", tree->node.Identifier.symbol->name);
 			break;
@@ -106,6 +138,14 @@ char *codegen(AstNode *tree) {
 			id = codegen(tree->node.ArrayLocation.identifier);
 			indicies = processBlock(tree->node.ArrayLocation.indicies, "][", 0);
 			result = smprintf("%s[%s]", id, indicies);
+			break;
+		case UnaryOperation:
+			expr = codegen(tree->node.UnaryOperation.expression);
+			if (tree->node.UnaryOperation.fix == postfix) {
+				result= smprintf("%s%s", expr, getBinaryOperator(tree->node.UnaryOperation.operator));
+			}else {
+				result= smprintf("%s%s", getBinaryOperator(tree->node.UnaryOperation.operator), expr);
+			}
 			break;
 		case Return:
 			result = smprintf("return%s;", "");

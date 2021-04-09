@@ -97,5 +97,18 @@ function dummy(int a) -> int {
   int f = 4 << 3;
   int g = f << e;
   int h = (f * 9) << (e % 3) * 2;
+  while ( h > 5 ) {
+    h--;
+    h++;
+    h + 5;
+    h--;
+  }
+
+  switch(h%1) {
+    case 1:
+      h = 213;
+    default:
+      h = 123;
+  }
 
 }
