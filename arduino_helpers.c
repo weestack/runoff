@@ -1,7 +1,5 @@
-#include <FreeRTOS.h>
+#include <Arduino_FreeRTOS.h>
 
-char *init(){
-  return "Sauron was here hehe";
-}
-
+void setup(){}
+void loop(){}
 // End of helper file

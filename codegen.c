@@ -15,6 +15,7 @@ char *getBuiltInTypeLiteral(int type);
 char *getBinaryOperator(int operator);
 char *getHelperFunctionsCode(void);
 char *buildArrayDeclIndices(AstNode *node);
+char *preTypeDeclerationHelper(AstNode *node);
 
 char *codegen(AstNode *tree) {
 	char *id = NULL;
@@ -26,6 +27,7 @@ char *codegen(AstNode *tree) {
 	char *elsepart = NULL;
 	char *location = NULL;
 	char *indicies = NULL;
+	char *preGenerate = NULL;
 
 	char *result = NULL;
 
@@ -126,7 +128,8 @@ char *codegen(AstNode *tree) {
 			result = smprintf("%s", tree->node.Identifier.symbol->name);
 			break;
 		case ExprStmt:
-			result = smprintf("%s;", codegen(tree->node.ExprStmt.expression));
+			preGenerate = smprintf("%s", preTypeDeclerationHelper(tree->node.ExprStmt.expression));
+			result = smprintf("%s;%s;", preGenerate, codegen(tree->node.ExprStmt.expression));
 			break;
 		case Assignment:
 			id = codegen(tree->node.Assignment.location);
@@ -208,7 +211,7 @@ char *codegen(AstNode *tree) {
 	free(elsepart);
 	free(location);
 	free(indicies);
-
+	free(preGenerate);
 	return result;
 }
 
@@ -361,7 +364,7 @@ char *getBuiltInTypeLiteral(int type) {
 			return "void";
 			break;
 		case builtintype_bool:
-			return "boolean";
+			return "bool";
 			break;
 		case builtintype_msg:
 		case builtintype_taskid:
@@ -399,4 +402,8 @@ char *getHelperFunctionsCode(void) {
 	}
 
 	return code;
+}
+
+char *preTypeDeclerationHelper(AstNode *node) {
+	
 }
