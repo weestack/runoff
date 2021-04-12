@@ -132,12 +132,15 @@ char *codegen(AstNode *tree) {
 		case ExprStmt:
 			if(tree->node.ExprStmt.expression != NULL && tree->node.ExprStmt.expression->tag == Assignment){
 				preGenerate = smprintf("%s", preTypeDeclerationHelper(tree->node.ExprStmt.expression->node.Assignment.expression));
-			}
-
-			else{
+			}else{
 				preGenerate = smprintf("%s", preTypeDeclerationHelper(tree->node.ExprStmt.expression));
 			}
-			result = smprintf("%s;%s;", preGenerate, codegen(tree->node.ExprStmt.expression));
+			result = smprintf("%s%s%s;",
+							 preGenerate,
+							 (tree->node.ExprStmt.expression == NULL) ? ";" : "",
+							 codegen(tree->node.ExprStmt.expression)
+
+						 );
 			break;
 		case Assignment:
 			id = codegen(tree->node.Assignment.location);
@@ -152,6 +155,7 @@ char *codegen(AstNode *tree) {
 		);
 			break;
 		case VariableLocation:
+
 			result = codegen(tree->node.VariableLocation.identifier);
 			break;
 		case StructLocation:
@@ -182,11 +186,11 @@ char *codegen(AstNode *tree) {
 			result = smprintf("%s(%s)", id, params);
 			break;
 		case VarDecl:
-			type = smprintf("%s%s", tree->node.VarDecl.toplevel == 1 ? "const " : "", codegen(tree->node.VarDecl.type));
+			/*type = smprintf("%s%s", tree->node.VarDecl.toplevel == 1 ? "const " : "", codegen(tree->node.VarDecl.type));*/
 			id = codegen(tree->node.VarDecl.identifier);
 			intlit = tree->node.VarDecl.type->tag == ArrayType ? buildArrayDeclIndices(tree->node.VarDecl.type) : smprintf("");
 			expr = tree->node.VarDecl.expression != NULL ? smprintf(" = %s", codegen(tree->node.VarDecl.expression)) : smprintf("");
-			result = smprintf("%s %s%s%s%s", type, id, intlit, expr, tree->node.VarDecl.toplevel == 1 ? ";" : "");
+			result = smprintf("%s %s%s%s%s", id, intlit, expr, tree->node.VarDecl.toplevel == 1 ? ";" : "");
 			break;
 		case BinaryOperation:
 			result = smprintf("(%s %s %s)",
@@ -421,18 +425,18 @@ char *preTypeDeclerationHelper(AstNode *tree) {
 			result = preTypeDeclerationHelperBlock(tree->node.Assignment.expression, "", 0);
 			break;
 		case VarDecl:
-			result = smprintf("%s %s = %s; %s", 
-					codegen(tree->node.VarDecl.type), 
+			result = smprintf("%s %s = %s;\n%s",
+					codegen(tree->node.VarDecl.type),
 					codegen(tree->node.VarDecl.identifier),
 					getStandardValueHelper(tree->node.VarDecl.type),
-					preTypeDeclerationHelperBlock(tree->node.VarDecl.expression, "", 0)
+					preTypeDeclerationHelperBlock(tree->node.VarDecl.expression, "",0)
 			);
 			break;
 		case ExprStmt:
 			result = preTypeDeclerationHelperBlock(tree->node.ExprStmt.expression, "", 0);
 			break;
 		case BinaryOperation:
-			result = smprintf("%s;%s", preTypeDeclerationHelper(tree->node.BinaryOperation.expression_left), 
+			result = smprintf("%s%s", preTypeDeclerationHelper(tree->node.BinaryOperation.expression_left),
 									   preTypeDeclerationHelper(tree->node.BinaryOperation.expression_right));
 			break;
 		case UnaryOperation:
@@ -492,6 +496,6 @@ char *getStandardValueHelper(AstNode *node){
 			return "false";
 			break;
 		default:
-			return "_yeet_";
+			return "";
 	}
 }
