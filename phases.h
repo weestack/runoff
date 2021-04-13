@@ -10,5 +10,9 @@ int buildSymbolTable(AstNode *tree);
 /* Checking for type errors defined in typechecker.c */
 int typeCheck(AstNode *tree);
 
+/* Make sure the tree contains no variable declarations inside expressions.
+   defined in removeNestedDecls.c */
+void removeNestedDecls(AstNode *tree);
+
 /* Code generation defined ind codegen.c */
 char *codegen(AstNode *tree);

@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <errno.h>
 #include "parser.h"
 #include "symbol.h"
 #include "ast.h"
@@ -79,10 +80,18 @@ main(int argc, char *argv[])
 	if(errors != 0)
 		return errors;
 
-	code = codegen(tree);
-	if(outfile != NULL)
-		printf("Should output code to file %s but meh.\n", outfile);
+	/* some code transformations that cannot fail */
+	removeNestedDecls(tree);
 
-	printf("%s\n", code);
+	/* generate the code! */
+	code = codegen(tree);
+	if(outfile != NULL){
+		FILE *fp = fopen(outfile, "w");
+		if (fp != NULL)
+			fputs(code, fp);
+		else
+			printf("Could not open file %s: %s\n", outfile, strerror(errno));
+	}else
+		printf("%s\n", code);
 	return 0;
 }
