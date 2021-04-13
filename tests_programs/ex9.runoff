@@ -18,12 +18,3 @@ function test() -> void {
 	# s is now = 15
 	return;
 }
-
-function a(int arg) -> void {
-}
-
-function main() -> void {
-  a(int b);
-  int b = 5;
-  print(b);
-}

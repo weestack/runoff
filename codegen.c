@@ -15,9 +15,7 @@ char *getBuiltInTypeLiteral(int type);
 char *getBinaryOperator(int operator);
 char *getHelperFunctionsCode(void);
 char *buildArrayDeclIndices(AstNode *node);
-char *preTypeDeclerationHelper(AstNode *tree);
-char *preTypeDeclerationHelperBlock(AstNode *node, char *sep, int end);
-char *getStandardValueHelper(AstNode *node);
+char *preTypeDeclerationHelper(AstNode *node);
 
 char *codegen(AstNode *tree) {
 	char *id = NULL;
@@ -130,13 +128,7 @@ char *codegen(AstNode *tree) {
 			result = smprintf("%s", tree->node.Identifier.symbol->name);
 			break;
 		case ExprStmt:
-			if(tree->node.ExprStmt.expression != NULL && tree->node.ExprStmt.expression->tag == Assignment){
-				preGenerate = smprintf("%s", preTypeDeclerationHelper(tree->node.ExprStmt.expression->node.Assignment.expression));
-			}
-
-			else{
-				preGenerate = smprintf("%s", preTypeDeclerationHelper(tree->node.ExprStmt.expression));
-			}
+			preGenerate = smprintf("%s", preTypeDeclerationHelper(tree->node.ExprStmt.expression));
 			result = smprintf("%s;%s;", preGenerate, codegen(tree->node.ExprStmt.expression));
 			break;
 		case Assignment:
@@ -412,86 +404,6 @@ char *getHelperFunctionsCode(void) {
 	return code;
 }
 
-char *preTypeDeclerationHelper(AstNode *tree) {
-	char *result = NULL;
-	if (tree == NULL)
-		return smprintf("");
-	switch(tree->tag){
-		case Assignment:
-			result = preTypeDeclerationHelperBlock(tree->node.Assignment.expression, "", 0);
-			break;
-		case VarDecl:
-			result = smprintf("%s %s = %s; %s", 
-					codegen(tree->node.VarDecl.type), 
-					codegen(tree->node.VarDecl.identifier),
-					getStandardValueHelper(tree->node.VarDecl.type),
-					preTypeDeclerationHelperBlock(tree->node.VarDecl.expression, "", 0)
-			);
-			break;
-		case ExprStmt:
-			result = preTypeDeclerationHelperBlock(tree->node.ExprStmt.expression, "", 0);
-			break;
-		case BinaryOperation:
-			result = smprintf("%s;%s", preTypeDeclerationHelper(tree->node.BinaryOperation.expression_left), 
-									   preTypeDeclerationHelper(tree->node.BinaryOperation.expression_right));
-			break;
-		case UnaryOperation:
-			result = smprintf("%s", preTypeDeclerationHelper(tree->node.UnaryOperation.expression));
-			break;
-		default:
-			result = smprintf("");
-	}
-	return result;
-}
-
-char *preTypeDeclerationHelperBlock(AstNode *node, char *sep, int end){
-	char *result;
-	char *prev;
-	char *childstr;
-	AstNode *child;
-
-	if(node == NULL)
-		return smprintf("");
-
-	child = node->next;
-	result = preTypeDeclerationHelper(node);
-
-	while(child != NULL){
-		prev = result;
-		childstr = preTypeDeclerationHelper(child);
-		result = smprintf("%s%s%s", prev, sep, childstr);
-		free(prev);
-		free(childstr);
-		child = child->next;
-	}
-	if(end){
-		prev = result;
-		result = smprintf("%s%s", prev, sep);
-		free(prev);
-	}
-	return result;
-}
-
-char *getStandardValueHelper(AstNode *node){
-	switch (node->tag) {
-		case builtintype_uint8:
-		case builtintype_uint16:
-		case builtintype_uint32:
-		case builtintype_uint64:
-		case builtintype_int8:
-		case builtintype_int16:
-		case builtintype_int32:
-		case builtintype_int64:
-		case builtintype_unknownInt:
-			return "0";
-			break;
-		case builtintype_float:
-			return "0.0";
-			break;
-		case builtintype_bool:
-			return "false";
-			break;
-		default:
-			return "_yeet_";
-	}
+char *preTypeDeclerationHelper(AstNode *node) {
+	
 }
