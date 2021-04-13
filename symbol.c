@@ -84,6 +84,7 @@ Symbol *enterSymbol(char *name, Type *type){
 	symbol->name = name;
 	symbol->type = type;
 	symbol->globalvar = 0;
+	symbol->initialized = 0;
 	symbol->next = current->symbols;
 	current->symbols = symbol;
 	return symbol;

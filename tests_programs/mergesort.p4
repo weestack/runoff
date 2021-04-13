@@ -8,8 +8,9 @@ function merge(int[10] arr, int left, int mid, int right) -> void {
     int n2 = right - mid;
 
     int [5] LeftHalf;
+    LeftHalf[0]=0;
     int [5] RightHalf;
-
+    RightHalf[0]=0;
     # Synes det kunne være nice med funktioner til at koppier Arrays, tænker Copy, koppier det hele og
     # CopyPart(arr1, arr2, index1, index2), koppier arr2[index..index2] over i arr1.
 

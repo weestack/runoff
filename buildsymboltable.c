@@ -14,6 +14,7 @@ void handleDefineFunction(AstNode *function);
 void handleDefineTask(AstNode *function);
 void handleMessageIdentifier(AstNode *function);
 void handleReceiveCase(AstNode *node);
+void handleAssignment(AstNode *node);
 void checkIdentifierTypes(AstNode *tree);
 static int errors;
 static Symbol *currentfunc; /* the symbol of the current function */
@@ -88,6 +89,8 @@ Type *processNode(AstNode *node){
 	case Parameter:
 		vartype = processNode(node->node.Parameter.type);
 		errors += insertSymbol(node->node.Parameter.identifier, vartype);
+		sym = retrieveSymbol(node->node.Parameter.identifier);
+		sym->initialized = 1;
 		break;
 	case BuiltinType:
 		return mkBuiltinTypeDescriptor(node->node.BuiltinType.type);
@@ -141,6 +144,8 @@ Type *processNode(AstNode *node){
 		errors += insertSymbol(node->node.VarDecl.identifier, vartype);
 		sym = retrieveSymbol(node->node.VarDecl.identifier);
 		sym->globalvar = node->node.VarDecl.toplevel;
+		if(node->node.VarDecl.expression != NULL)
+			sym->initialized = 1;
 		return NULL; /* special case */
 	case VariableLocation:
 		sym = retrieveSymbol(node->node.VariableLocation.identifier);
@@ -191,6 +196,9 @@ Type *processNode(AstNode *node){
 		else
 			updateSymbolId(node->node.Spawn.identifier, sym);
 		break;
+	case Assignment:
+		handleAssignment(node);
+		return NULL;
 	}
 
 	child = getChildren(node);
@@ -373,7 +381,10 @@ void handleReceiveCase(AstNode *node){
 		arg != NULL && paramnr < paramcount;
 		arg = arg->next, paramnr++)
 	{
+		Symbol *tmpsym;
 		errors += insertSymbol(arg, params[paramnr]);
+		tmpsym = retrieveSymbol(arg);
+		tmpsym->initialized = 1;
 	}
 	if(paramnr != paramcount || arg != NULL){
 		errors++;
@@ -381,4 +392,33 @@ void handleReceiveCase(AstNode *node){
 	}
 	processNodes(node->node.ReceiveCase.statements);
 	closeScope();
+}
+
+void handleAssignment(AstNode *node){
+	AstNode *loc = node->node.Assignment.location;
+	AstNode *expr = node->node.Assignment.expression;
+	AstNode *id = NULL;
+	Symbol *sym;
+
+	processNode(expr);
+	processNode(loc);
+
+	/* TODO fix for structs and arrays. Right now, assignment to one field/element marks the whole thing as initialized :--) */
+	switch(loc->tag){
+	case VariableLocation:
+		id = loc->node.VariableLocation.identifier;
+		break;
+	case ArrayLocation:
+		id = loc->node.VariableLocation.identifier;
+		break;
+	case StructLocation:
+		id = loc->node.StructLocation.identifier;
+		break;
+	}
+
+	if(id != NULL){
+		sym = id->node.Identifier.symbol;
+		sym->initialized = 1;
+	}
+
 }

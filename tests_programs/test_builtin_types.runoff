@@ -8,7 +8,7 @@ struct test {
   int a;
   int64 b;
   bool c;
-  struct hej s;
+  struct hej sej;
 }
 
 # Messages
@@ -22,7 +22,7 @@ function print(int64 wack) -> void {
 }
 
 function hehe(struct test s) -> int {
-	return s.s.a;
+	return s.sej.a;
 }
 
 function ad() -> void {
@@ -63,7 +63,7 @@ function ad() -> void {
   print(peter1234.b);
   peter1234.c = true;
 
-  print(peter1234.s.wuut);
+  print(peter1234.sej.wuut);
   v = ( (1+3) > 0 ) ? 4*5: 7*6;
 }
 

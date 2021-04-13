@@ -10,6 +10,8 @@ static void checkSwitchHasDefault(AstNode *tree);
 static void checkReceiveHasDefault(AstNode *tree);
 static void checkNotGlobalVar(AstNode *tree);
 static void checkHasMaxOneMessageBlock(AstNode *tree);
+static void checkVarInitialized(AstNode *tree);
+static int hasDefaultValue(Type *type);
 
 /* The following list of contextual constraints are checked by
    this phase:
@@ -18,6 +20,7 @@ static void checkHasMaxOneMessageBlock(AstNode *tree);
    3) Each receive has exactly one default case
    4) No modification of global variables
    5) Each tree has at most one messages block
+   6) All variables are initialized before use, or have a default value
  */
 int contextualConstraintsCheck(AstNode *tree){
 	AstNode *children;
@@ -40,6 +43,11 @@ int contextualConstraintsCheck(AstNode *tree){
 		if(tree->node.UnaryOperation.operator == edecrement
 			|| tree->node.UnaryOperation.operator == eincrement)
 			checkNotGlobalVar(tree->node.UnaryOperation.expression);
+		break;
+	case VariableLocation:
+	case StructLocation:
+	case ArrayLocation:
+		checkVarInitialized(tree);
 		break;
 	}
 	
@@ -147,5 +155,55 @@ static void checkHasMaxOneMessageBlock(AstNode *tree){
 	if(msgblockCount > 1){
 		eprintf(1, "At most one messages block is allowed per program. This program has %d\n", msgblockCount);
 		errors++;
+	}
+}
+
+/* check that the variable is either initialized before use, or have a default value */
+static void checkVarInitialized(AstNode *tree){
+	AstNode *id;
+	Symbol *sym;
+	switch(tree->tag){
+	case VariableLocation:
+		id = tree->node.VariableLocation.identifier;
+		break;
+	case StructLocation:
+		id = tree->node.StructLocation.identifier;
+		break;
+	case ArrayLocation:
+		id = tree->node.ArrayLocation.identifier;
+		break;
+	default:
+		return;
+	}
+
+	sym = id->node.Identifier.symbol;
+	if(!sym->initialized){
+		if(hasDefaultValue(sym->type))
+			eprintf(tree->linenum, "TODO insert initializer code for var %s here!\n", sym->name);
+		else{
+			eprintf(tree->linenum, "Variable '%s' is not initialized when used here\n", sym->name);
+			/* errors++; */
+		}
+	}
+}
+
+static int hasDefaultValue(Type *type){
+	if(type->tag != BuiltinTypeTag)
+		return 0;
+	
+	switch(type->tags.typeBuiltin.builtinType){
+	case builtintype_uint8:
+	case builtintype_uint16:
+	case builtintype_uint32:
+	case builtintype_uint64:
+	case builtintype_int8:
+	case builtintype_int16:
+	case builtintype_int32:
+	case builtintype_int64:
+	case builtintype_float:
+	case builtintype_bool:
+		return 1;
+	default:
+		return 0;
 	}
 }

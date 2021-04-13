@@ -21,6 +21,7 @@ struct Symbol {
 	char* name;
 	Type *type;
 	int globalvar;
+	int initialized;
 
 	struct AstNode *node; /* the node which inserted the symbol */
 	Symbol* next;
