@@ -7,3 +7,6 @@ function fibonacci_sequence(int n) -> int {
         return (fibonacci_sequence(n - 1) + fibonacci_sequence(n - 2));
     }
 }
+
+function setup() -> void {
+}

@@ -34,3 +34,6 @@ task blow_plastic_away() {
         blow_away_plastic_at_id(target);
     }
 }
+
+function setup() -> void {
+}

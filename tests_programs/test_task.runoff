@@ -5,3 +5,6 @@ task a(bool is_so, pinid pinInput) {
   }
 
 }
+
+function setup() -> void {
+}

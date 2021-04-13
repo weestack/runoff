@@ -18,3 +18,6 @@ function test() -> void {
 	# s is now = 15
 	return;
 }
+
+function setup() -> void {
+}

@@ -17,3 +17,6 @@ function test() -> void {
 	
 	int[15] arr;
 }
+
+function setup() -> void {
+}

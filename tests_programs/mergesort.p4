@@ -56,3 +56,6 @@ function mergeSort(int[10] arr, int left, int right) -> void {
         merge(arr, left, mid, right);
     }
 }
+
+function setup() -> void {
+}

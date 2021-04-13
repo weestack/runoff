@@ -10,6 +10,9 @@ int buildSymbolTable(AstNode *tree);
 /* Checking for type errors defined in typechecker.c */
 int typeCheck(AstNode *tree);
 
+/* A phase for other contextual constraints defined in constraints.c */
+int contextualConstraintsCheck(AstNode *tree);
+
 /* Make sure the tree contains no variable declarations inside expressions.
    defined in removeNestedDecls.c */
 void removeNestedDecls(AstNode *tree);

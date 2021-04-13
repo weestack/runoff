@@ -10,3 +10,6 @@ function test() -> void {
 		delay(200);
 	}
 }
+
+function setup() -> void {
+}

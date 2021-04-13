@@ -16,3 +16,6 @@ function test() -> void {
 	default: delay(1000000);
 	}
 }
+
+function setup() -> void {
+}

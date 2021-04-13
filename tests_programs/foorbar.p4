@@ -47,3 +47,6 @@ function calculator(int f, taskid who) -> void {
     }
 
 }
+
+function setup() -> void {
+}

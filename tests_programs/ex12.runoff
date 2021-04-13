@@ -2,3 +2,6 @@
 function f1() -> void {
 	delay(1000);
 }
+
+function setup() -> void {
+}
