@@ -62,14 +62,12 @@ main(int argc, char *argv[])
 		filename = argv[0];
 
 	tree = parse(filename);
+	if(tree == NULL)
+		return -1;
+
 	if(ppflag){
-		if(tree != NULL){
-			printf("%s\n", prettyprint(tree));
-			return 0;
-		}else{
-			printf("Can't prettyprint since I couln't parse\n");
-			return -1;
-		}
+		printf("%s\n", prettyprint(tree));
+		return 0;
 	}
 
 	errors += buildSymbolTable(tree);

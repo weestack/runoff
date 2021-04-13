@@ -8,12 +8,14 @@ static int errors = 0;
 static void checkTreeHasSetup(AstNode *tree);
 static void checkSwitchHasDefault(AstNode *tree);
 static void checkReceiveHasDefault(AstNode *tree);
+static void checkNotGlobalVar(AstNode *tree);
 
 /* The following list of contextual constraints are checked by
    this phase:
    1) Each tree has one setup function with type setup(void)->void
    2) Each switch has exactly one default case
    3) Each receive has exactly one default case
+   4) No modification of global variables
  */
 int contextualConstraintsCheck(AstNode *tree){
 	AstNode *children;
@@ -27,6 +29,14 @@ int contextualConstraintsCheck(AstNode *tree){
 		break;
 	case Receive:
 		checkReceiveHasDefault(tree);
+		break;
+	case Assignment:
+		checkNotGlobalVar(tree->node.Assignment.location);
+		break;
+	case UnaryOperation:
+		if(tree->node.UnaryOperation.operator == edecrement
+			|| tree->node.UnaryOperation.operator == eincrement)
+			checkNotGlobalVar(tree->node.UnaryOperation.expression);
 		break;
 	}
 	
@@ -95,5 +105,28 @@ static void checkReceiveHasDefault(AstNode *tree){
 	if(defaultCount != 1){
 		errors++;
 		eprintf(tree->linenum, "Receive statements must have exactly one default case. This one has %d\n", defaultCount);
+	}
+}
+
+/* Check if the tree is a location, and if so, check that it isn't global */
+static void checkNotGlobalVar(AstNode *tree){
+	AstNode *id;
+	switch(tree->tag){
+	case VariableLocation:
+		id = tree->node.VariableLocation.identifier;
+		break;
+	case StructLocation:
+		id = tree->node.StructLocation.identifier;
+		break;
+	case ArrayLocation:
+		id = tree->node.ArrayLocation.identifier;
+		break;
+	default:
+		return;
+	}
+
+	if(id->node.Identifier.symbol->globalvar){
+		eprintf(tree->linenum, "Cannot modify the global variable '%s'\n", id->node.Identifier.symbol->name);
+		errors++;
 	}
 }

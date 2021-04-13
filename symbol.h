@@ -20,6 +20,7 @@ struct AstNode; /* declared fully in ast.h */
 struct Symbol {
 	char* name;
 	Type *type;
+	int globalvar;
 
 	struct AstNode *node; /* the node which inserted the symbol */
 	Symbol* next;

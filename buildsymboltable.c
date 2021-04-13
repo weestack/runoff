@@ -139,6 +139,8 @@ Type *processNode(AstNode *node){
 		vartype = processNode(node->node.VarDecl.type);
 		processNode(node->node.VarDecl.expression);
 		errors += insertSymbol(node->node.VarDecl.identifier, vartype);
+		sym = retrieveSymbol(node->node.VarDecl.identifier);
+		sym->globalvar = node->node.VarDecl.toplevel;
 		return NULL; /* special case */
 	case VariableLocation:
 		sym = retrieveSymbol(node->node.VariableLocation.identifier);

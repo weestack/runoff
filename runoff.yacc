@@ -219,8 +219,8 @@ Expression: Location {$$ = $1;}
 	| '(' Expression ')' {$$ = $2;}
 	| identifier '(' ArgsList ')' {$$ = mkFunctionCallNode($1, $3);}
 	| Location '=' Expression {$$ = mkAssignmentNode($1, $3);}
-	| identifier increment {$$ = mkUnaryOperationNode(eincrement, postfix, $1);}
-	| identifier decrement {$$ = mkUnaryOperationNode(edecrement, postfix, $1);}
+	| Location increment {$$ = mkUnaryOperationNode(eincrement, postfix, $1);}
+	| Location decrement {$$ = mkUnaryOperationNode(edecrement, postfix, $1);}
 	| Declaration {$$ = $1;}
 	| Expression '?' Expression ':' Expression {$$ = mkTernaryOperatorNode($1, $3, $5);}
 	| spawn_keyword identifier '(' ArgsList ')' {$$ = mkSpawnNode($2, $4);}

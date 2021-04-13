@@ -83,6 +83,7 @@ Symbol *enterSymbol(char *name, Type *type){
 	Symbol *symbol = malloc(sizeof(Symbol));
 	symbol->name = name;
 	symbol->type = type;
+	symbol->globalvar = 0;
 	symbol->next = current->symbols;
 	current->symbols = symbol;
 	return symbol;
