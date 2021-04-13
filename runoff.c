@@ -80,12 +80,9 @@ main(int argc, char *argv[])
 		return errors;
 
 	code = codegen(tree);
-	if(outfile != NULL) {
-		FILE *fp = fopen(outfile, "w");
-		if (fp != NULL)
-			fputs(code, fp);
-		else
-			printf("Could not create file %s, unknown error happend but meh.\n", outfile);
-	}
+	if(outfile != NULL)
+		printf("Should output code to file %s but meh.\n", outfile);
+
+	printf("%s\n", code);
 	return 0;
 }
