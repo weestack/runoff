@@ -9,6 +9,7 @@ static void checkTreeHasSetup(AstNode *tree);
 static void checkSwitchHasDefault(AstNode *tree);
 static void checkReceiveHasDefault(AstNode *tree);
 static void checkNotGlobalVar(AstNode *tree);
+static void checkHasMaxOneMessageBlock(AstNode *tree);
 
 /* The following list of contextual constraints are checked by
    this phase:
@@ -16,6 +17,7 @@ static void checkNotGlobalVar(AstNode *tree);
    2) Each switch has exactly one default case
    3) Each receive has exactly one default case
    4) No modification of global variables
+   5) Each tree has at most one messages block
  */
 int contextualConstraintsCheck(AstNode *tree){
 	AstNode *children;
@@ -23,6 +25,7 @@ int contextualConstraintsCheck(AstNode *tree){
 	switch(tree->tag){
 	case Prog:
 		checkTreeHasSetup(tree);
+		checkHasMaxOneMessageBlock(tree);
 		break;
 	case Switch:
 		checkSwitchHasDefault(tree);
@@ -127,6 +130,22 @@ static void checkNotGlobalVar(AstNode *tree){
 
 	if(id->node.Identifier.symbol->globalvar){
 		eprintf(tree->linenum, "Cannot modify the global variable '%s'\n", id->node.Identifier.symbol->name);
+		errors++;
+	}
+}
+
+/* Check that there is at most one messages block in the program */
+static void checkHasMaxOneMessageBlock(AstNode *tree){
+	int msgblockCount = 0;
+	AstNode *toplevels = tree->node.Prog.toplevels;
+	AstNode *node;
+	for(node = toplevels; node != NULL; node = node->next){
+		if(node->tag == DefineMessage)
+			msgblockCount++;
+	}
+
+	if(msgblockCount > 1){
+		eprintf(1, "At most one messages block is allowed per program. This program has %d\n", msgblockCount);
 		errors++;
 	}
 }
