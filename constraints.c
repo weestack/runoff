@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include "auxiliary.h"
 #include "symbol.h"
@@ -11,7 +12,7 @@ static void checkReceiveHasDefault(AstNode *tree);
 static void checkNotGlobalVar(AstNode *tree);
 static void checkHasMaxOneMessageBlock(AstNode *tree);
 static void checkVarInitialized(AstNode *tree);
-static int hasDefaultValue(Type *type);
+static AstNode *getDefaultValue(Type *type);
 
 /* The following list of contextual constraints are checked by
    this phase:
@@ -178,18 +179,25 @@ static void checkVarInitialized(AstNode *tree){
 
 	sym = id->node.Identifier.symbol;
 	if(!sym->initialized){
-		if(hasDefaultValue(sym->type))
-			eprintf(tree->linenum, "TODO insert initializer code for var %s here!\n", sym->name);
-		else{
+		AstNode *expr = getDefaultValue(sym->type);
+		if(expr != NULL){
+			/* replace the occurence of variable v with v=e where e is the default value. Don't know if it works yet :))*/
+			AstNode *loc = malloc(sizeof(AstNode));
+			memcpy(loc, tree, sizeof(AstNode));
+			tree->tag = Assignment;
+			tree->node.Assignment.location = loc;
+			tree->node.Assignment.expression = expr;
+			sym->initialized = 1;
+		}else{
 			eprintf(tree->linenum, "Variable '%s' is not initialized when used here\n", sym->name);
 			/* errors++; */
 		}
 	}
 }
 
-static int hasDefaultValue(Type *type){
+static AstNode *getDefaultValue(Type *type){
 	if(type->tag != BuiltinTypeTag)
-		return 0;
+		return NULL;
 	
 	switch(type->tags.typeBuiltin.builtinType){
 	case builtintype_uint8:
@@ -200,10 +208,12 @@ static int hasDefaultValue(Type *type){
 	case builtintype_int16:
 	case builtintype_int32:
 	case builtintype_int64:
+		return mkIntLiteralNode(0);
 	case builtintype_float:
+		return mkFloatLiteralNode(0);
 	case builtintype_bool:
-		return 1;
+		return mkBoolLiteralNode(0);
 	default:
-		return 0;
+		return NULL;
 	}
 }
