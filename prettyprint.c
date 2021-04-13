@@ -157,13 +157,16 @@ char *prettyprint(AstNode *node)
 		break;
 	case Switch:
 		exprA = prettyprint(node->node.Switch.expression);
-		cases = prettyprint(node->node.Switch.cases);
+		cases = prettyprintlist(node->node.Switch.cases, "\n", 1);
 		result = smprintf("switch(%s) {\n%s}", exprA, cases);
 		break;
 	case SwitchCase:
 		intlit = prettyprint(node->node.SwitchCase.literal);
 		stmts = prettyprintlist(node->node.SwitchCase.statements, "\n", 1);
-		result = smprintf("case %s: %s", intlit, stmts);
+		if(node->node.SwitchCase.literal == NULL)
+			result = smprintf("default: %s", stmts);
+		else
+			result = smprintf("case %s: %s", intlit, stmts);
 		break;
 	case If:
 		exprA = prettyprint(node->node.If.expression);
@@ -192,7 +195,10 @@ char *prettyprint(AstNode *node)
 		message = prettyprint(node->node.ReceiveCase.messageName);
 		args = prettyprintlist(node->node.ReceiveCase.dataNames, ", ", 0);
 		stmts = prettyprintlist(node->node.ReceiveCase.statements, "\n", 1);
-		result = smprintf("case %s{%s}: %s", message, args, stmts);
+		if(node->node.ReceiveCase.messageName == NULL)
+			result = smprintf("default: %s", stmts);
+		else
+			result = smprintf("case %s{%s}: %s", message, args, stmts);
 		break;
 	case VarDecl:
 		type = prettyprint(node->node.VarDecl.type);

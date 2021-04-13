@@ -113,7 +113,13 @@ Type *processNode(AstNode *node){
 		scopeopened = 1;
 		break;
 	case ReceiveCase:
-		handleReceiveCase(node);
+		if(node->node.ReceiveCase.messageName != NULL)
+			handleReceiveCase(node);
+		else{
+			openScope();
+			processNodes(node->node.ReceiveCase.statements);
+			closeScope();
+		}
 		return NULL;
 	case If:
 		openScope();

@@ -13,7 +13,15 @@ task ledhandler() {
 		receive {
 		case ButtonPressed{}: turnOn(LEDPin);
 		case ButtonReleased{}: turnOff(LEDPin);
+		default:
 		}
+	}
+
+	int i;
+	switch(i){
+	case 0: turnOn(LEDPin);
+	case 1: turnOff(LEDPin);
+	default: turnOn(LEDPin);
 	}
 }
 

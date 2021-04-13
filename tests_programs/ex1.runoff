@@ -29,6 +29,7 @@ task A() {
 		case Button1Click{}: turnOn(LED2Pin);
 		case Button1Release{}: turnOff(LED2Pin);
 		case PartyTime{s}: setPartyLight(s);
+		default:
 		}
 	}
 	i >= j;

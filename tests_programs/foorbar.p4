@@ -14,6 +14,7 @@ task printer() {
             case print_foo{} : print_statement = 0;
             case print_bar{} : print_statement = 1;
             case print_foobar{} : print_statement = 2;
+            default:
         }
 
 		int foo;

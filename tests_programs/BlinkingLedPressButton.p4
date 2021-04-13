@@ -12,6 +12,7 @@ task A() {
         receive {
             case ButtonClick{} : turnOn(BUTTONLEDPIN);
             case ButtonRelase{} : turnOff(BUTTONLEDPIN);
+            default:
         }
     }
 }

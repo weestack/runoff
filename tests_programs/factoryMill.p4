@@ -30,6 +30,7 @@ task blow_plastic_away() {
         struct placement target;
         receive {
             case detected_plactic{value} : target = value;
+            default:
         }
         blow_away_plastic_at_id(target);
     }

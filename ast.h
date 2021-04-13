@@ -144,6 +144,7 @@ struct ReceiveNode {
 };
 
 struct ReceiveCaseNode {
+	/* if messagename is NULL, it is the default case */
 	AstNode *messageName;
 	AstNode *dataNames;
 	AstNode *statements;

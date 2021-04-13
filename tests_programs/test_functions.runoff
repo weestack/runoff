@@ -51,6 +51,7 @@ function dummy(int a) -> int {
     	b++;
     	a++;
     	print(a);
+    default:
   }
 
   float so123;

@@ -6,10 +6,14 @@
 
 static int errors = 0;
 static void checkTreeHasSetup(AstNode *tree);
+static void checkSwitchHasDefault(AstNode *tree);
+static void checkReceiveHasDefault(AstNode *tree);
 
 /* The following list of contextual constraints are checked by
    this phase:
    1) Each tree has one setup function with type setup(void)->void
+   2) Each switch has exactly one default case
+   3) Each receive has exactly one default case
  */
 int contextualConstraintsCheck(AstNode *tree){
 	AstNode *children;
@@ -17,6 +21,12 @@ int contextualConstraintsCheck(AstNode *tree){
 	switch(tree->tag){
 	case Prog:
 		checkTreeHasSetup(tree);
+		break;
+	case Switch:
+		checkSwitchHasDefault(tree);
+		break;
+	case Receive:
+		checkReceiveHasDefault(tree);
 		break;
 	}
 	
@@ -54,4 +64,36 @@ static void checkTreeHasSetup(AstNode *tree){
 	}
 	eprintf(1, "No setup function with type 'setup() -> void' found in program\n");
 	errors++;
+}
+
+/* go through all cases and check if there is exactly one default case */
+static void checkSwitchHasDefault(AstNode *tree){
+	AstNode *cases = tree->node.Switch.cases;
+	AstNode *node;
+	int defaultCount = 0;
+	for(node = cases; node != NULL; node = node->next){
+		if(node->node.SwitchCase.literal == NULL)
+			defaultCount++;
+	}
+
+	if(defaultCount != 1){
+		errors++;
+		eprintf(tree->linenum, "Switch statements must have exactly one default case. This one has %d\n", defaultCount);
+	}
+}
+
+/* go through all cases and check if there is exactly one default case */
+static void checkReceiveHasDefault(AstNode *tree){
+	AstNode *cases = tree->node.Receive.cases;
+	AstNode *node;
+	int defaultCount = 0;
+	for(node = cases; node != NULL; node = node->next){
+		if(node->node.ReceiveCase.messageName == NULL)
+			defaultCount++;
+	}
+
+	if(defaultCount != 1){
+		errors++;
+		eprintf(tree->linenum, "Receive statements must have exactly one default case. This one has %d\n", defaultCount);
+	}
 }
