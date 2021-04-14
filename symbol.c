@@ -17,12 +17,12 @@ int insertSymbol(AstNode *node, Type *type) {
 
 	symbol = declaredLocally(name);
 	if(symbol != NULL){
-		eprintf(node->linenum, "Name \"%s\" is already declared on line %d\n", name, symbol->node->linenum);
+		eprintf(node->linenum, "Name \"%s\" is already declared on line %d\n", name, symbol->linenum);
 		return 1;
 	}
 
 	symbol = enterSymbol(name, type);
-	symbol->node = node;
+	symbol->linenum = node->linenum;
 	node->node.Identifier.symbol = symbol;
 	return 0;
 }

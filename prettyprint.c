@@ -249,7 +249,7 @@ char *prettyprint(AstNode *node)
 	case Assignment:
 		location = prettyprint(node->node.Assignment.location);
 		exprA = prettyprint(node->node.Assignment.expression);
-		result = smprintf("%s = %s", location, exprA);
+		result = smprintf("(%s = %s)", location, exprA);
 		break;
 	case TernaryOperator:
 		exprA = prettyprint(node->node.TernaryOperator.expressionTest);

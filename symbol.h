@@ -22,8 +22,7 @@ struct Symbol {
 	Type *type;
 	int globalvar;
 	int initialized;
-
-	struct AstNode *node; /* the node which inserted the symbol */
+	int linenum; /* the line number where the symbol first appeared */
 	Symbol* next;
 };
 

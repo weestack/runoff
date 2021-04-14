@@ -62,7 +62,6 @@ struct DefineStructNode {
 	AstNode *fields;
 };
 
-
 struct DefineMessageNode {
 	AstNode *messagesIdentifiers;
 };

@@ -131,7 +131,7 @@ char *codegen(AstNode *tree) {
 		case Assignment:
 			id = codegen(tree->node.Assignment.location);
 			expr = processBlock(tree->node.Assignment.expression, "", 0);
-			result = smprintf("%s = %s", id, expr);
+			result = smprintf("(%s = %s)", id, expr);
 			break;
 		case TernaryOperator:
 			result = smprintf("(%s) ? %s: %s",

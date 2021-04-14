@@ -4,6 +4,7 @@
 #include "auxiliary.h"
 #include "symbol.h"
 #include "ast.h"
+#include "phases.h"
 
 static int errors = 0;
 static void checkTreeHasSetup(AstNode *tree);
@@ -24,8 +25,7 @@ static AstNode *getDefaultValue(Type *type);
    6) All variables are initialized before use, or have a default value
  */
 int contextualConstraintsCheck(AstNode *tree){
-	AstNode *children;
-
+	AstNode *tmp;
 	switch(tree->tag){
 	case Prog:
 		checkTreeHasSetup(tree);
@@ -49,13 +49,160 @@ int contextualConstraintsCheck(AstNode *tree){
 	case StructLocation:
 	case ArrayLocation:
 		checkVarInitialized(tree);
-		break;
+		return errors;
 	}
-	
-	children = getChildren(tree);
-	while(children != NULL){
-		contextualConstraintsCheck(children);
-		children = children->next;
+
+	/* we cannot use getChildren here, since cannot work with a copy
+	   of the tree, as it is modified later. */
+#define CHECKCHILD(tag, field) for(tmp=tree->node.tag.field; tmp!=NULL; tmp=tmp->next) {contextualConstraintsCheck(tmp);}
+
+	switch(tree->tag){
+	case Prog:
+		CHECKCHILD(Prog, toplevels);
+		break;
+	case DefineFunction:
+		CHECKCHILD(DefineFunction, identifier);
+		CHECKCHILD(DefineFunction, parameters);
+		CHECKCHILD(DefineFunction, type);
+		CHECKCHILD(DefineFunction, statements);
+		break;
+	case DefineTask:
+		CHECKCHILD(DefineTask, identifier);
+		CHECKCHILD(DefineTask, parameters);
+		CHECKCHILD(DefineTask, statements);
+		break;
+	case DefineStruct:
+		CHECKCHILD(DefineStruct, identifier);
+		CHECKCHILD(DefineStruct, fields);
+		break;
+	case DefineMessage:
+		CHECKCHILD(DefineMessage, messagesIdentifiers);
+		break;
+	case IncludeRunoffFile:
+		CHECKCHILD(IncludeRunoffFile, identifier);
+		break;
+	case MessageIdentifier:
+		CHECKCHILD(MessageIdentifier, identifier);
+		CHECKCHILD(MessageIdentifier, parameters);
+		break;
+	case StructMember:
+		CHECKCHILD(StructMember, type);
+		CHECKCHILD(StructMember, identifier);
+		break;
+	case Parameter:
+		CHECKCHILD(Parameter, type);
+		CHECKCHILD(Parameter, identifier);
+		break;
+	case BuiltinType:
+		break;
+	case StructType:
+		CHECKCHILD(StructType, identifier);
+		break;
+	case ArrayType:
+		CHECKCHILD(ArrayType, type);
+		CHECKCHILD(ArrayType, int_literal);
+		break;
+	case While:
+		CHECKCHILD(While, expression);
+		CHECKCHILD(While, statements);
+		break;
+	case For:
+		CHECKCHILD(For, expressionInit);
+		CHECKCHILD(For, expressionTest);
+		CHECKCHILD(For, expressionUpdate);
+		CHECKCHILD(For, statements);
+		break;
+	case Switch:
+		CHECKCHILD(Switch, expression);
+		CHECKCHILD(Switch, cases);
+		break;
+	case SwitchCase:
+		CHECKCHILD(SwitchCase, literal);
+		CHECKCHILD(SwitchCase, statements);
+		break;
+	case If:
+		CHECKCHILD(If, expression);
+		CHECKCHILD(If, statements);
+		CHECKCHILD(If, elsePart);
+		break;
+	case ElseIf:
+		CHECKCHILD(ElseIf, expression);
+		CHECKCHILD(ElseIf, statements);
+		CHECKCHILD(ElseIf, elsePart);
+		break;
+	case Else:
+		CHECKCHILD(Else, statements);
+		break;
+	case Receive:
+		CHECKCHILD(Receive, cases);
+		break;
+	case ReceiveCase:
+		CHECKCHILD(ReceiveCase, messageName);
+		CHECKCHILD(ReceiveCase, dataNames);
+		CHECKCHILD(ReceiveCase, statements);
+		break;
+	case VarDecl:
+		CHECKCHILD(VarDecl, type);
+		CHECKCHILD(VarDecl, identifier);
+		CHECKCHILD(VarDecl, expression);
+		break;
+	case BinaryOperation:
+		CHECKCHILD(BinaryOperation, expression_left);
+		CHECKCHILD(BinaryOperation, expression_right);
+		break;
+	case VariableLocation:
+		CHECKCHILD(VariableLocation, identifier);
+		break;
+	case StructLocation:
+		CHECKCHILD(StructLocation, identifier);
+		CHECKCHILD(StructLocation, location);
+		break;
+	case ArrayLocation:
+		CHECKCHILD(ArrayLocation, identifier);
+		CHECKCHILD(ArrayLocation, indicies);
+		break;
+	case UnaryOperation:
+		CHECKCHILD(UnaryOperation, expression);
+		break;
+	case FunctionCall:
+		CHECKCHILD(FunctionCall, identifier);
+		CHECKCHILD(FunctionCall, arguments);
+		break;
+	case Assignment:
+		CHECKCHILD(Assignment, location);
+		CHECKCHILD(Assignment, expression);
+		break;
+	case TernaryOperator:
+		CHECKCHILD(TernaryOperator, expressionTest);
+		CHECKCHILD(TernaryOperator, expressionTrue);
+		CHECKCHILD(TernaryOperator, expressionFalse);
+		break;
+	case Identifier:
+		break;
+	case IntLiteral:
+		break;
+	case FloatLiteral:
+		break;
+	case BoolLiteral:
+		break;
+	case MessageLiteral:
+		CHECKCHILD(MessageLiteral, identifier);
+		CHECKCHILD(MessageLiteral, arguments);
+		break;
+	case Return:
+		CHECKCHILD(Return, expression);
+		break;
+	case Spawn:
+		CHECKCHILD(Spawn, identifier);
+		CHECKCHILD(Spawn, arguments);
+		break;
+	case Send:
+		CHECKCHILD(Send, message);
+		CHECKCHILD(Send, receiver);
+		break;
+	case ExprStmt:
+		CHECKCHILD(ExprStmt, expression);
+		break;
 	}
 	return errors;
 }
@@ -181,16 +328,17 @@ static void checkVarInitialized(AstNode *tree){
 	if(!sym->initialized){
 		AstNode *expr = getDefaultValue(sym->type);
 		if(expr != NULL){
-			/* replace the occurence of variable v with v=e where e is the default value. Don't know if it works yet :))*/
+			/* replace the occurence of variable v with v=e where e is the default value.*/
 			AstNode *loc = malloc(sizeof(AstNode));
 			memcpy(loc, tree, sizeof(AstNode));
 			tree->tag = Assignment;
 			tree->node.Assignment.location = loc;
 			tree->node.Assignment.expression = expr;
 			sym->initialized = 1;
+			printf("Replaces '%s' with '%s' on line %d\n", prettyprint(loc), prettyprint(tree), tree->linenum);
 		}else{
 			eprintf(tree->linenum, "Variable '%s' is not initialized when used here\n", sym->name);
-			/* errors++; */
+			errors++;
 		}
 	}
 }

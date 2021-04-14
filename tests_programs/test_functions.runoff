@@ -17,6 +17,7 @@ function setup() -> void {
 
 function ss(int a) -> struct hello {
     struct hello test;
+    test.nicelevel100 = 100000;
     return test;
 }
 
