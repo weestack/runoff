@@ -13,6 +13,8 @@ static void checkReceiveHasDefault(AstNode *tree);
 static void checkNotGlobalVar(AstNode *tree);
 static void checkHasMaxOneMessageBlock(AstNode *tree);
 static void checkVarInitialized(AstNode *tree);
+static void checkAllSpawnsInSetup(AstNode *prog, AstNode *stmts);
+static int countSpawns(AstNode *nodes, int recurse);
 static AstNode *getDefaultValue(Type *type);
 
 /* The following list of contextual constraints are checked by
@@ -23,6 +25,7 @@ static AstNode *getDefaultValue(Type *type);
    4) No modification of global variables
    5) Each tree has at most one messages block
    6) All variables are initialized before use, or have a default value
+   7) All spawns appear as a statement directly in the setup function
  */
 int contextualConstraintsCheck(AstNode *tree){
 	AstNode *tmp;
@@ -228,8 +231,10 @@ static void checkTreeHasSetup(AstNode *tree){
 		t = s->type->tags.typeFunction;
 		if(t.arity == 0 
 			&& t.returnType->tag == BuiltinTypeTag
-			&& t.returnType->tags.typeBuiltin.builtinType == builtintype_void)
+			&& t.returnType->tags.typeBuiltin.builtinType == builtintype_void){
+			checkAllSpawnsInSetup(tree, node->node.DefineFunction.statements);
 			return;
+		}
 	}
 	eprintf(1, "No setup function with type 'setup() -> void' found in program\n");
 	errors++;
@@ -363,5 +368,26 @@ static AstNode *getDefaultValue(Type *type){
 		return mkBoolLiteralNode(0);
 	default:
 		return NULL;
+	}
+}
+
+static int countSpawns(AstNode *nodes, int recurse){
+	AstNode *n;
+	int count = 0;
+	for(n = nodes; n != NULL; n = n->next){
+		if(n->tag == Spawn)
+			count++;
+		if(recurse || n->tag == ExprStmt || n->tag == VarDecl)
+			count += countSpawns(getChildren(n), recurse);
+	}
+	return count;
+}
+
+static void checkAllSpawnsInSetup(AstNode *prog, AstNode *stmts){
+	int spawncountall = countSpawns(prog->node.Prog.toplevels, 1);
+	int spawncountstmts = countSpawns(stmts, 0);
+	if(spawncountall > spawncountstmts){
+		errors++;
+		eprintf(1, "It looks like you have spawns located somewhere else than directly in the setup function, which is not allowed.\n");
 	}
 }
