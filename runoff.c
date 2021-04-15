@@ -6,7 +6,6 @@
 #include "symbol.h"
 #include "ast.h"
 #include "phases.h"
-#include "codegen.h"
 
 /* Some code copy pasted from plan9's /sys/include/libc.h
    used to handle command line arguments. Modified to compile
