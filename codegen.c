@@ -390,7 +390,7 @@ char *getHelperFunctionsCode(void) {
 	char *code;
 
 	/* opening file for reading */
-	fp = fopen("arduino_helpers.c" , "r");
+	fp = fopen("arduino_helpers.ino" , "r");
 
 	if(fp == NULL) {
 			return NULL;
