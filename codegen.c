@@ -337,7 +337,7 @@ char *getBuiltInTypeLiteral(int type) {
 			return "unsigned long";
 			break;
 		case builtintype_uint64:
-			return "unsigned long";
+			return "uint64_t";
 			break;
 		case builtintype_int8:
 			return "char";
@@ -349,7 +349,7 @@ char *getBuiltInTypeLiteral(int type) {
 			return "long";
 			break;
 		case builtintype_int64:
-			return "long";
+			return "int64_t";
 			break;
 		case builtintype_unknownInt:
 			return "int";
