@@ -15,6 +15,8 @@ char *getBuiltInTypeLiteral(int type);
 char *getBinaryOperator(int operator);
 char *getHelperFunctionsCode(void);
 char *buildArrayDeclIndices(AstNode *node);
+char *generatePassByValue(AstNode *tree);
+
 
 char *codegen(AstNode *tree) {
 	char *id = NULL;
@@ -26,6 +28,7 @@ char *codegen(AstNode *tree) {
 	char *elsepart = NULL;
 	char *location = NULL;
 	char *indicies = NULL;
+	char *extraCode = NULL;
 
 	char *result = NULL;
 
@@ -40,12 +43,13 @@ char *codegen(AstNode *tree) {
 			type = codegen(tree->node.DefineFunction.type);
 			id = codegen(tree->node.DefineFunction.identifier);
 			params = processBlock(tree->node.DefineFunction.parameters, ", ", 0);
+			extraCode = generatePassByValue( tree->node.DefineFunction.parameters );
 			stmts = processBlock(tree->node.DefineFunction.statements, "\n", 1);
-			result = smprintf("%s %s(%s) {%s}", type, id, params, stmts);
+			result = smprintf("%s %s(%s) {%s %s}", type, id, params, extraCode, stmts);
 			break;
 		case DefineStruct:
 			result = smprintf(
-				"struct %s {%s}",
+				"struct %s {%s};",
 				codegen(tree->node.DefineStruct.identifier),
 				processBlock(tree->node.DefineStruct.fields, "", 0)
 			);
@@ -59,7 +63,12 @@ char *codegen(AstNode *tree) {
 			break;
 		case Parameter:
 			type = codegen(tree->node.Parameter.type);
-			id = codegen(tree->node.Parameter.identifier);
+
+			if (tree->node.Parameter.type->tag == ArrayType) {
+				id = smprintf("%s_original",codegen(tree->node.Parameter.identifier));
+			}else {
+				id = codegen(tree->node.Parameter.identifier);
+			}
 			intlit = tree->node.Parameter.type->tag == ArrayType ? buildArrayDeclIndices(tree->node.Parameter.type) : smprintf("");
 			result = smprintf("%s %s%s", type, id, intlit);
 			break;
@@ -163,7 +172,7 @@ char *codegen(AstNode *tree) {
 			break;
 		case Return:
 			expr = codegen(tree->node.Return.expression);
-			result = smprintf("return%s;", expr);
+			result = smprintf("return %s;", expr);
 			break;
 		case FunctionCall:
 			id = codegen(tree->node.FunctionCall.identifier);
@@ -208,6 +217,7 @@ char *codegen(AstNode *tree) {
 	free(elsepart);
 	free(location);
 	free(indicies);
+	free(extraCode);
 
 	return result;
 }
@@ -361,7 +371,7 @@ char *getBuiltInTypeLiteral(int type) {
 			return "void";
 			break;
 		case builtintype_bool:
-			return "boolean";
+			return "bool";
 			break;
 		case builtintype_msg:
 		case builtintype_taskid:
@@ -399,4 +409,39 @@ char *getHelperFunctionsCode(void) {
 	}
 
 	return code;
+}
+
+char *generatePassByValue(AstNode *tree) {
+	char *result = NULL;
+	char *prev;
+	char *childstr;
+	AstNode *child;
+
+	if (tree == NULL) return smprintf("");
+
+	child = tree;
+	result = smprintf("");
+	while(child != NULL){
+		prev = smprintf("%s", result);
+		switch (child->node.Parameter.type->tag) {
+			case ArrayType:
+				childstr = smprintf("%s %s%s; memcpy(%s, %s, sizeof(%s));",
+						codegen(child->node.Parameter.type->node.ArrayType.type),
+						codegen(child->node.Parameter.identifier),
+						buildArrayDeclIndices(tree->node.Parameter.type),
+						codegen(child->node.Parameter.identifier),
+						smprintf("%s_original",codegen(child->node.Parameter.identifier)),
+						smprintf("%s_original",codegen(child->node.Parameter.identifier))
+				);
+				break;
+			default:
+				childstr = smprintf("");
+		}
+		result = smprintf("%s%s", prev, childstr);
+		free(prev);
+		free(childstr);
+		child = child->next;
+	}
+
+	return result;
 }

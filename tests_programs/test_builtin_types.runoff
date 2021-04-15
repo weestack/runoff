@@ -25,6 +25,10 @@ function hehe(struct test s) -> int {
 	return s.sej.a;
 }
 
+function test_memcpy(int[123] a, bool[32] v, float[12] s) -> bool {
+  return false; # :sunglasses:
+}
+
 function ad() -> void {
   # bool
   bool p = true;
