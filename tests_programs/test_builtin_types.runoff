@@ -28,6 +28,7 @@ function hehe(struct test s) -> int {
 function ad() -> void {
   # bool
   bool p = true;
+  bool[5] list_of_bools;
   p = false;
   # int
   int c = -123;
