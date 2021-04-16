@@ -4,7 +4,7 @@ pinid ButtonPin = 8P;
 
 messages {
 	ButtonPressed;
-	ButtonReleased;
+	ButtonReleased{int i, float b};
 }
 
 task ledhandler() {
@@ -12,7 +12,7 @@ task ledhandler() {
 	for(;;) {
 		receive {
 		case ButtonPressed{}: turnOn(LEDPin);
-		case ButtonReleased{}: turnOff(LEDPin);
+		case ButtonReleased{i, b}: i = i % i;
 		default:
 		}
 	}
@@ -33,6 +33,6 @@ function otherway() -> bool {
 function setup() -> void {
 	taskid nama = spawn ledhandler();
 	taskid mana = spawn ledhandler();
-	inputPin(ButtonPin, nama, ButtonPressed{}, ButtonReleased{});
+	inputPin(ButtonPin, nama, ButtonPressed{}, ButtonReleased{1, 2.0});
 	outputPin(LEDPin);
 }

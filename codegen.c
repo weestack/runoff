@@ -17,7 +17,9 @@ char *getBinaryOperator(int operator);
 char *getHelperFunctionsCode(void);
 char *buildArrayDeclIndices(AstNode *node);
 char *generatePassByValue(AstNode *tree);
-
+char *constructMessageEnum(AstNode *tree);
+char *constructMessageStruct(AstNode *tree);
+char *constructMessageUnionStruct(AstNode *tree);
 
 char *codegen(AstNode *tree) {
 	char *id = NULL;
@@ -50,11 +52,26 @@ char *codegen(AstNode *tree) {
 			stmts = processBlock(tree->node.DefineFunction.statements, "\n", 1);
 			result = smprintf("%s %s(%s) {%s %s}", type, id, params, extraCode, stmts);
 			break;
+		case DefineTask:
+			id = codegen(tree->node.DefineTask.identifier);
+			params = processBlock(tree->node.DefineTask.parameters, ", ", 0);
+			extraCode = generatePassByValue( tree->node.DefineTask.parameters );
+			stmts = processBlock(tree->node.DefineTask.statements, "\n", 1);
+			result = smprintf("void %s(%s) {%s %s}", id, params, extraCode, stmts);
+			break;
+		
 		case DefineStruct:
 			result = smprintf(
 				"struct %s {%s};",
 				codegen(tree->node.DefineStruct.identifier),
 				processBlock(tree->node.DefineStruct.fields, "", 0)
+			);
+			break;
+		case DefineMessage:
+			result = smprintf("enum messages{%s};\n%s\nstruct mailbox{%s}", 
+							constructMessageEnum(tree->node.DefineMessage.messagesIdentifiers),
+							constructMessageStruct(tree->node.DefineMessage.messagesIdentifiers),
+							constructMessageUnionStruct(tree->node.DefineMessage.messagesIdentifiers)
 			);
 			break;
 		case StructMember:
@@ -91,6 +108,13 @@ char *codegen(AstNode *tree) {
 			stmts = processBlock(tree->node.Else.statements, "", 1);
 			result = smprintf("else {%s}", stmts);
 			break;
+		case Receive:
+			stmts = processBlock(tree->node.Receive.cases, "", 1);
+			result = smprintf("receive{%s}", stmts);
+			break;
+		/*case ReceiveCase:
+			
+			break;*/
 		case BuiltinType:
 			result = smprintf("%s", getBuiltInTypeLiteral(tree->node.BuiltinType.type));
 			break;
@@ -448,4 +472,17 @@ char *generatePassByValue(AstNode *tree) {
 	}
 
 	return result;
+}
+
+
+char *constructMessageEnum(AstNode *tree){
+	return smprintf("Enum");
+}
+
+char *constructMessageStruct(AstNode *tree){
+	return smprintf("Struct");
+}
+
+char *constructMessageUnionStruct(AstNode *tree){
+	return smprintf("Union struct");
 }
