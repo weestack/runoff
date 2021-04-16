@@ -5,6 +5,7 @@
 #include "symbol.h"
 #include "ast.h"
 
+
 /* Tænker at hvis codegen returnere en stor streng fra heapen
 	lidt i stil med prettyprint, så er det smart, for så kan vi
 	selv bestemme om main() i runoff.c skal printe eller putte
@@ -38,7 +39,7 @@ char *codegen(AstNode *tree) {
 		case Prog:
 			/* Special case include helper functions! */
 			printf("prog so123 %d", tree->node.Prog.spawnCount );
-			result = smprintf("%s%s",getHelperFunctionsCode(),  processBlock(tree->node.Prog.toplevels, "\n", 0));
+			result = smprintf("%s%s\n#define numberOfSpawns %s\ntaskHandle_t handlers[numberOfSpawns];", getHelperFunctionsCode(), processBlock(tree->node.Prog.toplevels, "\n", 0), tree->node.Prog.spawnCount);
 			break;
 		case DefineFunction:
 			type = codegen(tree->node.DefineFunction.type);
