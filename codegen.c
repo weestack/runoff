@@ -30,6 +30,7 @@ char *codegen(AstNode *tree) {
 	char *location = NULL;
 	char *indicies = NULL;
 	char *extraCode = NULL;
+	char *preCodeGen = NULL;
 
 	char *result = NULL;
 
@@ -38,8 +39,8 @@ char *codegen(AstNode *tree) {
 	switch (tree->tag) {
 		case Prog:
 			/* Special case include helper functions! */
-			printf("prog so123 %d", tree->node.Prog.spawnCount );
-			result = smprintf("%s%s\n#define numberOfSpawns %s\ntaskHandle_t handlers[numberOfSpawns];", getHelperFunctionsCode(), processBlock(tree->node.Prog.toplevels, "\n", 0), tree->node.Prog.spawnCount);
+			preCodeGen = smprintf("%s\n#define numberOfSpawns %d\ntaskHandle_t handlers[numberOfSpawns];\n/*End of preCodeGen*/\n", getHelperFunctionsCode(), tree->node.Prog.spawnCount);
+			result = smprintf("%s\n%s", preCodeGen, processBlock(tree->node.Prog.toplevels, "\n", 0));
 			break;
 		case DefineFunction:
 			type = codegen(tree->node.DefineFunction.type);
@@ -220,6 +221,7 @@ char *codegen(AstNode *tree) {
 	free(location);
 	free(indicies);
 	free(extraCode);
+	free(preCodeGen);
 
 	return result;
 }
