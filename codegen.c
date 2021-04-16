@@ -37,6 +37,7 @@ char *codegen(AstNode *tree) {
 	switch (tree->tag) {
 		case Prog:
 			/* Special case include helper functions! */
+			printf("prog so123 %d", tree->node.Prog.spawnCount );
 			result = smprintf("%s%s",getHelperFunctionsCode(),  processBlock(tree->node.Prog.toplevels, "\n", 0));
 			break;
 		case DefineFunction:

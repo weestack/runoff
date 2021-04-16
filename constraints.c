@@ -224,12 +224,12 @@ static void checkTreeHasSetup(AstNode *tree){
 		s = node->node.DefineFunction.identifier->node.Identifier.symbol;
 		if(strcmp("setup", s->name) != 0)
 			continue;
-		
+
 		if(s->type->tag != FunctionTypeTag)
 			continue;
-		
+
 		t = s->type->tags.typeFunction;
-		if(t.arity == 0 
+		if(t.arity == 0
 			&& t.returnType->tag == BuiltinTypeTag
 			&& t.returnType->tags.typeBuiltin.builtinType == builtintype_void){
 			checkAllSpawnsInSetup(tree, node->node.DefineFunction.statements);
@@ -351,7 +351,7 @@ static void checkVarInitialized(AstNode *tree){
 static AstNode *getDefaultValue(Type *type){
 	if(type->tag != BuiltinTypeTag)
 		return NULL;
-	
+
 	switch(type->tags.typeBuiltin.builtinType){
 	case builtintype_uint8:
 	case builtintype_uint16:
@@ -386,6 +386,7 @@ static int countSpawns(AstNode *nodes, int recurse){
 static void checkAllSpawnsInSetup(AstNode *prog, AstNode *stmts){
 	int spawncountall = countSpawns(prog->node.Prog.toplevels, 1);
 	int spawncountstmts = countSpawns(stmts, 0);
+	prog->node.Prog.spawnCount = spawncountstmts;
 	if(spawncountall > spawncountstmts){
 		errors++;
 		eprintf(1, "It looks like you have spawns located somewhere else than directly in the setup function, which is not allowed.\n");

@@ -42,6 +42,7 @@ typedef struct ExprStmtNode ExprStmtNode;
 
 struct ProgNode {
 	AstNode *toplevels;
+	int spawnCount;
 };
 
 struct DefineFunctionNode {
