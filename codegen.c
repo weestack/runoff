@@ -476,13 +476,66 @@ char *generatePassByValue(AstNode *tree) {
 
 
 char *constructMessageEnum(AstNode *tree){
-	return smprintf("Enum");
+	char *result = smprintf("");
+	char *currentChild;
+	char *prev;
+	AstNode *child = tree;
+	int counter = 0;
+	if(tree==NULL){
+		return smprintf("");
+	}
+	while(child != NULL){
+		prev = result;
+		currentChild = codegen(child->node.MessageIdentifier.identifier);
+		result = smprintf("%s%s\n%s", 
+				prev, (counter++ != 0) ? "," : "", currentChild
+				);
+		free(currentChild);
+		free(prev);
+		child = child->next;
+	}
+	return result;
 }
 
 char *constructMessageStruct(AstNode *tree){
-	return smprintf("Struct");
+	/*char *result;
+	char *currentChild;
+	AstNode *child = tree;
+	if(tree==NULL){
+		return smprintf("");
+	}
+
+	while(child != NULL){
+		
+		child = child->next;
+	}
+
+	free(currentChild); 
+	return result; */
+	if(tree){
+
+	}
+	return smprintf("");
 }
 
 char *constructMessageUnionStruct(AstNode *tree){
-	return smprintf("Union struct");
+	/*
+	char *result;
+	char *currentChild;
+	AstNode *child = tree;
+	if(tree==NULL){
+		return smprintf("");
+	}
+
+	while(child != NULL){
+		
+		child = child->next;
+	}
+
+	free(currentChild);
+	return result; */
+	if(tree){
+
+	}
+	return smprintf("");
 }
