@@ -478,44 +478,56 @@ char *generatePassByValue(AstNode *tree) {
 char *constructMessageEnum(AstNode *tree){
 	char *result = smprintf("");
 	char *currentChild;
-	char *prev;
 	AstNode *child = tree;
 	int counter = 0;
 	if(tree==NULL){
 		return smprintf("");
 	}
 	while(child != NULL){
-		prev = result;
 		currentChild = codegen(child->node.MessageIdentifier.identifier);
 		result = smprintf("%s%s\n%s", 
-				prev, (counter++ != 0) ? "," : "", currentChild
+				result, (counter++ != 0) ? "," : "", currentChild
 				);
 		free(currentChild);
-		free(prev);
 		child = child->next;
 	}
 	return result;
 }
 
 char *constructMessageStruct(AstNode *tree){
-	/*char *result;
-	char *currentChild;
+	char *currentChildId;
+	char *currentChildType;
 	AstNode *child = tree;
+	AstNode *paramChild;
+	char *codeBlock = smprintf("");
+	char *currentStruct;
+
 	if(tree==NULL){
 		return smprintf("");
 	}
-
 	while(child != NULL){
-		
+		paramChild = child->node.MessageIdentifier.parameters;
+		currentStruct = smprintf("");
+		while(paramChild != NULL){
+			currentChildType = codegen(paramChild->node.Parameter.type);
+			currentChildId = smprintf("run_%s",codegen(paramChild->node.Parameter.identifier));
+			currentStruct = smprintf("%s %s;\n%s", 
+					currentChildType, currentChildId, currentStruct
+					);
+			free(currentChildId);
+			free(currentChildType);
+			paramChild = paramChild->next;
+		}
+		codeBlock = smprintf("struct %s{%s};\n%s",
+			codegen(child->node.MessageIdentifier.identifier),
+			currentStruct,
+			codeBlock
+		);
+
+		free(currentStruct);
 		child = child->next;
 	}
-
-	free(currentChild); 
-	return result; */
-	if(tree){
-
-	}
-	return smprintf("");
+	return codeBlock;
 }
 
 char *constructMessageUnionStruct(AstNode *tree){
