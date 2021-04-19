@@ -174,6 +174,13 @@ void typeCheckNode(AstNode *node){
 	case ExprStmt:
 		typeof(node); /* typeof will check that the expression is ok (it tries to find its type) */
 		break;
+	case ReceiveCase:
+		typeA = typeof(node->node.ReceiveCase.messageName);
+		if(typeA == NULL) /* default case */
+			break;
+		if(!(typeA->tag == MessageTypeTag))
+			printTypeFail("Name in receive case should be a message type.", node, typeA);
+		break;
 	}
 
 	children = getChildren(node);
