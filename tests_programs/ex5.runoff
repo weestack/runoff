@@ -20,12 +20,11 @@ task pong() {
 }
 
 task ping(taskid pongtaskid) {
-	taskid last = spawn pong();
-	msg pingmsg = Ping{last}; # the msg type can contain any of the messages
+	msg pingmsg = Ping{pongtaskid}; # the msg type can contain any of the messages
 
 	for(;;){
 		# a ping message is sent to the pong task
-		send pingmsg to last;
+		send pingmsg to pongtaskid;
 		receive {
 		case Pong{}: delay(1);
 		default:
@@ -34,6 +33,7 @@ task ping(taskid pongtaskid) {
 }
 
 function setup() -> void {
+	taskid last = spawn pong();
 	taskid pongtaskid = spawn pong();
 	taskid pingtaskid = spawn ping(pongtaskid);
 }
