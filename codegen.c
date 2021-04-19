@@ -59,7 +59,7 @@ char *codegen(AstNode *tree) {
 			stmts = processBlock(tree->node.DefineTask.statements, "\n", 1);
 			result = smprintf("void %s(%s) {%s %s}", id, params, extraCode, stmts);
 			break;
-		
+
 		case DefineStruct:
 			result = smprintf(
 				"struct %s {%s};",
@@ -68,7 +68,7 @@ char *codegen(AstNode *tree) {
 			);
 			break;
 		case DefineMessage:
-			result = smprintf("enum messages{%s};\n%s\nstruct mailbox{%s}", 
+			result = smprintf("enum messages{%s};\n%s\n%s",
 							constructMessageEnum(tree->node.DefineMessage.messagesIdentifiers),
 							constructMessageStruct(tree->node.DefineMessage.messagesIdentifiers),
 							constructMessageUnionStruct(tree->node.DefineMessage.messagesIdentifiers)
@@ -113,7 +113,7 @@ char *codegen(AstNode *tree) {
 			result = smprintf("receive{%s}", stmts);
 			break;
 		/*case ReceiveCase:
-			
+
 			break;*/
 		case BuiltinType:
 			result = smprintf("%s", getBuiltInTypeLiteral(tree->node.BuiltinType.type));
@@ -478,16 +478,17 @@ char *generatePassByValue(AstNode *tree) {
 char *constructMessageEnum(AstNode *tree){
 	char *result = smprintf("");
 	char *currentChild;
+	char *old;
 	AstNode *child = tree;
 	int counter = 0;
-	if(tree==NULL){
-		return smprintf("");
-	}
+
 	while(child != NULL){
 		currentChild = codegen(child->node.MessageIdentifier.identifier);
-		result = smprintf("%s%s\n%s", 
+		old = result;
+		result = smprintf("%s%s\n%s",
 				result, (counter++ != 0) ? "," : "", currentChild
 				);
+		free(old);
 		free(currentChild);
 		child = child->next;
 	}
@@ -501,29 +502,31 @@ char *constructMessageStruct(AstNode *tree){
 	AstNode *paramChild;
 	char *codeBlock = smprintf("");
 	char *currentStruct;
+	char *old;
 
-	if(tree==NULL){
-		return smprintf("");
-	}
 	while(child != NULL){
 		paramChild = child->node.MessageIdentifier.parameters;
 		currentStruct = smprintf("");
 		while(paramChild != NULL){
 			currentChildType = codegen(paramChild->node.Parameter.type);
 			currentChildId = smprintf("run_%s",codegen(paramChild->node.Parameter.identifier));
-			currentStruct = smprintf("%s %s;\n%s", 
+			old = currentStruct;
+			currentStruct = smprintf("%s %s;\n%s",
 					currentChildType, currentChildId, currentStruct
 					);
+			free(old);
 			free(currentChildId);
 			free(currentChildType);
 			paramChild = paramChild->next;
 		}
+		old = codeBlock;
 		codeBlock = smprintf("struct %s{%s};\n%s",
 			codegen(child->node.MessageIdentifier.identifier),
 			currentStruct,
 			codeBlock
 		);
 
+		free(old);
 		free(currentStruct);
 		child = child->next;
 	}
@@ -531,23 +534,22 @@ char *constructMessageStruct(AstNode *tree){
 }
 
 char *constructMessageUnionStruct(AstNode *tree){
-	/*
 	char *result;
-	char *currentChild;
+	char *structNames = smprintf("");
+	char *old;
 	AstNode *child = tree;
-	if(tree==NULL){
-		return smprintf("");
-	}
 
 	while(child != NULL){
-		
+		old = structNames;
+		structNames = smprintf("struct %s %s; %s",
+				codegen(child->node.MessageIdentifier.identifier),
+				codegen(child->node.MessageIdentifier.identifier),
+				structNames);
+		free(old);
 		child = child->next;
 	}
+	result = smprintf("struct Message { int Tag; union {%s} data;}", structNames);
 
-	free(currentChild);
-	return result; */
-	if(tree){
-
-	}
-	return smprintf("");
+	free(structNames);
+	return result;
 }
