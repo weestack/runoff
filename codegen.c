@@ -59,7 +59,6 @@ char *codegen(AstNode *tree) {
 			stmts = processBlock(tree->node.DefineTask.statements, "\n", 1);
 			result = smprintf("void %s(%s) {%s %s}", id, params, extraCode, stmts);
 			break;
-
 		case DefineStruct:
 			result = smprintf(
 				"struct %s {%s};",
@@ -115,6 +114,17 @@ char *codegen(AstNode *tree) {
 		/*case ReceiveCase:
 
 			break;*/
+		case Spawn:
+			if(tree->node.Spawn.arguments != NULL){
+				result = smprintf("runoff_createTask(%s, %s)", 
+					codegen(tree->node.Spawn.identifier),
+					codegen(tree->node.Spawn.arguments)
+				);
+			} else {
+				result = smprintf("runoff_createTask(%s)", 
+					codegen(tree->node.Spawn.identifier));
+			}
+			break;
 		case BuiltinType:
 			result = smprintf("%s", getBuiltInTypeLiteral(tree->node.BuiltinType.type));
 			break;
