@@ -12,7 +12,6 @@ void loop(){}
 int runoff_createTask(TaskFunction_t taskFunction, char *taskName, int enumIdentifier, void *args){
   BaseType_t xReturned;
 
-    taskName = ("%s_%d", taskName, identifier);
    /* Create the task, storing the handle. */
     xReturned = xTaskCreate(
     taskFunction,       /* Function that implements the task. */
