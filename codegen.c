@@ -548,7 +548,7 @@ char *constructMessageUnionStruct(AstNode *tree){
 		free(old);
 		child = child->next;
 	}
-	result = smprintf("struct Message { int Tag; union {%s} data;}", structNames);
+	result = smprintf("struct Message { int Tag; union {%s} data;};", structNames);
 
 	free(structNames);
 	return result;

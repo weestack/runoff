@@ -1,6 +1,11 @@
 #include <Arduino_FreeRTOS.h>
 
 #define configUSE_TIME_SLICING 1
+#define messageQueueSize 3
+
+void setup() {  
+  /* remember to run users setup function! */
+}
 
 void loop(){}
 // End of helper file
