@@ -20,6 +20,7 @@ char *generatePassByValue(AstNode *tree);
 char *constructMessageEnum(AstNode *tree);
 char *constructMessageStruct(AstNode *tree);
 char *constructMessageUnionStruct(AstNode *tree);
+int newTaskID(void);
 
 char *codegen(AstNode *tree) {
 	char *id = NULL;
@@ -57,7 +58,10 @@ char *codegen(AstNode *tree) {
 			params = processBlock(tree->node.DefineTask.parameters, ", ", 0);
 			extraCode = generatePassByValue( tree->node.DefineTask.parameters );
 			stmts = processBlock(tree->node.DefineTask.statements, "\n", 1);
-			result = smprintf("void %s(%s) {%s %s}", id, params, extraCode, stmts);
+			result = smprintf("struct %s{char self;%s};\nvoid %s(%s) {%s %s}", 
+				id, processBlock(tree->node.DefineTask.parameters, ";\n", 1), 
+				id, params, extraCode, stmts
+			);
 			break;
 		case DefineStruct:
 			result = smprintf(
@@ -175,9 +179,14 @@ char *codegen(AstNode *tree) {
 			result = smprintf("%s;", codegen(tree->node.ExprStmt.expression));
 			break;
 		case Assignment:
-			id = codegen(tree->node.Assignment.location);
-			expr = processBlock(tree->node.Assignment.expression, "", 0);
-			result = smprintf("(%s = %s)", id, expr);
+			if(tree->node.Assignment.expression != NULL && tree->node.Assignment.expression->tag){
+				id = codegen(tree->node.Assignment.location);
+				result = smprintf("%s = %d; %s", id, newTaskID(), codegen(tree->node.Assignment.expression));
+			} else {
+				id = codegen(tree->node.Assignment.location);
+				expr = processBlock(tree->node.Assignment.expression, "", 0);
+				result = smprintf("(%s = %s)", id, expr);
+			}
 			break;
 		case TernaryOperator:
 			result = smprintf("(%s) ? %s: %s",
@@ -217,11 +226,16 @@ char *codegen(AstNode *tree) {
 			result = smprintf("%s(%s)", id, params);
 			break;
 		case VarDecl:
-			type = smprintf("%s%s", tree->node.VarDecl.toplevel == 1 ? "const " : "", codegen(tree->node.VarDecl.type));
-			id = codegen(tree->node.VarDecl.identifier);
-			intlit = tree->node.VarDecl.type->tag == ArrayType ? buildArrayDeclIndices(tree->node.VarDecl.type) : smprintf("");
-			expr = tree->node.VarDecl.expression != NULL ? smprintf(" = %s", codegen(tree->node.VarDecl.expression)) : smprintf("");
-			result = smprintf("%s %s%s%s%s", type, id, intlit, expr, tree->node.VarDecl.toplevel == 1 ? ";" : "");
+			if(tree->node.VarDecl.expression != NULL && tree->node.VarDecl.expression->tag == Spawn){
+				id = codegen(tree->node.VarDecl.identifier);
+				result = smprintf("char %s = %d;%s", id, newTaskID(), codegen(tree->node.VarDecl.expression));
+			} else {
+				type = smprintf("%s%s", tree->node.VarDecl.toplevel == 1 ? "const " : "", codegen(tree->node.VarDecl.type));
+				id = codegen(tree->node.VarDecl.identifier);
+				intlit = tree->node.VarDecl.type->tag == ArrayType ? buildArrayDeclIndices(tree->node.VarDecl.type) : smprintf("");
+				expr = tree->node.VarDecl.expression != NULL ? smprintf(" = %s", codegen(tree->node.VarDecl.expression)) : smprintf("");
+				result = smprintf("%s %s%s%s%s", type, id, intlit, expr, tree->node.VarDecl.toplevel == 1 ? ";" : "");
+			}
 			break;
 		case BinaryOperation:
 			result = smprintf("(%s %s %s)",
@@ -412,9 +426,11 @@ char *getBuiltInTypeLiteral(int type) {
 			return "bool";
 			break;
 		case builtintype_msg:
-		case builtintype_taskid:
 		case builtintype_pinid:
 			return "int";
+			break;
+		case builtintype_taskid:
+			return "char";
 			break;
 		default:
 			return "unknownType";
@@ -562,4 +578,11 @@ char *constructMessageUnionStruct(AstNode *tree){
 
 	free(structNames);
 	return result;
+}
+
+int newTaskID(void){
+	/* Starting at -1 so it will return from 0 and upwards. */
+	static int taskid = -1;
+	taskid++;
+	return taskid;
 }
