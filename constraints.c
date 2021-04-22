@@ -377,7 +377,7 @@ static int countSpawns(AstNode *nodes, int recurse){
 	for(n = nodes; n != NULL; n = n->next){
 		if(n->tag == Spawn)
 			count++;
-		if(recurse || n->tag == ExprStmt || n->tag == VarDecl)
+		if(recurse || n->tag == ExprStmt || n->tag == VarDecl || n->tag == Assignment)
 			count += countSpawns(getChildren(n), recurse);
 	}
 	return count;
