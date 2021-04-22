@@ -9,12 +9,10 @@ void setup() {
 
 void loop(){}
 // End of helper file
-int runoff_createTask(TaskFunction_t taskFunction, char *taskName, void *args){
+void runoff_createTask(TaskFunction_t taskFunction, void *args){
   BaseType_t xReturned;
-  static int taskId = -1;
-  taskId++;
-
-   /* Create the task, storing the handle. */
+  
+  /* Create the task, storing the handle. */
   xReturned = xTaskCreate(
   taskFunction,                            /* Function that implements the task.   *\           */
   "",                                     /* Text name for the task.                *\         */
@@ -24,7 +22,6 @@ int runoff_createTask(TaskFunction_t taskFunction, char *taskName, void *args){
   NULL );                             /* Used to pass out the created task's handle.    *\ */
 
   if( xReturned != pdPASS ){
-    return NULL;
+    return;
   }
-  return taskId;
 }
