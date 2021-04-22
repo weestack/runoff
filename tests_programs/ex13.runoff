@@ -1,0 +1,42 @@
+# const defines symbolic constants like #define in C
+pinid LEDPin = 7P;
+pinid ButtonPin = 8P;
+
+messages {
+	ButtonPressed;
+	ButtonReleased{int i, float b};
+	patter;
+	lort;
+	patterPlusLortHMMM;
+}
+
+task ledhandler(int f, int k, int j) {
+	f = k+j;
+	for(;;) {
+		receive {
+		case ButtonPressed{}: turnOn(LEDPin);
+		case ButtonReleased{i, b}: i = i % i;
+		default:
+		}
+	}
+
+	int i;
+	switch(i){
+	case 0: turnOn(LEDPin);
+	case 1: turnOff(LEDPin);
+	default: turnOn(LEDPin);
+	}
+}
+
+function otherway() -> bool {
+	bool state = readInput(ButtonPin);
+	return state;
+}
+
+function setup() -> void {
+	taskid mana;
+	taskid nama = spawn ledhandler(1, 2, 3);
+	mana = spawn ledhandler(1,2,3);
+	inputPin(ButtonPin, nama, ButtonPressed{}, ButtonReleased{1, 2.0});
+	outputPin(LEDPin);
+}
