@@ -20,4 +20,5 @@ function test() -> void {
 }
 
 function setup() -> void {
+	test();
 }
