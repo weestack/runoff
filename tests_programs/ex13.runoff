@@ -10,8 +10,9 @@ messages {
 	patterPlusLortHMMM;
 }
 
-task ledhandler(int f, int k, int j) {
-	f = k+j;
+task ledhandler(int f, int k, int[10] j) {
+	f = k;
+	j[0] = 420;
 	for(;;) {
 		receive {
 		case ButtonPressed{}: turnOn(LEDPin);
@@ -34,9 +35,11 @@ function otherway() -> bool {
 }
 
 function setup() -> void {
+	int[10] f;
+	f[0] = 5;
 	taskid mana;
-	taskid nama = spawn ledhandler(1, 2, 3);
-	mana = spawn ledhandler(1,2,3);
+	taskid nama = spawn ledhandler(1, 2, f);
+	mana = spawn ledhandler(1,2,f);
 	inputPin(ButtonPin, nama, ButtonPressed{}, ButtonReleased{1, 2.0});
 	outputPin(LEDPin);
 }
