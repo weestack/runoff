@@ -522,7 +522,7 @@ char *generatePassByValue(AstNode *tree) {
 						buildArrayDeclIndices(tree->node.Parameter.type),
 						codegen(child->node.Parameter.identifier),
 						smprintf("%s_original",codegen(child->node.Parameter.identifier)),
-						smprintf("%s_original",codegen(child->node.Parameter.identifier))
+						codegen(child->node.Parameter.identifier)
 				);
 				break;
 			default:
