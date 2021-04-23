@@ -10,17 +10,17 @@
 	selv bestemme om main() i runoff.c skal printe eller putte
 	over i en fil eller hvad vi nu vil gøre med strengen. */
 
-char *processBlock(AstNode *node, char *sep, int end);
-char *getBuiltInTypeLiteral(int type);
-char *getBinaryOperator(int operator);
+char *processBlock(AstNode *, char *, int);
+char *getBuiltInTypeLiteral(int);
+char *getBinaryOperator(int );
 char *getHelperFunctionsCode(void);
-char *buildArrayDeclIndices(AstNode *node);
-char *generateParametersFromStructFields(AstNode *tree);
-char *generatePassByValue(AstNode *tree);
-char *constructMessageEnum(AstNode *tree);
-char *constructMessageStruct(AstNode *tree);
-char *constructMessageUnionStruct(AstNode *tree);
-int newTaskID(void);
+char *buildArrayDeclIndices(AstNode *);
+char *generateParametersFromStructFields(AstNode *);
+char *generatePassByValue(AstNode *);
+char *constructMessageEnum(AstNode *);
+char *constructMessageStruct(AstNode *);
+char *constructMessageUnionStruct(AstNode *);
+char *mkStructsFromSpawns(AstNode *);
 
 char *codegen(AstNode *tree) {
 	char *id = NULL;
@@ -46,12 +46,16 @@ char *codegen(AstNode *tree) {
 			result = smprintf("%s\n%s", preCodeGen, processBlock(tree->node.Prog.toplevels, "\n", 0));
 			break;
 		case DefineFunction:
-			type = codegen(tree->node.DefineFunction.type);
 			id = codegen(tree->node.DefineFunction.identifier);
+			if(strcmp(codegen(tree->node.DefineFunction.identifier), "setup") == 0)
+				preCodeGen = mkStructsFromSpawns(tree->node.DefineFunction.statements);
+			else 
+				preCodeGen = smprintf("");
+			type = codegen(tree->node.DefineFunction.type);
 			params = processBlock(tree->node.DefineFunction.parameters, ", ", 0);
 			extraCode = generatePassByValue( tree->node.DefineFunction.parameters );
 			stmts = processBlock(tree->node.DefineFunction.statements, "\n", 1);
-			result = smprintf("%s %s(%s) {%s %s}", type, id, params, extraCode, stmts);
+			result = smprintf("%s%s %s(%s) {%s %s}", preCodeGen, type, id, params, extraCode, stmts);
 			break;
 		case DefineTask:
 			id = codegen(tree->node.DefineTask.identifier);
@@ -120,15 +124,11 @@ char *codegen(AstNode *tree) {
 
 			break;*/
 		case Spawn:
-			if(tree->node.Spawn.arguments != NULL){
-				result = smprintf("runoff_createTask(%s, %s)", 
-					codegen(tree->node.Spawn.identifier),
-					codegen(tree->node.Spawn.arguments)
-				);
-			} else {
-				result = smprintf("runoff_createTask(%s)", 
-					codegen(tree->node.Spawn.identifier));
-			}
+			id = codegen(tree->node.Spawn.identifier);				
+			result = smprintf("%s_%d = {%d, %s};\nrunoff_createTask(%s, (void *)&%s_%d)", 
+				id, tree->node.Spawn.taskId,tree->node.Spawn.taskId, processBlock(tree->node.Spawn.arguments, ",", 0),
+				id, id, tree->node.Spawn.taskId
+			);
 			break;
 		case BuiltinType:
 			result = smprintf("%s", getBuiltInTypeLiteral(tree->node.BuiltinType.type));
@@ -182,7 +182,10 @@ char *codegen(AstNode *tree) {
 		case Assignment:
 			if(tree->node.Assignment.expression != NULL && tree->node.Assignment.expression->tag == Spawn){
 				id = codegen(tree->node.Assignment.location);
-				result = smprintf("%s = %d; %s", id, newTaskID(), codegen(tree->node.Assignment.expression));
+				result = smprintf("%s = %d; %s", id, 
+					tree->node.Assignment.expression->node.Spawn.taskId,
+					codegen(tree->node.Assignment.expression)
+				);
 			} else {
 				id = codegen(tree->node.Assignment.location);
 				expr = processBlock(tree->node.Assignment.expression, "", 0);
@@ -229,7 +232,10 @@ char *codegen(AstNode *tree) {
 		case VarDecl:
 			if(tree->node.VarDecl.expression != NULL && tree->node.VarDecl.expression->tag == Spawn){
 				id = codegen(tree->node.VarDecl.identifier);
-				result = smprintf("char %s = %d;%s", id, newTaskID(), codegen(tree->node.VarDecl.expression));
+				result = smprintf("char %s = %d;%s", id, 
+					tree->node.VarDecl.expression->node.Spawn.taskId, 
+					codegen(tree->node.VarDecl.expression)
+				);
 			} else {
 				type = smprintf("%s%s", tree->node.VarDecl.toplevel == 1 ? "const " : "", codegen(tree->node.VarDecl.type));
 				id = codegen(tree->node.VarDecl.identifier);
@@ -617,9 +623,27 @@ char *constructMessageUnionStruct(AstNode *tree){
 	return result;
 }
 
-int newTaskID(void){
-	/* Starting at -1 so it will return from 0 and upwards. */
-	static int taskid = -1;
-	taskid++;
-	return taskid;
+char *mkStructsFromSpawns(AstNode *tree){
+	char *result = smprintf("");
+	char *old;
+	char *id;
+	AstNode *child;
+	if(tree == NULL) return smprintf("");
+	child = tree;
+	while(child != NULL){
+		if(child->tag == Spawn){
+			id = codegen(child->node.Spawn.identifier);
+			old = result;
+			result = smprintf("struct %s %s_%d;\n", id, id, child->node.Spawn.taskId);
+			free(id);
+		} else {
+			AstNode *children = getChildren(child);
+			old = result;
+			result = smprintf("%s %s", result, mkStructsFromSpawns(children));
+			/* Renember to free the children! */
+		}
+		child=child->next;
+		free(old);
+	}
+	return result;
 }
