@@ -3,10 +3,6 @@
 #define configUSE_TIME_SLICING 1
 #define messageQueueSize 3
 
-void setup() {
-  /* remember to run users setup function! */
-}
-
 void loop(){}
 // End of helper file
 void runoff_createTask(TaskFunction_t taskFunction, void *args){
@@ -24,4 +20,24 @@ void runoff_createTask(TaskFunction_t taskFunction, void *args){
   if( xReturned != pdPASS ){
     return;
   }
+}
+
+void turnOn(int pin){
+  digitalWrite(pin, HIGH);
+}
+
+void turnOff(int pin){
+  digitalWrite(pin, LOW);
+}
+
+bool readInput(int pin){
+  return digitalRead(pin);
+}
+
+void outputPin(int pin){
+  pinMode(pin, OUTPUT);
+}
+
+void simpleInputPin(int pin){
+  pinMode(pin, INPUT);
 }
