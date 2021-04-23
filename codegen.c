@@ -5,7 +5,6 @@
 #include "symbol.h"
 #include "ast.h"
 
-
 /* Tænker at hvis codegen returnere en stor streng fra heapen
 	lidt i stil med prettyprint, så er det smart, for så kan vi
 	selv bestemme om main() i runoff.c skal printe eller putte
@@ -16,6 +15,7 @@ char *getBuiltInTypeLiteral(int type);
 char *getBinaryOperator(int operator);
 char *getHelperFunctionsCode(void);
 char *buildArrayDeclIndices(AstNode *node);
+char *generateParametersFromStructFields(AstNode *tree);
 char *generatePassByValue(AstNode *tree);
 char *constructMessageEnum(AstNode *tree);
 char *constructMessageStruct(AstNode *tree);
@@ -42,7 +42,7 @@ char *codegen(AstNode *tree) {
 	switch (tree->tag) {
 		case Prog:
 			/* Special case include helper functions! */
-			preCodeGen = smprintf("%s\n#define numberOfSpawns %d\ntaskHandle_t handlers[numberOfSpawns];\n/*End of preCodeGen*/\n", getHelperFunctionsCode(), tree->node.Prog.spawnCount);
+			preCodeGen = smprintf("%s\n#define numberOfSpawns %d\nTaskHandle_t handlers[numberOfSpawns];\n/*End of preCodeGen*/\n", getHelperFunctionsCode(), tree->node.Prog.spawnCount);
 			result = smprintf("%s\n%s", preCodeGen, processBlock(tree->node.Prog.toplevels, "\n", 0));
 			break;
 		case DefineFunction:
@@ -55,12 +55,13 @@ char *codegen(AstNode *tree) {
 			break;
 		case DefineTask:
 			id = codegen(tree->node.DefineTask.identifier);
-			params = processBlock(tree->node.DefineTask.parameters, ", ", 0);
-			extraCode = generatePassByValue( tree->node.DefineTask.parameters );
+			params = processBlock(tree->node.DefineTask.parameters, ";\n", 1);
+			extraCode = smprintf("struct %s *struct_args = (struct %s *)args;\n%s",
+				id, id, generateParametersFromStructFields(tree->node.DefineTask.parameters)
+			);
 			stmts = processBlock(tree->node.DefineTask.statements, "\n", 1);
-			result = smprintf("struct %s{char self;%s};\nvoid %s(%s) {%s %s}", 
-				id, processBlock(tree->node.DefineTask.parameters, ";\n", 1), 
-				id, params, extraCode, stmts
+			result = smprintf("struct %s{char self;%s};\nvoid %s(void *args) {%s %s}", 
+				id, params, id, extraCode, stmts
 			);
 			break;
 		case DefineStruct:
@@ -179,7 +180,7 @@ char *codegen(AstNode *tree) {
 			result = smprintf("%s;", codegen(tree->node.ExprStmt.expression));
 			break;
 		case Assignment:
-			if(tree->node.Assignment.expression != NULL && tree->node.Assignment.expression->tag){
+			if(tree->node.Assignment.expression != NULL && tree->node.Assignment.expression->tag == Spawn){
 				id = codegen(tree->node.Assignment.location);
 				result = smprintf("%s = %d; %s", id, newTaskID(), codegen(tree->node.Assignment.expression));
 			} else {
@@ -455,14 +456,50 @@ char *getHelperFunctionsCode(void) {
 	  fseek (fp, 0, SEEK_END);
 	  length = ftell(fp);
 	  fseek(fp, 0, SEEK_SET);
-	  code = malloc(length);
+	  code = malloc(length+1);
 	  if (code){
 	    fread(code, 1, length, fp);
 	  }
+	  code[length] = '\0';
 	  fclose (fp);
 	}
 
 	return code;
+}
+
+char *generateParametersFromStructFields(AstNode *tree){
+	AstNode *child = tree;
+	char *result = smprintf("");
+	char *old;
+	char *id;
+	char *type;
+	char *struct_id;
+	char *struct_type;
+	if(tree == NULL) return smprintf("");
+	
+	while(child != NULL){
+		old = result;
+		id = codegen(child->node.Parameter.identifier);
+		type = codegen(child->node.Parameter.type);
+		if(child->node.Parameter.type->tag == ArrayType){
+			struct_id = smprintf("%s_original", id);
+			struct_type = smprintf("%s *", type);
+		} else {
+			struct_id = smprintf("%s", id); 
+			struct_type = smprintf("%s", type);
+		}
+		result = smprintf("%s %s = struct_args->%s;\n%s",
+			struct_type, id, struct_id, result
+		);
+		child=child->next;
+		free(struct_type);
+		free(struct_id);
+		free(old);
+		free(id);
+		free(type);
+	}
+
+	return result;
 }
 
 char *generatePassByValue(AstNode *tree) {
