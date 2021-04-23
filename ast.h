@@ -241,6 +241,7 @@ struct ReturnNode {
 struct SpawnNode {
 	AstNode *identifier;
 	AstNode *arguments;
+	char taskId;
 };
 
 struct SendNode {

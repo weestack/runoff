@@ -330,9 +330,12 @@ AstNode *mkReturnNode(AstNode *expression){
 }
 
 AstNode *mkSpawnNode(AstNode *identifier, AstNode *arguments){
+	static int taskid = 0;
 	AstNode *node = mkNode(Spawn);
 	node->node.Spawn.identifier = identifier;
 	node->node.Spawn.arguments = arguments;
+	node->node.Spawn.taskId = taskid;
+	taskid++;
 	return node;
 }
 
