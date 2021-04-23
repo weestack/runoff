@@ -1,9 +1,10 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include "auxiliary.h"
 #include "symbol.h"
 #include "ast.h"
+#include "auxiliary.h"
+
 
 /* Tænker at hvis codegen returnere en stor streng fra heapen
 	lidt i stil med prettyprint, så er det smart, for så kan vi
@@ -21,6 +22,8 @@ char *constructMessageEnum(AstNode *);
 char *constructMessageStruct(AstNode *);
 char *constructMessageUnionStruct(AstNode *);
 char *mkStructsFromSpawns(AstNode *);
+void changeParamNames(AstNode *);
+char *assignParamsToStruct(AstNode *);
 
 char *codegen(AstNode *tree) {
 	char *id = NULL;
@@ -58,6 +61,7 @@ char *codegen(AstNode *tree) {
 			result = smprintf("%s%s %s(%s) {%s %s}", preCodeGen, type, id, params, extraCode, stmts);
 			break;
 		case DefineTask:
+			changeParamNames(tree->node.DefineTask.parameters);
 			id = codegen(tree->node.DefineTask.identifier);
 			params = processBlock(tree->node.DefineTask.parameters, ";\n", 1);
 			extraCode = smprintf("struct %s *struct_args = (struct %s *)args;\n%s",
@@ -125,8 +129,8 @@ char *codegen(AstNode *tree) {
 			break;*/
 		case Spawn:
 			id = codegen(tree->node.Spawn.identifier);				
-			result = smprintf("%s_%d = {%d, %s};\nrunoff_createTask(%s, (void *)&%s_%d)", 
-				id, tree->node.Spawn.taskId,tree->node.Spawn.taskId, processBlock(tree->node.Spawn.arguments, ",", 0),
+			result = smprintf("%s\nrunoff_createTask(%s, (void *)&%s_%d)", 
+				assignParamsToStruct(tree),
 				id, id, tree->node.Spawn.taskId
 			);
 			break;
@@ -644,6 +648,53 @@ char *mkStructsFromSpawns(AstNode *tree){
 		}
 		child=child->next;
 		free(old);
+	}
+	return result;
+}
+
+void changeParamNames(AstNode *tree){
+	AstNode *child;
+	int i = 0;
+	child = tree;
+	while(child != NULL){
+		free(child->node.Parameter.identifier->node.Identifier.symbol->name);
+		child->node.Parameter.identifier->node.Identifier.symbol->name = smprintf("arg_%d", i++);
+		child = child->next;
+	}
+}
+
+char *assignParamsToStruct(AstNode *spawnNode){
+	char *result = smprintf("");
+	char *old;
+	int i = 0;
+	char *structName = smprintf("%s_%d", 
+		spawnNode->node.Spawn.identifier->node.Identifier.identifier, 
+		spawnNode->node.Spawn.taskId);
+	AstNode *child;
+	child = spawnNode->node.Spawn.arguments;
+	
+	while(child != NULL){
+		char *expr = codegen(child);
+		char *field = smprintf("arg_%d", i);
+		Type *t = typeOf(child);
+		old = result;
+		if(t->tag == ArrayTypeTag){
+			result = smprintf("%smemcpy(%s.%s_original, %s, sizeof(%s.%s_original));\n",
+				result,
+				structName,
+				field,
+				expr,
+				structName,
+				field
+			);
+		} else {
+			result = smprintf("%s%s.%s = %s;\n", result, structName, field, expr);
+		}
+		child = child->next;
+		i++;
+		free(expr);
+		free(old);
+		free(field);
 	}
 	return result;
 }

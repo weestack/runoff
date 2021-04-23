@@ -1,9 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "auxiliary.h"
 #include "symbol.h"
 #include "ast.h"
+#include "auxiliary.h"
 #include "phases.h"
 
 static int errors = 0;
@@ -340,7 +340,6 @@ static void checkVarInitialized(AstNode *tree){
 			tree->node.Assignment.location = loc;
 			tree->node.Assignment.expression = expr;
 			sym->initialized = 1;
-			printf("Replaces '%s' with '%s' on line %d\n", prettyprint(loc), prettyprint(tree), tree->linenum);
 		}else{
 			eprintf(tree->linenum, "Variable '%s' is not initialized when used here\n", sym->name);
 			errors++;

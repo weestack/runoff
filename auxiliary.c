@@ -2,7 +2,6 @@
 #include <stdlib.h>
 #include <stdarg.h>
 #include <string.h>
-#include "auxiliary.h"
 
 extern char *filename;
 

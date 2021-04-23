@@ -1,12 +1,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "auxiliary.h"
 #include "symbol.h"
 #include "ast.h"
+#include "auxiliary.h"
 
 void typeCheckNode(AstNode *);
-Type *typeof(AstNode *);
 int buildinTypeMatch(Type *, int);
 int buildinTypeMatchInt(Type *);
 int numericType(Type *);
@@ -31,7 +30,7 @@ void typeCheckNode(AstNode *node){
 
 	switch(node->tag){
 	case While:
-		typeA = typeof(node->node.While.expression);
+		typeA = typeOf(node->node.While.expression);
 		if(!buildinTypeMatch(typeA, builtintype_bool))
 			printTypeFail("While loop expected bool", node->node.While.expression, typeA);
 
@@ -40,25 +39,25 @@ void typeCheckNode(AstNode *node){
 		if(node->node.For.expressionTest == NULL){
 			break;
 		}
-		typeA = typeof(node->node.For.expressionTest);
+		typeA = typeOf(node->node.For.expressionTest);
 		if(!buildinTypeMatch(typeA, builtintype_bool))
 			printTypeFail("For loop test expected bool", node->node.For.expressionTest, typeA);
 
 		break;
 	case Switch:
-		typeA = typeof(node->node.Switch.expression);
+		typeA = typeOf(node->node.Switch.expression);
 		if(!buildinTypeMatchInt(typeA))
 			printTypeFail("Switch expression expected int", node->node.Switch.expression, typeA);
 
 		break;
 	case If:
-		typeA = typeof(node->node.If.expression);
+		typeA = typeOf(node->node.If.expression);
 		if(!buildinTypeMatch(typeA, builtintype_bool))
 			printTypeFail("if statement expected bool", node->node.If.expression, typeA);
 
 		break;
 	case ElseIf:
-		typeA = typeof(node->node.ElseIf.expression);
+		typeA = typeOf(node->node.ElseIf.expression);
 		if(!buildinTypeMatch(typeA, builtintype_bool))
 			printTypeFail("if statement expected bool", node->node.ElseIf.expression, typeA);
 		break;
@@ -66,8 +65,8 @@ void typeCheckNode(AstNode *node){
 		if(node->node.VarDecl.expression == NULL)
 			break;
 
-		typeA = typeof(node->node.VarDecl.identifier);
-		typeB = typeof(node->node.VarDecl.expression);
+		typeA = typeOf(node->node.VarDecl.identifier);
+		typeB = typeOf(node->node.VarDecl.expression);
 		if (!typeMatch(typeA, typeB)){
 			char* typeAString = typeString(typeA);
 			char* errorMessage = smprintf("incompatible types expected %s", typeAString);
@@ -87,8 +86,8 @@ void typeCheckNode(AstNode *node){
 			"function-call");
 		break;
 	case Assignment:
-		typeA = typeof(node->node.Assignment.location);
-		typeB = typeof(node->node.Assignment.expression);
+		typeA = typeOf(node->node.Assignment.location);
+		typeB = typeOf(node->node.Assignment.expression);
 		if(!typeMatch(typeA, typeB)){
 			char* typeAString = typeString(typeA);
 			char* errorMessage = smprintf("incompatible types expected %s", typeAString);
@@ -98,9 +97,9 @@ void typeCheckNode(AstNode *node){
 		}
 		break;
 	case TernaryOperator:
-		typeA = typeof(node->node.TernaryOperator.expressionTest);
-		typeB = typeof(node->node.TernaryOperator.expressionTrue);
-		typeC = typeof(node->node.TernaryOperator.expressionFalse);
+		typeA = typeOf(node->node.TernaryOperator.expressionTest);
+		typeB = typeOf(node->node.TernaryOperator.expressionTrue);
+		typeC = typeOf(node->node.TernaryOperator.expressionFalse);
 		if(!typeMatch(typeB, typeC)){
 			char* typeBString = typeString(typeB);
 			char* errorMessage = smprintf("incompatible types expected %s", typeBString);
@@ -123,7 +122,7 @@ void typeCheckNode(AstNode *node){
 			"message literal");
 		break;
 	case Return:
-		typeA = typeof(node->node.Return.expression);
+		typeA = typeOf(node->node.Return.expression);
 		
 		if(*node->node.Return.functionsym == NULL){
 			if(typeA != NULL){
@@ -162,8 +161,8 @@ void typeCheckNode(AstNode *node){
 			"task");
 		break;
 	case Send:
-		typeA = typeof(node->node.Send.message);
-		typeB = typeof(node->node.Send.receiver);
+		typeA = typeOf(node->node.Send.message);
+		typeB = typeOf(node->node.Send.receiver);
 		if(!buildinTypeMatch(typeA, builtintype_msg))
 			printTypeFail("body of send should be a message", node->node.Send.message, typeA);
 		if(!buildinTypeMatch(typeB, builtintype_taskid))
@@ -172,10 +171,10 @@ void typeCheckNode(AstNode *node){
 	case BinaryOperation: /* Fall through */
 	case UnaryOperation: /* Fall through */
 	case ExprStmt:
-		typeof(node); /* typeof will check that the expression is ok (it tries to find its type) */
+		typeOf(node); /* typeOf will check that the expression is ok (it tries to find its type) */
 		break;
 	case ReceiveCase:
-		typeA = typeof(node->node.ReceiveCase.messageName);
+		typeA = typeOf(node->node.ReceiveCase.messageName);
 		if(typeA == NULL) /* default case */
 			break;
 		if(!(typeA->tag == MessageTypeTag))
@@ -188,7 +187,7 @@ void typeCheckNode(AstNode *node){
 		typeCheckNode(children);
 }
 
-Type *typeof(AstNode *node){
+Type *typeOf(AstNode *node){
 	AstNode *id;
 	Type *tmp;
 	AstNode *index;
@@ -212,7 +211,7 @@ Type *typeof(AstNode *node){
 			}
 			return tmp;
 		case StructLocation:
-			return typeof(node->node.StructLocation.location);
+			return typeOf(node->node.StructLocation.location);
 		case VariableLocation:
 			id = node->node.VariableLocation.identifier;
 			return id->node.Identifier.symbol->type;
@@ -236,12 +235,12 @@ Type *typeof(AstNode *node){
 			id = node->node.FunctionCall.identifier;
 			return id->node.Identifier.symbol->type->tags.typeFunction.returnType;
 		case Assignment:
-			return typeof(node->node.Assignment.location);
+			return typeOf(node->node.Assignment.location);
 		case VarDecl:
 			id = node->node.VarDecl.identifier;
 			return id->node.Identifier.symbol->type;
 		case TernaryOperator:
-			return typeof(node->node.TernaryOperator.expressionTrue);
+			return typeOf(node->node.TernaryOperator.expressionTrue);
 		case Spawn:
 			return mkBuiltinTypeDescriptor(builtintype_taskid);
 		default:
@@ -374,8 +373,8 @@ char *typeString(Type *type){
 }
 
 Type *binaryOperatorType(AstNode *node){
-	Type *left = typeof(node->node.BinaryOperation.expression_left);
-	Type *right = typeof(node->node.BinaryOperation.expression_right);
+	Type *left = typeOf(node->node.BinaryOperation.expression_left);
+	Type *right = typeOf(node->node.BinaryOperation.expression_right);
 	int expected_right = 0, expected_left = 0, return_type = 0;
 	char *other_error = NULL;
 
@@ -472,7 +471,7 @@ Type *binaryOperatorType(AstNode *node){
 }
 
 Type *unaryOperatorType(AstNode *node){
-	Type *operandType = typeof(node->node.UnaryOperation.expression);
+	Type *operandType = typeOf(node->node.UnaryOperation.expression);
 	char *otherError = NULL;
 	int expected = 0, returnType = 0;
 	switch (node->node.UnaryOperation.operator){
@@ -524,7 +523,7 @@ void checkParameterList(AstNode *id, AstNode *args, int arity, Type **parameters
 	
 	for(paramnr = 0; paramnr < arity && arg != NULL; paramnr++, arg = arg->next){
 		Type *ptype = parameters[paramnr];
-		Type *atype = typeof(arg);
+		Type *atype = typeOf(arg);
 		if(!typeMatch(ptype, atype)){
 			char *expected = typeString(ptype);
 			char *errmsg = smprintf("Expected argument %d of %s \"%s\" to have type %s", paramnr+1, desc, name, expected);
