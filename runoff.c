@@ -6,6 +6,7 @@
 #include "symbol.h"
 #include "ast.h"
 #include "phases.h"
+#include "auxiliary.h"
 
 /* Some code copy pasted from plan9's /sys/include/libc.h
    used to handle command line arguments. Modified to compile
@@ -28,10 +29,11 @@
 
 char *filename;
 
-void usage(void){
-	printf("Usage: runoff [-p] [-o outfile] filename\n");
-	exit(EXIT_FAILURE);
-}
+void usage(void);
+void verifycode(char *);
+char *indent(char *);
+void writeFile(char *, char *);
+char *readFile(char *);
 
 int
 main(int argc, char *argv[])
@@ -41,6 +43,8 @@ main(int argc, char *argv[])
 	char *code;
 
 	int ppflag = 0;
+	int verifyflag = 0;
+	int indentflag = 0;
 	char *outfile = NULL;
 
 	ARGBEGIN{
@@ -49,6 +53,12 @@ main(int argc, char *argv[])
 		break;
 	case 'o':
 		outfile = EARGF(usage());
+		break;
+	case 'v':
+		verifyflag = 1;
+		break;
+	case 'i':
+		indentflag = 1;
 		break;
 	default:
 		usage();
@@ -84,17 +94,72 @@ main(int argc, char *argv[])
 	/* some code transformations that cannot fail */
 	removeNestedDecls(tree);
 
-
-
 	/* generate the code! */
 	code = codegen(tree);
-	if(outfile != NULL){
-		FILE *fp = fopen(outfile, "w");
-		if (fp != NULL)
-			fputs(code, fp);
-		else
-			printf("Could not open file %s: %s\n", outfile, strerror(errno));
-	}else
+	
+	if(indentflag)
+		code = indent(code);
+
+	if(outfile != NULL)
+		writeFile(code, outfile);
+	else
 		printf("%s\n", code);
+	
+	if(verifyflag)
+		verifycode(code);
+
 	return 0;
+}
+
+void usage(void){
+	printf("Usage: runoff [-p] [-o outfile] filename\n");
+	exit(EXIT_FAILURE);
+}
+
+void verifycode(char *code){
+	char *tmpdirname = tmpnam(NULL);
+	char *tmpname = smprintf("%s/code.cpp", tmpdirname);
+	char *cmd1 = smprintf("mkdir %s", tmpdirname);
+	char *cmd2 = smprintf("cd %s && arduino --verify %s", tmpdirname, tmpname);
+	system(cmd1);
+	writeFile(code, tmpname);
+	system(cmd2);
+}
+
+char *indent(char *code){
+	char *tmpname = tmpnam(NULL);
+	char *cmd = smprintf("indent %s", tmpname);
+	writeFile(code, tmpname);
+	system(cmd);
+	return readFile(tmpname);
+}
+
+void writeFile(char *buf, char *filename){
+	FILE *fp = fopen(filename, "w");
+	if (fp != NULL){
+		fputs(buf, fp);
+		fflush(fp);
+		fclose(fp);
+	}
+	else
+		printf("Could not open file %s: %s\n", filename, strerror(errno));
+}
+
+char *readFile(char *filename){
+	FILE *fp;
+	char *buf;
+	long length;
+	fp = fopen(filename, "r");
+	if(fp == NULL)
+		return NULL;
+	fseek(fp, 0, SEEK_END);
+	length = ftell(fp);
+	fseek(fp, 0, SEEK_SET);
+	buf = malloc(length+1);
+	if(buf == NULL)
+		return NULL;
+	fread(buf, 1, length, fp);
+	buf[length] = '\0';
+	fclose(fp);
+	return buf;
 }
