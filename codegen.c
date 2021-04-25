@@ -664,7 +664,7 @@ void changeParamNames(AstNode *tree){
 }
 
 char *assignParamsToStruct(AstNode *spawnNode){
-	char *result = smprintf("");
+	char *result;
 	char *old;
 	int i = 0;
 	char *structName = smprintf("%s_%d", 
@@ -673,6 +673,8 @@ char *assignParamsToStruct(AstNode *spawnNode){
 	AstNode *child;
 	child = spawnNode->node.Spawn.arguments;
 	
+	result = smprintf("%s.self = %d;\n",structName, spawnNode->node.Spawn.taskId);
+
 	while(child != NULL){
 		char *expr = codegen(child);
 		char *field = smprintf("arg_%d", i);
