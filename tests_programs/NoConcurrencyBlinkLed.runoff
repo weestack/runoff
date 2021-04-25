@@ -1,0 +1,9 @@
+function setup() -> void {
+	pinid a = 13P;
+	while(true){
+		turnOn(a);
+		delay(500);
+		turnOff(a);
+		delay(1000);
+	}
+}
