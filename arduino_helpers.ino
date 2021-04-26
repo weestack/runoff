@@ -1,4 +1,5 @@
 #include <Arduino_FreeRTOS.h>
+#include <queue.h>
 
 #define configUSE_TIME_SLICING 1
 #define messageQueueSize 3

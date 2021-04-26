@@ -48,11 +48,13 @@ char *codegen(AstNode *tree) {
 		case Prog:
 			/* Special case include helper functions! */
 			preCodeGen = smprintf("%s\n#define numberOfSpawns %d\nTaskHandle_t handlers[numberOfSpawns];\n/*End of preCodeGen*/\n", getHelperFunctionsCode(), tree->node.Prog.spawnCount);
-			result = smprintf("%s\nQueueHandle_t Mailbox[%d];\n%s\n", preCodeGen, tree->node.Prog.spawnCount,processBlock(tree->node.Prog.toplevels, "\n", 0));
+			params = processBlock(tree->node.Prog.toplevels, "\n", 0);
+			result = smprintf("%s\nQueueHandle_t Mailbox[%d];\n%s\n", preCodeGen, tree->node.Prog.spawnCount,params);
 			break;
 		case DefineFunction:
 			id = codegen(tree->node.DefineFunction.identifier);
-			if(strcmp(codegen(tree->node.DefineFunction.identifier), "setup") == 0)
+			intlit = codegen(tree->node.DefineFunction.identifier);
+			if(strcmp(intlit, "setup") == 0)
 				preCodeGen = mkStructsFromSpawns(tree->node.DefineFunction.statements);
 			else 
 				preCodeGen = smprintf("");
@@ -66,8 +68,9 @@ char *codegen(AstNode *tree) {
 			changeParamNames(tree->node.DefineTask.parameters);
 			id = codegen(tree->node.DefineTask.identifier);
 			params = processBlock(tree->node.DefineTask.parameters, ";\n", 1);
+			expr = generateParametersFromStructFields(tree->node.DefineTask.parameters);
 			extraCode = smprintf("struct %s *struct_args = (struct %s *)args;\n%s",
-				id, id, generateParametersFromStructFields(tree->node.DefineTask.parameters)
+				id, id, expr
 			);
 			stmts = processBlock(tree->node.DefineTask.statements, "\n", 1);
 			result = smprintf("struct %s{char self;%s};\nvoid %s(void *args) {%s %s}", 
@@ -82,24 +85,30 @@ char *codegen(AstNode *tree) {
 			);
 			break;
 		case DefineMessage:
+			extraCode = constructMessageEnum(tree->node.DefineMessage.messagesIdentifiers);
+			preCodeGen = constructMessageStruct(tree->node.DefineMessage.messagesIdentifiers);
+			intlit = constructMessageUnionStruct(tree->node.DefineMessage.messagesIdentifiers);
 			result = smprintf("enum messages{%s};\n%s\n%s",
-							constructMessageEnum(tree->node.DefineMessage.messagesIdentifiers),
-							constructMessageStruct(tree->node.DefineMessage.messagesIdentifiers),
-							constructMessageUnionStruct(tree->node.DefineMessage.messagesIdentifiers)
+							extraCode,
+							preCodeGen,
+							intlit
 							);
 			break;
 		case StructMember:
+			type = codegen(tree->node.StructMember.type);
+			id = codegen(tree->node.StructMember.identifier);
 			result = smprintf(
 				"%s %s;",
-				codegen(tree->node.StructMember.type),
-				codegen(tree->node.StructMember.identifier)
+				type,
+				id
 			);
 			break;
 		case Parameter:
 			type = codegen(tree->node.Parameter.type);
 
 			if (tree->node.Parameter.type->tag == ArrayType) {
-				id = smprintf("%s_original",codegen(tree->node.Parameter.identifier));
+				preCodeGen = codegen(tree->node.Parameter.identifier);
+				id = smprintf("%s_original",preCodeGen);
 			}else {
 				id = codegen(tree->node.Parameter.identifier);
 			}
@@ -141,10 +150,10 @@ char *codegen(AstNode *tree) {
 			}
 			break;
 		case Spawn:
-			id = codegen(tree->node.Spawn.identifier);				
+			id = codegen(tree->node.Spawn.identifier);	
+			params = assignParamsToStruct(tree);			
 			result = smprintf("%s\nrunoff_createTask(%s, (void *)&%s_%d)", 
-				assignParamsToStruct(tree),
-				id, id, tree->node.Spawn.taskId
+				params,	id, id, tree->node.Spawn.taskId
 			);
 			break;
 		case BuiltinType:
@@ -164,27 +173,28 @@ char *codegen(AstNode *tree) {
 			result = smprintf("while(%s) {%s}", expr, stmts);
 		 	break;
 		case For:
+			type = codegen(tree->node.For.expressionInit);
+			id = codegen(tree->node.For.expressionTest);
+			expr = codegen(tree->node.For.expressionUpdate);
+			preCodeGen = processBlock(tree->node.For.statements, "", 0);
 			result = smprintf(
 				"for(%s;%s;%s){%s}",
-				codegen(tree->node.For.expressionInit),
-				codegen(tree->node.For.expressionTest),
-				codegen(tree->node.For.expressionUpdate),
-				processBlock(tree->node.For.statements, "", 0)
+				type, id, expr, preCodeGen
 			);
 			break;
 		case Switch:
 			expr = codegen(tree->node.Switch.expression);
+			stmts = processBlock(tree->node.Switch.cases, "", 0);
 			result = smprintf("switch(%s){%s}",
-				expr,
-				processBlock(tree->node.Switch.cases, "", 0)
+				expr, stmts
 			);
 			break;
 		case SwitchCase:
 			stmts = processBlock(tree->node.SwitchCase.statements, "", 0);
+			intlit = codegen(tree->node.SwitchCase.literal);
 			if (tree->node.SwitchCase.literal != NULL) {
 				result = smprintf("case %s: if(1){%s} break;",
-					codegen(tree->node.SwitchCase.literal),
-					stmts
+					intlit, stmts
 				);
 			}else {
 				result = smprintf("default: if(1){%s} break;", stmts);
@@ -194,14 +204,15 @@ char *codegen(AstNode *tree) {
 			result = smprintf("%s", tree->node.Identifier.symbol->name);
 			break;
 		case ExprStmt:
-			result = smprintf("%s;", codegen(tree->node.ExprStmt.expression));
+			expr = codegen(tree->node.ExprStmt.expression);
+			result = smprintf("%s;", expr);
 			break;
 		case Assignment:
 			if(tree->node.Assignment.expression != NULL && tree->node.Assignment.expression->tag == Spawn){
 				id = codegen(tree->node.Assignment.location);
+				expr = codegen(tree->node.Assignment.expression);
 				result = smprintf("%s = %d; %s", id, 
-					tree->node.Assignment.expression->node.Spawn.taskId,
-					codegen(tree->node.Assignment.expression)
+					tree->node.Assignment.expression->node.Spawn.taskId, expr
 				);
 			} else {
 				id = codegen(tree->node.Assignment.location);
@@ -210,11 +221,12 @@ char *codegen(AstNode *tree) {
 			}
 			break;
 		case TernaryOperator:
+			expr = codegen(tree->node.TernaryOperator.expressionTest);
+			stmts = codegen(tree->node.TernaryOperator.expressionTrue);
+			elsepart = codegen(tree->node.TernaryOperator.expressionFalse);
 			result = smprintf("(%s) ? %s: %s",
-			codegen(tree->node.TernaryOperator.expressionTest),
-			codegen(tree->node.TernaryOperator.expressionTrue),
-			codegen(tree->node.TernaryOperator.expressionFalse)
-		);
+				expr, stmts, elsepart
+			);
 			break;
 		case VariableLocation:
 			result = codegen(tree->node.VariableLocation.identifier);
@@ -249,9 +261,10 @@ char *codegen(AstNode *tree) {
 		case VarDecl:
 			if(tree->node.VarDecl.expression != NULL && tree->node.VarDecl.expression->tag == Spawn){
 				id = codegen(tree->node.VarDecl.identifier);
+				expr = codegen(tree->node.VarDecl.expression);
 				result = smprintf("char %s = %d;%s", id, 
 					tree->node.VarDecl.expression->node.Spawn.taskId, 
-					codegen(tree->node.VarDecl.expression)
+					expr
 				);
 			} else {
 				type = smprintf("%s%s", tree->node.VarDecl.toplevel == 1 ? "const " : "", codegen(tree->node.VarDecl.type));
@@ -262,10 +275,10 @@ char *codegen(AstNode *tree) {
 			}
 			break;
 		case BinaryOperation:
+			expr = codegen(tree->node.BinaryOperation.expression_left);
+			type = codegen(tree->node.BinaryOperation.expression_right);
 			result = smprintf("(%s %s %s)",
-			codegen(tree->node.BinaryOperation.expression_left),
-			getBinaryOperator(tree->node.BinaryOperation.operator),
-			codegen(tree->node.BinaryOperation.expression_right));
+			expr,getBinaryOperator(tree->node.BinaryOperation.operator),type);
 			break;
 		case IntLiteral:
 			result = smprintf("%d", tree->node.IntLiteral.value);
@@ -650,7 +663,7 @@ char *mkStructsFromSpawns(AstNode *tree){
 		if(child->tag == Spawn){
 			id = codegen(child->node.Spawn.identifier);
 			old = result;
-			result = smprintf("struct %s %s_%d;\nMailbox[%d] = xQueueCreate(messageQueueSize, sizeof(Message));\n", 
+			result = smprintf("struct %s %s_%d;\n", 
 				id, id, child->node.Spawn.taskId, child->node.Spawn.taskId);
 			free(id);
 		} else {
@@ -686,7 +699,7 @@ char *assignParamsToStruct(AstNode *spawnNode){
 	AstNode *child;
 	child = spawnNode->node.Spawn.arguments;
 	
-	result = smprintf("%s.self = %d;\n",structName, spawnNode->node.Spawn.taskId);
+	result = smprintf("Mailbox[%d] = xQueueCreate(messageQueueSize, sizeof(Message));\n%s.self = %d;\n",spawnNode->node.Spawn.taskId,structName, spawnNode->node.Spawn.taskId);
 
 	while(child != NULL){
 		char *expr = codegen(child);
