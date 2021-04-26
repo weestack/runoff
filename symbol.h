@@ -17,6 +17,7 @@ Type* mkAnyTypeDescriptor(void);
 
 struct AstNode; /* declared fully in ast.h */
 
+struct AstNode; /* cheat mode */
 struct Symbol {
 	char* name;
 	Type *type;
@@ -24,6 +25,8 @@ struct Symbol {
 	int initialized;
 	int linenum; /* the line number where the symbol first appeared */
 	Symbol* next;
+	/* This is where the symbol is first found. */
+	struct AstNode *first;
 };
 
 struct SymbolTable {

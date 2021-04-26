@@ -23,6 +23,7 @@ int insertSymbol(AstNode *node, Type *type) {
 
 	symbol = enterSymbol(name, type);
 	symbol->linenum = node->linenum;
+	symbol->first = node;
 	node->node.Identifier.symbol = symbol;
 	return 0;
 }

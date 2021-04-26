@@ -4,6 +4,7 @@
 #include "symbol.h"
 #include "ast.h"
 #include "auxiliary.h"
+#include "phases.h"
 
 
 /* Tænker at hvis codegen returnere en stor streng fra heapen
@@ -24,6 +25,7 @@ char *constructMessageUnionStruct(AstNode *);
 char *mkStructsFromSpawns(AstNode *);
 void changeParamNames(AstNode *);
 char *assignParamsToStruct(AstNode *);
+char *generateReceiveCaseData(AstNode *);
 
 char *codegen(AstNode *tree) {
 	char *id = NULL;
@@ -46,7 +48,7 @@ char *codegen(AstNode *tree) {
 		case Prog:
 			/* Special case include helper functions! */
 			preCodeGen = smprintf("%s\n#define numberOfSpawns %d\nTaskHandle_t handlers[numberOfSpawns];\n/*End of preCodeGen*/\n", getHelperFunctionsCode(), tree->node.Prog.spawnCount);
-			result = smprintf("%s\n%s", preCodeGen, processBlock(tree->node.Prog.toplevels, "\n", 0));
+			result = smprintf("%s\nQueueHandle_t Mailbox[%d];\n%s\n", preCodeGen, tree->node.Prog.spawnCount,processBlock(tree->node.Prog.toplevels, "\n", 0));
 			break;
 		case DefineFunction:
 			id = codegen(tree->node.DefineFunction.identifier);
@@ -84,7 +86,7 @@ char *codegen(AstNode *tree) {
 							constructMessageEnum(tree->node.DefineMessage.messagesIdentifiers),
 							constructMessageStruct(tree->node.DefineMessage.messagesIdentifiers),
 							constructMessageUnionStruct(tree->node.DefineMessage.messagesIdentifiers)
-			);
+							);
 			break;
 		case StructMember:
 			result = smprintf(
@@ -121,12 +123,23 @@ char *codegen(AstNode *tree) {
 			result = smprintf("else {%s}", stmts);
 			break;
 		case Receive:
-			stmts = processBlock(tree->node.Receive.cases, "", 1);
-			result = smprintf("receive{%s}", stmts);
+			stmts = processBlock(tree->node.Receive.cases, ";", 0);
+			result = smprintf("struct Message m;\nxQueueReceive(Mailbox[self], &m, portMAX_DELAY);\nswitch(m.Tag){%s}", stmts);
 			break;
-		/*case ReceiveCase:
-
-			break;*/
+		case ReceiveCase:
+			stmts = codegen(tree->node.ReceiveCase.statements);
+			id = codegen(tree->node.ReceiveCase.messageName);
+			if(tree->node.ReceiveCase.messageName == NULL){
+				result = smprintf("default: if(1){%s}\nbreak;", stmts);
+			} else {
+				if(tree->node.ReceiveCase.dataNames == NULL){
+					result = smprintf("case %s: if(1){%s}\nbreak;", id, stmts);	
+				} else {
+					extraCode = generateReceiveCaseData(tree);
+					result = smprintf("case %s: if(1){%s%s}\nbreak;", id, extraCode, stmts); 
+				}
+			}
+			break;
 		case Spawn:
 			id = codegen(tree->node.Spawn.identifier);				
 			result = smprintf("%s\nrunoff_createTask(%s, (void *)&%s_%d)", 
@@ -169,12 +182,12 @@ char *codegen(AstNode *tree) {
 		case SwitchCase:
 			stmts = processBlock(tree->node.SwitchCase.statements, "", 0);
 			if (tree->node.SwitchCase.literal != NULL) {
-				result = smprintf("case %s: %s break;",
+				result = smprintf("case %s: if(1){%s} break;",
 					codegen(tree->node.SwitchCase.literal),
 					stmts
 				);
 			}else {
-				result = smprintf("default: %s break;", stmts);
+				result = smprintf("default: if(1){%s} break;", stmts);
 			}
 		break;
 		case Identifier:
@@ -479,7 +492,7 @@ char *getHelperFunctionsCode(void) {
 
 char *generateParametersFromStructFields(AstNode *tree){
 	AstNode *child = tree;
-	char *result = smprintf("");
+	char *result;
 	char *old;
 	char *id;
 	char *type;
@@ -487,6 +500,7 @@ char *generateParametersFromStructFields(AstNode *tree){
 	char *struct_type;
 	if(tree == NULL) return smprintf("");
 	
+	result = smprintf("char self = struct_args->self;\n");
 	while(child != NULL){
 		old = result;
 		id = codegen(child->node.Parameter.identifier);
@@ -569,28 +583,26 @@ char *constructMessageEnum(AstNode *tree){
 }
 
 char *constructMessageStruct(AstNode *tree){
-	char *currentChildId;
 	char *currentChildType;
 	AstNode *child = tree;
 	AstNode *paramChild;
 	char *codeBlock = smprintf("");
 	char *currentStruct;
 	char *old;
-
+	int i=0;
 	while(child != NULL){
 		paramChild = child->node.MessageIdentifier.parameters;
 		currentStruct = smprintf("");
 		while(paramChild != NULL){
 			currentChildType = codegen(paramChild->node.Parameter.type);
-			currentChildId = smprintf("run_%s",codegen(paramChild->node.Parameter.identifier));
 			old = currentStruct;
-			currentStruct = smprintf("%s %s;\n%s",
-					currentChildType, currentChildId, currentStruct
+			currentStruct = smprintf("%s arg_%d;\n%s",
+					currentChildType, i, currentStruct
 					);
 			free(old);
-			free(currentChildId);
 			free(currentChildType);
 			paramChild = paramChild->next;
+			i++;
 		}
 		old = codeBlock;
 		codeBlock = smprintf("struct %s{%s};\n%s",
@@ -638,7 +650,8 @@ char *mkStructsFromSpawns(AstNode *tree){
 		if(child->tag == Spawn){
 			id = codegen(child->node.Spawn.identifier);
 			old = result;
-			result = smprintf("struct %s %s_%d;\n", id, id, child->node.Spawn.taskId);
+			result = smprintf("struct %s %s_%d;\nMailbox[%d] = xQueueCreate(messageQueueSize, sizeof(Message));\n", 
+				id, id, child->node.Spawn.taskId, child->node.Spawn.taskId);
 			free(id);
 		} else {
 			AstNode *children = getChildren(child);
@@ -698,5 +711,34 @@ char *assignParamsToStruct(AstNode *spawnNode){
 		free(old);
 		free(field);
 	}
+	return result;
+}
+
+char *generateReceiveCaseData(AstNode *ReceiveCaseNode){
+	char *result = smprintf("");
+	char *decl = smprintf("");
+	char *idBOSS = codegen(ReceiveCaseNode->node.ReceiveCase.messageName);
+	char *old;
+	AstNode *parameter = ReceiveCaseNode->node.ReceiveCase.dataNames;
+	AstNode *msgIdentifier = ReceiveCaseNode->node.ReceiveCase.messageName->node.Identifier.symbol->first->node.MessageIdentifier.parameters;
+	int i = 0;
+	while(parameter != NULL){
+		char *type = getBuiltInTypeLiteral(msgIdentifier->node.Parameter.type->node.BuiltinType.type);
+		char *old_decl = decl;
+		char *id = codegen(parameter);
+		decl = smprintf("%s %s;\n%s", type, id, decl);
+
+		old = result;
+		result = smprintf("%s%s = m.data.%s.arg_%d;\n", result, id, idBOSS, i);
+		parameter = parameter->next;
+		msgIdentifier = msgIdentifier->next;
+		free(old_decl);
+		free(old);
+		free(id);
+		i++;
+	}
+	old = result;
+	result = smprintf("%s%s", decl, result);
+	free(old);
 	return result;
 }

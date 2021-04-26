@@ -4,7 +4,7 @@
 #define messageQueueSize 3
 
 void loop(){}
-// End of helper file
+// Helper function to create tasks
 void runoff_createTask(TaskFunction_t taskFunction, void *args){
   BaseType_t xReturned;
   
@@ -22,6 +22,7 @@ void runoff_createTask(TaskFunction_t taskFunction, void *args){
   }
 }
 
+// Helper functions
 void turnOn(int pin){
   digitalWrite(pin, HIGH);
 }
@@ -41,3 +42,4 @@ void outputPin(int pin){
 void simpleInputPin(int pin){
   pinMode(pin, INPUT);
 }
+// End of helper file

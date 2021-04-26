@@ -357,6 +357,7 @@ void handleMessageIdentifier(AstNode *function){
 
 	sym = retrieveSymbol(function->node.MessageIdentifier.identifier);
 	sym->type = t;
+	sym->first = function;
 }
 
 void handleReceiveCase(AstNode *node){
