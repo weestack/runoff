@@ -1,10 +1,13 @@
 function useless() -> void {
 	int i = 5;
+	i++;
 }
 
 function absorb(int a, float b) -> void {
 	int c = a + 4;
 	float d = b * 5.0;
+	c++;
+	d = d;
 }
 
 function produce() -> int {
@@ -18,8 +21,12 @@ function add(int a, int b) -> int {
 
 function hej() -> void {
 	int i = add(2,2);
+	i++;
 }
 
 function setup() -> void {
-
+	useless();
+	absorb(4,5.6);
+	produce();
+	hej();
 }

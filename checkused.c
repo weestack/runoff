@@ -15,9 +15,9 @@ static void mark(AstNode *tree){
 		else if(n->tag == Parameter)
 			children = NULL;
 		else if(n->tag == DefineFunction && strcmp(n->node.DefineFunction.identifier->node.Identifier.symbol->name, "setup") != 0)
-			children = n->node.DefineFunction.parameters;
+			children = n->children->chain; /* skip the identifier */
 		else if(n->tag == DefineTask)
-			children = n->node.DefineTask.parameters;
+			children = n->children->chain; /* skip the identifier */
 		else if(n->tag == Identifier)
 			n->node.Identifier.symbol->used++;
 
