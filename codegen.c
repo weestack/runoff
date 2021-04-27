@@ -1,16 +1,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include "symbol.h"
-#include "ast.h"
+#include "data.h"
 #include "auxiliary.h"
-#include "phases.h"
-
-
-/* Tænker at hvis codegen returnere en stor streng fra heapen
-	lidt i stil med prettyprint, så er det smart, for så kan vi
-	selv bestemme om main() i runoff.c skal printe eller putte
-	over i en fil eller hvad vi nu vil gøre med strengen. */
 
 char *processBlock(AstNode *, char *, int);
 char *getBuiltInTypeLiteral(int);

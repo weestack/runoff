@@ -1,8 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "symbol.h"
-#include "ast.h"
+#include "data.h"
 
 extern int yylineno; /* global variable from flex */
 

@@ -2,9 +2,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <errno.h>
-#include "parser.h"
-#include "symbol.h"
-#include "ast.h"
+#include "data.h"
 #include "phases.h"
 #include "auxiliary.h"
 

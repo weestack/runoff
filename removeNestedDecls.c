@@ -1,14 +1,50 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "symbol.h"
-#include "ast.h"
-#include "phases.h"
+#include "data.h"
 
 #define HANDLE_CHILDREN(tag, field) (pushed = append_node(pushed, handleChildren(node->node.tag.field, toplevel)))
 #define REPLACE_SUBTREE(tag, subtree, toplevel) (tree->node.tag.subtree = handleList(tree->node.tag.subtree, toplevel))
 
-static AstNode *handleNode(AstNode *node, int toplevel, int wrap);
+static AstNode *handleNode(AstNode *, int, int);
+static AstNode *handleList(AstNode *, int);
+static AstNode *handleChildren(AstNode *, int);
+
+/* This function changes replaces blocks with fixed blocks. Should include a case for each node that defines a new scope/block */
+void removeNestedDecls(AstNode *tree){
+	switch(tree->tag){
+	case Prog:
+		REPLACE_SUBTREE(Prog, toplevels, 1);
+		break;
+	case DefineFunction:
+		REPLACE_SUBTREE(DefineFunction, statements, 0);
+		break;
+	case DefineTask:
+		REPLACE_SUBTREE(DefineTask, statements, 0);
+		break;
+	case While:
+		REPLACE_SUBTREE(While, statements, 0);
+		break;
+	case SwitchCase:
+		REPLACE_SUBTREE(SwitchCase, statements, 0);
+		break;
+	case If:
+		REPLACE_SUBTREE(If, statements, 0);
+		REPLACE_SUBTREE(If, elsePart, 0);
+		break;
+	case ElseIf:
+		REPLACE_SUBTREE(ElseIf, statements, 0);
+		REPLACE_SUBTREE(ElseIf, elsePart, 0);
+		break;
+	case Else:
+		REPLACE_SUBTREE(Else, statements, 0);
+		break;
+	case ReceiveCase:
+		REPLACE_SUBTREE(ReceiveCase, statements, 0);
+		break;
+	}
+}
+
 
 /* This function loops over each child in the children list, and if it is
    a variable declaration, it creates a new declaration and changes the old
@@ -146,40 +182,4 @@ static AstNode *handleList(AstNode *list, int toplevel){
 		result = append_node(result, tmp);
 	}
 	return result;
-}
-
-
-/* This function changes replaces blocks with fixed blocks. Should include a case for each node that defines a new scope/block */
-void removeNestedDecls(AstNode *tree){
-	switch(tree->tag){
-	case Prog:
-		REPLACE_SUBTREE(Prog, toplevels, 1);
-		break;
-	case DefineFunction:
-		REPLACE_SUBTREE(DefineFunction, statements, 0);
-		break;
-	case DefineTask:
-		REPLACE_SUBTREE(DefineTask, statements, 0);
-		break;
-	case While:
-		REPLACE_SUBTREE(While, statements, 0);
-		break;
-	case SwitchCase:
-		REPLACE_SUBTREE(SwitchCase, statements, 0);
-		break;
-	case If:
-		REPLACE_SUBTREE(If, statements, 0);
-		REPLACE_SUBTREE(If, elsePart, 0);
-		break;
-	case ElseIf:
-		REPLACE_SUBTREE(ElseIf, statements, 0);
-		REPLACE_SUBTREE(ElseIf, elsePart, 0);
-		break;
-	case Else:
-		REPLACE_SUBTREE(Else, statements, 0);
-		break;
-	case ReceiveCase:
-		REPLACE_SUBTREE(ReceiveCase, statements, 0);
-		break;
-	}
 }

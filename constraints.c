@@ -1,10 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "symbol.h"
-#include "ast.h"
+#include "data.h"
 #include "auxiliary.h"
-#include "phases.h"
 
 static int errors = 0;
 static void checkTreeHasSetup(AstNode *tree);

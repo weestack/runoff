@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <string.h>
-#include "symbol.h"
-#include "ast.h"
+#include "data.h"
 #include "auxiliary.h"
 
 static int errors;

@@ -1,8 +1,6 @@
 %{
 	#include <stdio.h>
-	#include "symbol.h"
-	#include "ast.h"
-	#include "phases.h"
+	#include "data.h"
 	#include "auxiliary.h"
 
 	extern int yylineno;

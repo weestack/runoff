@@ -1,15 +1,15 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include "symbol.h"
-#include "ast.h"
+#include "data.h"
 #include "auxiliary.h"
 
 static SymbolTable* symbolTable;
 static SymbolTable* current;
 
-Symbol *enterSymbol(char *, Type*);
-void insertBuiltinFunctions(void);
+static Symbol *enterSymbol(char *, Type*);
+static Symbol *declaredLocally(char *);
+static void insertBuiltinFunctions(void);
 
 int insertSymbol(AstNode *node, Type *type) {
 	Symbol *symbol;
@@ -71,7 +71,7 @@ Symbol *retrieveSymbolFromTable(AstNode *node, SymbolTable *table){
 	return NULL;
 }
 
-Symbol *declaredLocally(char *name){
+static Symbol *declaredLocally(char *name){
 	Symbol *tmp;
 	for(tmp = current->symbols; tmp != NULL; tmp = tmp->next){
 		if(strcmp(tmp->name, name) == 0)

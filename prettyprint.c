@@ -1,8 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "symbol.h"
-#include "ast.h"
-#include "phases.h"
+#include "data.h"
 #include "auxiliary.h"
 
 static char *prettyprintlist(AstNode *node, char *sep, int end);
