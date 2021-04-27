@@ -30,7 +30,20 @@ static void check(AstNode *tree){
 	AstNode *n;
 	for(n = tree; n != NULL; n = n->chain){
 		if(n->tag == Identifier && n->node.Identifier.symbol->used == 0){
-			eprintf(n->linenum, "%s is unused\n", n->node.Identifier.symbol->name);
+			char *kind;
+			Symbol *sym = n->node.Identifier.symbol;
+			switch(sym->type->tag){
+			case FunctionTypeTag:
+				kind = "function";
+				break;
+			case TaskTypeTag:
+				kind = "task";
+				break;
+			default:
+				kind = "variable";
+				break;
+			}
+			eprintf(n->linenum, "Unused %s: %s\n", kind, sym->name);
 			errors++;
 		}
 
