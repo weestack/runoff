@@ -5,7 +5,6 @@
 #include "auxiliary.h"
 
 char *processBlock(AstNode *, char *, int);
-char *getHelperFunctionsCode(void);
 char *buildArrayDeclIndices(AstNode *);
 char *generateParametersFromStructFields(AstNode *);
 char *generatePassByValue(AstNode *);
@@ -56,7 +55,7 @@ char *codegen(AstNode *tree) {
 	switch (tree->tag) {
 		case Prog:
 			/* Special case include helper functions! */
-			preCodeGen = smprintf("%s\n#define numberOfSpawns %d\nTaskHandle_t handlers[numberOfSpawns];\n/*End of preCodeGen*/\n", getHelperFunctionsCode(), tree->node.Prog.spawnCount);
+			preCodeGen = smprintf("%s\n#define numberOfSpawns %d\nTaskHandle_t handlers[numberOfSpawns];\n/*End of preCodeGen*/\n", readFile("arduino_helpers.ino"), tree->node.Prog.spawnCount);
 			params = processBlock(tree->node.Prog.toplevels, "\n", 0);
 			result = smprintf("%s\nQueueHandle_t Mailbox[%d];\n%s\n", preCodeGen, tree->node.Prog.spawnCount,params);
 			break;
@@ -357,34 +356,6 @@ char *processBlock(AstNode *node, char *sep, int end){
 		free(prev);
 	}
 	return result;
-}
-
-char *getHelperFunctionsCode(void) {
-	FILE *fp;
-	long length = 0;
-	char *code;
-
-	/* opening file for reading */
-	fp = fopen("arduino_helpers.ino" , "r");
-
-	if(fp == NULL) {
-			return NULL;
-	}
-
-
-	if (fp) {
-	  fseek (fp, 0, SEEK_END);
-	  length = ftell(fp);
-	  fseek(fp, 0, SEEK_SET);
-	  code = malloc(length+1);
-	  if (code){
-	    fread(code, 1, length, fp);
-	  }
-	  code[length] = '\0';
-	  fclose (fp);
-	}
-
-	return code;
 }
 
 char *generateParametersFromStructFields(AstNode *tree){

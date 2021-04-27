@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include <errno.h>
 #include "data.h"
 #include "phases.h"
 #include "auxiliary.h"
@@ -136,32 +135,3 @@ char *indent(char *code){
 	return readFile(tmpname);
 }
 
-void writeFile(char *buf, char *filename){
-	FILE *fp = fopen(filename, "w");
-	if (fp != NULL){
-		fputs(buf, fp);
-		fflush(fp);
-		fclose(fp);
-	}
-	else
-		printf("Could not open file %s: %s\n", filename, strerror(errno));
-}
-
-char *readFile(char *filename){
-	FILE *fp;
-	char *buf;
-	long length;
-	fp = fopen(filename, "r");
-	if(fp == NULL)
-		return NULL;
-	fseek(fp, 0, SEEK_END);
-	length = ftell(fp);
-	fseek(fp, 0, SEEK_SET);
-	buf = malloc(length+1);
-	if(buf == NULL)
-		return NULL;
-	fread(buf, 1, length, fp);
-	buf[length] = '\0';
-	fclose(fp);
-	return buf;
-}
