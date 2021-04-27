@@ -19,6 +19,3 @@ function add(int a, int b) -> int {
 function hej() -> void {
 	int i = add(2,2);
 }
-
-function setup() -> void {
-}

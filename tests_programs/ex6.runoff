@@ -3,19 +3,23 @@ function test() -> void {
 	uint16 b;
 	uint32 c;
 	uint64 d;
-	
+
 	int8 e;
 	int16 f;
 	int32 g;
 	int64 h;
 
 	float i;
-	
+
 	int j;
 
 	msg m;
-	
+
 	int[15] arr;
+}
+
+messages {
+	a{int a, float b};
 }
 
 function setup() -> void {

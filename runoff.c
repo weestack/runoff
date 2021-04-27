@@ -96,7 +96,7 @@ main(int argc, char *argv[])
 
 	/* generate the code! */
 	code = codegen(tree);
-	
+
 	if(indentflag)
 		code = indent(code);
 
@@ -104,7 +104,7 @@ main(int argc, char *argv[])
 		writeFile(code, outfile);
 	else
 		printf("%s\n", code);
-	
+
 	if(verifyflag)
 		verifycode(code);
 

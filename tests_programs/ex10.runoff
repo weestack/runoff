@@ -5,9 +5,6 @@ pinid ButtonPin = 8P;
 messages {
 	ButtonPressed;
 	ButtonReleased{int i, float b};
-	patter;
-	lort;
-	patterPlusLortHMMM;
 }
 
 task ledhandler() {

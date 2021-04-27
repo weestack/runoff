@@ -2,9 +2,9 @@ pinid LED1Pin = 1P;
 pinid LED2Pin = 2P;
 pinid LED3Pin = 15P;
 
-pinid LED4Pin = 1P;
-pinid LED5Pin = 2P;
-pinid LED6Pin = 15P;
+pinid LED4Pin = 3P;
+pinid LED5Pin = 4P;
+pinid LED6Pin = 16P;
 
 messages {
 	Button1Click;
@@ -13,7 +13,6 @@ messages {
 }
 
 function setPartyLight(bool state) -> void {
-
 	if(state) {
 		turnOn(LED3Pin);
 	} else {
@@ -35,7 +34,7 @@ task A() {
 	j = 123;
 	i >= j;
 	i + j;
-	
+
 }
 
 task B(taskid other) {
