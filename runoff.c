@@ -91,6 +91,10 @@ main(int argc, char *argv[])
 	if(errors != 0)
 		return errors;
 
+	errors += checkused(tree);
+	if(errors != 0)
+		return errors;
+
 	/* some code transformations that cannot fail */
 	removeNestedDecls(tree);
 

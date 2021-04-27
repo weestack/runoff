@@ -13,6 +13,9 @@ int typeCheck(AstNode *tree);
 /* A phase for other contextual constraints defined in constraints.c */
 int contextualConstraintsCheck(AstNode *tree);
 
+/* Check that all vars + functions are used */
+int checkused(AstNode *tree);
+
 /* Make sure the tree contains no variable declarations inside expressions.
    defined in removeNestedDecls.c */
 void removeNestedDecls(AstNode *tree);

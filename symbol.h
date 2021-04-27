@@ -23,6 +23,7 @@ struct Symbol {
 	Type *type;
 	int globalvar;
 	int initialized;
+	int used;
 	int linenum; /* the line number where the symbol first appeared */
 	Symbol* next;
 	/* This is where the symbol is first found. */

@@ -18,7 +18,7 @@ messages {
 }
 
 function print(int64 wack) -> void {
-
+	wack = wack;
 }
 
 function hehe(struct test s) -> int {
