@@ -248,8 +248,6 @@ Type *typeOf(AstNode *node){
 	return NULL;
 }
 
-
-
 int buildinTypeMatch(Type *a, int b){
 	Type *bType = mkBuiltinTypeDescriptor(b);
 	if(a == NULL)
