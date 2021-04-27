@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <string.h>
 #include "symbol.h"
 #include "ast.h"
 #include "auxiliary.h"
@@ -14,6 +15,10 @@ static void mark(AstNode *tree){
 			children = n->node.VarDecl.expression;
 		else if(n->tag == Parameter)
 			children = NULL;
+		else if(n->tag == DefineFunction && strcmp(n->node.DefineFunction.identifier->node.Identifier.symbol->name, "setup") != 0)
+			children = n->node.DefineFunction.parameters;
+		else if(n->tag == DefineTask)
+			children = n->node.DefineTask.parameters;
 		else if(n->tag == Identifier)
 			n->node.Identifier.symbol->used++;
 
