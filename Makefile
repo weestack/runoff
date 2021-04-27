@@ -2,7 +2,7 @@
 SOURCES=lexer.c parser.c runoff.c ast.c prettyprint.c symbol.c typechecker.c buildsymboltable.c auxiliary.c codegen.c removeNestedDecls.c constraints.c checkused.c
 
 # What headers do we have?
-HEADERS=phases.h data.h
+HEADERS=phases.h data.h auxiliary.h
 
 # The objects are just the sources with .c swapped out for .o
 OBJECTS=$(SOURCES:.c=.o)
