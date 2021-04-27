@@ -42,8 +42,8 @@ int contextualConstraintsCheck(AstNode *tree){
 		checkNotGlobalVar(tree->node.Assignment.location);
 		break;
 	case UnaryOperation:
-		if(tree->node.UnaryOperation.operator == edecrement
-			|| tree->node.UnaryOperation.operator == eincrement)
+		if(tree->node.UnaryOperation.operator == OpDecrement
+			|| tree->node.UnaryOperation.operator == OpIncrement)
 			checkNotGlobalVar(tree->node.UnaryOperation.expression);
 		break;
 	case VariableLocation:

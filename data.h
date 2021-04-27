@@ -49,29 +49,29 @@ enum NodeTypes {
 
 /* This enum has an element for each of the binary and unary operators
    in the language. */
-enum operators {
-	elogical_and,
-	elogical_or,
-	egreater_equal,
-	esmaller_equal,
-	eequal,
-	enot_equal,
-	edecrement,
-	eincrement,
-	esmaller_than,
-	ebigger_than,
-	emod,
-	eplus,
-	eminus,
-	etimes,
-	edivid,
-	elogical_not,
-	ebit_and,
-	ebit_or,
-	eright_shift,
-	eleft_shift,
-	ebit_xor,
-	ebit_not
+enum Operators {
+	OpLogAnd,
+	OpLogOr,
+	OpGreaterEqual,
+	OpSmallerEqual,
+	OpEqual,
+	OpNotEqual,
+	OpIncrement,
+	OpDecrement,
+	OpSmallerThan,
+	OpGreaterThan,
+	OpMod,
+	OpPlus,
+	OpMinus,
+	OpTimes,
+	OpDivide,
+	OpLogNot,
+	OpBitAnd,
+	OpBitOr,
+	OpShiftRight,
+	OpShiftLeft,
+	OpBitXor,
+	OpBitNot
 };
 
 /* Enum used to tell if a unary operator is to be printed in pre- or postfix form */

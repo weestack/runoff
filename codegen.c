@@ -6,7 +6,6 @@
 
 char *processBlock(AstNode *, char *, int);
 char *getBuiltInTypeLiteral(int);
-char *getBinaryOperator(int );
 char *getHelperFunctionsCode(void);
 char *buildArrayDeclIndices(AstNode *);
 char *generateParametersFromStructFields(AstNode *);
@@ -236,9 +235,9 @@ char *codegen(AstNode *tree) {
 		case UnaryOperation:
 			expr = codegen(tree->node.UnaryOperation.expression);
 			if (tree->node.UnaryOperation.fix == postfix) {
-				result= smprintf("%s%s", expr, getBinaryOperator(tree->node.UnaryOperation.operator));
+				result= smprintf("%s%s", expr, operatorNames[tree->node.UnaryOperation.operator]);
 			}else {
-				result= smprintf("%s%s", getBinaryOperator(tree->node.UnaryOperation.operator), expr);
+				result= smprintf("%s%s", operatorNames[tree->node.UnaryOperation.operator], expr);
 			}
 			break;
 		case Return:
@@ -270,7 +269,7 @@ char *codegen(AstNode *tree) {
 			expr = codegen(tree->node.BinaryOperation.expression_left);
 			type = codegen(tree->node.BinaryOperation.expression_right);
 			result = smprintf("(%s %s %s)",
-			expr,getBinaryOperator(tree->node.BinaryOperation.operator),type);
+			expr, operatorNames[tree->node.BinaryOperation.operator],type);
 			break;
 		case IntLiteral:
 			result = smprintf("%d", tree->node.IntLiteral.value);
@@ -302,80 +301,6 @@ char *codegen(AstNode *tree) {
 
 	return result;
 }
-
-char *getBinaryOperator(int operator) {
-	switch (operator) {
-		case elogical_and:
-			return "&&";
-			break;
-		case elogical_or:
-			return "||";
-			break;
-		case egreater_equal:
-			return ">=";
-			break;
-		case esmaller_equal:
-			return "<=";
-			break;
-		case eequal:
-			return "==";
-			break;
-		case enot_equal:
-			return "!=";
-			break;
-		case edecrement:
-			return "--";
-			break;
-		case eincrement:
-			return "++";
-			break;
-		case esmaller_than:
-			return "<";
-			break;
-		case ebigger_than:
-			return ">";
-			break;
-		case emod:
-			return "%";
-			break;
-		case eplus:
-			return "+";
-			break;
-		case eminus:
-			return "-";
-			break;
-		case etimes:
-			return "*";
-			break;
-		case edivid:
-			return "/";
-			break;
-		case elogical_not:
-			return "!";
-			break;
-		case ebit_and:
-			return "&";
-			break;
-		case ebit_or:
-			return "|";
-			break;
-		case eright_shift:
-			return ">";
-			break;
-		case eleft_shift:
-			return "<";
-			break;
-		case ebit_xor:
-			return "^";
-			break;
-		case ebit_not:
-			return "~";
-			break;
-		default:
-			return "unknown_op";
-	}
-}
-
 
 char *buildArrayDeclIndices(AstNode *node) {
 	char *buffer = smprintf("[%s]", codegen(node->node.ArrayType.int_literal));

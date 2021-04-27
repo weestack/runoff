@@ -378,14 +378,14 @@ Type *binaryOperatorType(AstNode *node){
 	char *other_error = NULL;
 
 	switch(node->node.BinaryOperation.operator){
-	case elogical_and: /*Fall through*/
-	case elogical_or:
+	case OpLogAnd: /*Fall through*/
+	case OpLogOr:
 		expected_left = expected_right = return_type = builtintype_bool;
 		break;
-	case esmaller_equal: /*Fall through*/
-	case egreater_equal: /*Fall through*/
-	case esmaller_than:  /*Fall through*/
-	case ebigger_than:
+	case OpSmallerEqual: /*Fall through*/
+	case OpGreaterEqual: /*Fall through*/
+	case OpSmallerThan:  /*Fall through*/
+	case OpGreaterThan:
 		return_type = builtintype_bool;
 		if(!numericType(left)){
 			other_error = "Expected numeric types";
@@ -394,8 +394,8 @@ Type *binaryOperatorType(AstNode *node){
 		expected_left = left->tags.typeBuiltin.builtinType;
 		expected_right = expected_left;
 		break;
-	case eequal: /*Fall through*/
-	case enot_equal:
+	case OpEqual: /*Fall through*/
+	case OpNotEqual:
 		return_type = builtintype_bool;
 		if(left == NULL || left->tag != BuiltinTypeTag){
 			other_error = "Expected builtin types";
@@ -404,10 +404,10 @@ Type *binaryOperatorType(AstNode *node){
 		expected_left = left->tags.typeBuiltin.builtinType;
 		expected_right = expected_left;
 		break;
-	case eplus: /*Fall through*/
-	case eminus:/*Fall through*/
-	case etimes:/*Fall through*/
-	case edivid:
+	case OpPlus: /*Fall through*/
+	case OpMinus:/*Fall through*/
+	case OpTimes:/*Fall through*/
+	case OpDivide:
 		if(!numericType(left)){
 			other_error = "Expected numeric types";
 			break;
@@ -416,12 +416,12 @@ Type *binaryOperatorType(AstNode *node){
 		expected_right = expected_left;
 		return_type = expected_right;
 		break;
-	case emod:		 /*Fall through*/
-	case ebit_and:	 /*Fall through*/
-	case ebit_or:	  /*Fall through*/
-	case eright_shift: /*Fall through*/
-	case eleft_shift:  /*Fall through*/
-	case ebit_xor:
+	case OpMod:		 /*Fall through*/
+	case OpBitAnd:	 /*Fall through*/
+	case OpBitOr:	  /*Fall through*/
+	case OpShiftRight: /*Fall through*/
+	case OpShiftLeft:  /*Fall through*/
+	case OpBitXor:
 		if(!buildinTypeMatchInt(left)){
 			other_error = "Expected integer types";
 			break;
@@ -474,13 +474,13 @@ Type *unaryOperatorType(AstNode *node){
 	char *otherError = NULL;
 	int expected = 0, returnType = 0;
 	switch (node->node.UnaryOperation.operator){
-	case elogical_not:
+	case OpLogNot:
 		expected = builtintype_bool;
 		returnType = expected;
 		break;
-	case edecrement: /*Fall through*/
-	case eincrement: /*Fall through*/
-	case ebit_not:
+	case OpDecrement: /*Fall through*/
+	case OpIncrement: /*Fall through*/
+	case OpBitNot:
 		if(!buildinTypeMatchInt(operandType)){
 			otherError = "Expected integer type";
 			break;
