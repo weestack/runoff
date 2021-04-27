@@ -182,8 +182,8 @@ void typeCheckNode(AstNode *node){
 		break;
 	}
 
-	children = getChildren(node);
-	for(; children!=NULL; children=children->next)
+	children = node->children;
+	for(; children!=NULL; children=children->chain)
 		typeCheckNode(children);
 }
 

@@ -299,7 +299,9 @@ struct AstNode {
 		ExprStmtNode ExprStmt;
 	} node;
 	int linenum;
-	AstNode *next;
+	AstNode *next; /* The next element in the list */
+	AstNode *chain; /* The next element in the chain of children */
+	AstNode *children; /* The first child of this node */
 };
 
 AstNode *mkProgNode(AstNode *toplevels);
@@ -346,7 +348,6 @@ AstNode *mkExprStmtNode(AstNode *expression);
 AstNode *append_node(AstNode* siblingA, AstNode* siblingB);
 AstNode *concat_node(AstNode *siblingA, AstNode* siblingB);
 int nodeLength(AstNode *);
-AstNode *getChildren(AstNode *node);
 
 enum NodeTypes {
 	Prog,

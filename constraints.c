@@ -28,7 +28,7 @@ static AstNode *getDefaultValue(Type *type);
    7) All spawns appear as a statement directly in the setup function
  */
 int contextualConstraintsCheck(AstNode *tree){
-	AstNode *tmp;
+	AstNode *children;
 	switch(tree->tag){
 	case Prog:
 		checkTreeHasSetup(tree);
@@ -55,158 +55,9 @@ int contextualConstraintsCheck(AstNode *tree){
 		return errors;
 	}
 
-	/* we cannot use getChildren here, since cannot work with a copy
-	   of the tree, as it is modified later. */
-#define CHECKCHILD(tag, field) for(tmp=tree->node.tag.field; tmp!=NULL; tmp=tmp->next) {contextualConstraintsCheck(tmp);}
-
-	switch(tree->tag){
-	case Prog:
-		CHECKCHILD(Prog, toplevels);
-		break;
-	case DefineFunction:
-		CHECKCHILD(DefineFunction, identifier);
-		CHECKCHILD(DefineFunction, parameters);
-		CHECKCHILD(DefineFunction, type);
-		CHECKCHILD(DefineFunction, statements);
-		break;
-	case DefineTask:
-		CHECKCHILD(DefineTask, identifier);
-		CHECKCHILD(DefineTask, parameters);
-		CHECKCHILD(DefineTask, statements);
-		break;
-	case DefineStruct:
-		CHECKCHILD(DefineStruct, identifier);
-		CHECKCHILD(DefineStruct, fields);
-		break;
-	case DefineMessage:
-		CHECKCHILD(DefineMessage, messagesIdentifiers);
-		break;
-	case IncludeRunoffFile:
-		CHECKCHILD(IncludeRunoffFile, identifier);
-		break;
-	case MessageIdentifier:
-		CHECKCHILD(MessageIdentifier, identifier);
-		CHECKCHILD(MessageIdentifier, parameters);
-		break;
-	case StructMember:
-		CHECKCHILD(StructMember, type);
-		CHECKCHILD(StructMember, identifier);
-		break;
-	case Parameter:
-		CHECKCHILD(Parameter, type);
-		CHECKCHILD(Parameter, identifier);
-		break;
-	case BuiltinType:
-		break;
-	case StructType:
-		CHECKCHILD(StructType, identifier);
-		break;
-	case ArrayType:
-		CHECKCHILD(ArrayType, type);
-		CHECKCHILD(ArrayType, int_literal);
-		break;
-	case While:
-		CHECKCHILD(While, expression);
-		CHECKCHILD(While, statements);
-		break;
-	case For:
-		CHECKCHILD(For, expressionInit);
-		CHECKCHILD(For, expressionTest);
-		CHECKCHILD(For, expressionUpdate);
-		CHECKCHILD(For, statements);
-		break;
-	case Switch:
-		CHECKCHILD(Switch, expression);
-		CHECKCHILD(Switch, cases);
-		break;
-	case SwitchCase:
-		CHECKCHILD(SwitchCase, literal);
-		CHECKCHILD(SwitchCase, statements);
-		break;
-	case If:
-		CHECKCHILD(If, expression);
-		CHECKCHILD(If, statements);
-		CHECKCHILD(If, elsePart);
-		break;
-	case ElseIf:
-		CHECKCHILD(ElseIf, expression);
-		CHECKCHILD(ElseIf, statements);
-		CHECKCHILD(ElseIf, elsePart);
-		break;
-	case Else:
-		CHECKCHILD(Else, statements);
-		break;
-	case Receive:
-		CHECKCHILD(Receive, cases);
-		break;
-	case ReceiveCase:
-		CHECKCHILD(ReceiveCase, messageName);
-		CHECKCHILD(ReceiveCase, dataNames);
-		CHECKCHILD(ReceiveCase, statements);
-		break;
-	case VarDecl:
-		CHECKCHILD(VarDecl, type);
-		CHECKCHILD(VarDecl, identifier);
-		CHECKCHILD(VarDecl, expression);
-		break;
-	case BinaryOperation:
-		CHECKCHILD(BinaryOperation, expression_left);
-		CHECKCHILD(BinaryOperation, expression_right);
-		break;
-	case VariableLocation:
-		CHECKCHILD(VariableLocation, identifier);
-		break;
-	case StructLocation:
-		CHECKCHILD(StructLocation, identifier);
-		CHECKCHILD(StructLocation, location);
-		break;
-	case ArrayLocation:
-		CHECKCHILD(ArrayLocation, identifier);
-		CHECKCHILD(ArrayLocation, indicies);
-		break;
-	case UnaryOperation:
-		CHECKCHILD(UnaryOperation, expression);
-		break;
-	case FunctionCall:
-		CHECKCHILD(FunctionCall, identifier);
-		CHECKCHILD(FunctionCall, arguments);
-		break;
-	case Assignment:
-		CHECKCHILD(Assignment, location);
-		CHECKCHILD(Assignment, expression);
-		break;
-	case TernaryOperator:
-		CHECKCHILD(TernaryOperator, expressionTest);
-		CHECKCHILD(TernaryOperator, expressionTrue);
-		CHECKCHILD(TernaryOperator, expressionFalse);
-		break;
-	case Identifier:
-		break;
-	case IntLiteral:
-		break;
-	case FloatLiteral:
-		break;
-	case BoolLiteral:
-		break;
-	case MessageLiteral:
-		CHECKCHILD(MessageLiteral, identifier);
-		CHECKCHILD(MessageLiteral, arguments);
-		break;
-	case Return:
-		CHECKCHILD(Return, expression);
-		break;
-	case Spawn:
-		CHECKCHILD(Spawn, identifier);
-		CHECKCHILD(Spawn, arguments);
-		break;
-	case Send:
-		CHECKCHILD(Send, message);
-		CHECKCHILD(Send, receiver);
-		break;
-	case ExprStmt:
-		CHECKCHILD(ExprStmt, expression);
-		break;
-	}
+	children = tree->children;
+	for(; children != NULL; children = children->chain)
+		contextualConstraintsCheck(children);
 	return errors;
 }
 
@@ -373,11 +224,11 @@ static AstNode *getDefaultValue(Type *type){
 static int countSpawns(AstNode *nodes, int recurse){
 	AstNode *n;
 	int count = 0;
-	for(n = nodes; n != NULL; n = n->next){
+	for(n = nodes; n != NULL; n = n->chain){
 		if(n->tag == Spawn)
 			count++;
 		if(recurse || n->tag == ExprStmt || n->tag == VarDecl || n->tag == Assignment)
-			count += countSpawns(getChildren(n), recurse);
+			count += countSpawns(n->children, recurse);
 	}
 	return count;
 }

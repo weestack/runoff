@@ -667,12 +667,12 @@ char *mkStructsFromSpawns(AstNode *tree){
 				id, id, child->node.Spawn.taskId, child->node.Spawn.taskId);
 			free(id);
 		} else {
-			AstNode *children = getChildren(child);
+			AstNode *children = child->children;
 			old = result;
 			result = smprintf("%s %s", result, mkStructsFromSpawns(children));
 			/* Renember to free the children! */
 		}
-		child=child->next;
+		child=child->chain;
 		free(old);
 	}
 	return result;

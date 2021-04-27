@@ -6,7 +6,7 @@
 #include "auxiliary.h"
 
 Type *processNode(AstNode*);
-void processNodes(AstNode *);
+void processNodes(AstNode *, int);
 void undeclaredError(AstNode *);
 void updateSymbolId(AstNode *, Symbol *);
 void handleStructLocation(AstNode *);
@@ -26,6 +26,7 @@ int buildSymbolTable(AstNode *tree){
 	/* this next is mostly usefull for debugging and is thus disabled
 	checkIdentifierTypes(tree);
 	*/
+
 	if(errors)
 		printf("BuildSymbolTable failed with %d errors\n", errors);
 
@@ -47,8 +48,8 @@ void checkIdentifierTypes(AstNode *tree){
 			*/
 		}
 	} else {
-		AstNode *children = getChildren(tree);
-		for(;children!=NULL;children=children->next){
+		AstNode *children = tree->children;
+		for(;children!=NULL;children=children->chain){
 			checkIdentifierTypes(children);
 		}
 	}
@@ -58,7 +59,6 @@ void checkIdentifierTypes(AstNode *tree){
 Type *processNode(AstNode *node){
 	int scopeopened = 0;
 	Symbol *sym;
-	AstNode *child;
 	Type *type = NULL; /* the return value of this function */
 	Type *vartype;
 
@@ -120,21 +120,21 @@ Type *processNode(AstNode *node){
 			handleReceiveCase(node);
 		else{
 			openScope();
-			processNodes(node->node.ReceiveCase.statements);
+			processNodes(node->node.ReceiveCase.statements, 0);
 			closeScope();
 		}
 		return NULL;
 	case If:
 		openScope();
-		child = append_node(node->node.If.expression, node->node.If.statements);
-		processNodes(child);
+		processNodes(node->node.If.expression, 0);
+		processNodes(node->node.If.statements, 0);
 		closeScope();
 		processNode(node->node.If.elsePart);
 		return NULL; /* special case */
 	case ElseIf:
 	 	openScope();
-		child = append_node(node->node.ElseIf.expression, node->node.ElseIf.statements);
-		processNodes(child);
+		processNodes(node->node.ElseIf.expression, 0);
+		processNodes(node->node.ElseIf.statements, 0);
 		closeScope();
 		processNode(node->node.ElseIf.elsePart);
 		return NULL; /* special case */
@@ -201,8 +201,7 @@ Type *processNode(AstNode *node){
 		return NULL;
 	}
 
-	child = getChildren(node);
-	processNodes(child);
+	processNodes(node->children, 1);
 
 	if(scopeopened)
 		closeScope();
@@ -210,10 +209,15 @@ Type *processNode(AstNode *node){
 	return type;
 }
 
-void processNodes(AstNode *nodes){
-	AstNode *child;
-	for(child = nodes; child != NULL; child = child->next)
+void processNodes(AstNode *nodes, int usechain){
+	AstNode *child = nodes;
+	while(child != NULL){
 		processNode(child);
+		if(usechain)
+			child = child->chain;
+		else
+			child = child->next;
+	}
 }
 
 void undeclaredError(AstNode *node){
@@ -246,7 +250,7 @@ void handleStructLocation(AstNode *node){
 		case ArrayLocation:
 			identifier = n->node.ArrayLocation.identifier;
 			next = NULL;
-			processNodes(n->node.ArrayLocation.indicies);
+			processNodes(n->node.ArrayLocation.indicies, 0);
 			break;
 		}
 
@@ -268,7 +272,6 @@ void handleStructLocation(AstNode *node){
 }
 
 void handleDefineFunction(AstNode *function){
-	AstNode *Children;
 	AstNode *tmp;
 	Type **para_types;
 	Symbol *sym;
@@ -279,8 +282,8 @@ void handleDefineFunction(AstNode *function){
 	currentfunc = sym;
 
 	openScope();
-	Children = concat_node(function->node.DefineFunction.parameters, function->node.DefineFunction.statements);
-	processNodes(Children);
+	processNodes(function->node.DefineFunction.parameters, 0);
+	processNodes(function->node.DefineFunction.statements, 0);
 
 	parameter_length = nodeLength(function->node.DefineFunction.parameters);
 
@@ -299,7 +302,6 @@ void handleDefineFunction(AstNode *function){
 
 void handleDefineTask(AstNode *function){
 	/* Copy pasted from handleDefineFunction. */
-	AstNode *Children;
 	AstNode *tmp;
 	Type **para_types;
 	Type *t;
@@ -309,8 +311,8 @@ void handleDefineTask(AstNode *function){
 	errors += insertSymbol(function->node.DefineTask.identifier, NULL);
 
 	openScope();
-	Children = concat_node(function->node.DefineTask.parameters, function->node.DefineTask.statements);
-	processNodes(Children);
+	processNodes(function->node.DefineTask.parameters, 0);
+	processNodes(function->node.DefineTask.statements, 0);
 
 	parameter_length = nodeLength(function->node.DefineTask.parameters);
 
@@ -340,7 +342,7 @@ void handleMessageIdentifier(AstNode *function){
 	errors += insertSymbol(function->node.MessageIdentifier.identifier, NULL);
 
 	openScope();
-	processNodes(function->node.MessageIdentifier.parameters);
+	processNodes(function->node.MessageIdentifier.parameters, 0);
 
 	parameter_length = nodeLength(function->node.MessageIdentifier.parameters);
 
@@ -366,6 +368,7 @@ void handleReceiveCase(AstNode *node){
 	Type **params = NULL;
 	int paramnr = 0;
 	int paramcount = 0;
+
 	if(sym == NULL){
 		undeclaredError(node->node.ReceiveCase.messageName);
 		return;
@@ -391,7 +394,7 @@ void handleReceiveCase(AstNode *node){
 		errors++;
 		eprintf(node->linenum,"Arity of message in receive case does not match message prototype for %s (should be %d but is %d)\n", sym->name, paramcount, nodeLength(node->node.ReceiveCase.dataNames));
 	}
-	processNodes(node->node.ReceiveCase.statements);
+	processNodes(node->node.ReceiveCase.statements, 0);
 	closeScope();
 }
 
