@@ -185,7 +185,7 @@ Type *processNode(AstNode *node){
 			updateSymbolId(node->node.MessageLiteral.identifier, sym);
 		break;
 	case Return:
-		*node->node.Return.functionsym = currentfunc;
+		node->node.Return.functionsym = currentfunc;
 		break;
 	case Spawn:
 		sym = retrieveSymbol(node->node.Spawn.identifier);

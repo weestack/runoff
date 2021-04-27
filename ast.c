@@ -317,8 +317,7 @@ AstNode *mkMessageLiteralNode(AstNode *identifier, AstNode *arguments){
 AstNode *mkReturnNode(AstNode *expression){
 	AstNode *node = mkNode(Return, expression);
 	SETCHILD(Return,expression);
-	node->node.Return.functionsym = malloc(sizeof(Symbol*));
-	*node->node.Return.functionsym = NULL;
+	node->node.Return.functionsym = NULL;
 	return node;
 }
 

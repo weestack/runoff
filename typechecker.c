@@ -123,7 +123,7 @@ void typeCheckNode(AstNode *node){
 	case Return:
 		typeA = typeOf(node->node.Return.expression);
 		
-		if(*node->node.Return.functionsym == NULL){
+		if(node->node.Return.functionsym == NULL){
 			if(typeA != NULL){
 				errors++;
 				eprintf(node->linenum, "Unexpected expession in return of task\n");
@@ -132,7 +132,7 @@ void typeCheckNode(AstNode *node){
 			break;
 		}
 
-		typeB = (*node->node.Return.functionsym)->type->tags.typeFunction.returnType;
+		typeB = node->node.Return.functionsym->type->tags.typeFunction.returnType;
 
 		if(typeA == NULL && !buildinTypeMatch(typeB, builtintype_void)){
 			char *expected = typeString(typeB);
