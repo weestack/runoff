@@ -75,28 +75,28 @@ enum Operators {
 };
 
 /* Enum used to tell if a unary operator is to be printed in pre- or postfix form */
-enum fixity {
-	prefix,
-	postfix
+enum Fixity {
+	Prefix,
+	Postfix
 };
 
 /* This enum has one element for each type in the language */
-enum builtintypes {
-	builtintype_uint8,
-	builtintype_uint16,
-	builtintype_uint32,
-	builtintype_uint64,
-	builtintype_int8,
-	builtintype_int16,
-	builtintype_int32,
-	builtintype_int64,
-	builtintype_unknownInt, /*used for integer literals*/
-	builtintype_float,
-	builtintype_void,
-	builtintype_bool,
-	builtintype_msg,
-	builtintype_taskid,
-	builtintype_pinid
+enum BuiltinTypes {
+	BuiltinTypeUint8,
+	BuiltinTypeUint16,
+	BuiltinTypeUint32,
+	BuiltinTypeUint64,
+	BuiltinTypeInt8,
+	BuiltinTypeInt16,
+	BuiltinTypeInt32,
+	BuiltinTypeInt64,
+	BuiltinTypeUnknownInt, /*used for integer literals*/
+	BuiltinTypeFloat,
+	BuiltinTypeVoid,
+	BuiltinTypeBool,
+	BuiltinTypeMsg,
+	BuiltinTypeTaskid,
+	BuiltinTypePinid
 };
 
 /* This enum has one element for each category of types, used as

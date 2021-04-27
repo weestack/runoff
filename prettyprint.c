@@ -234,7 +234,7 @@ char *prettyprint(AstNode *node)
 	case UnaryOperation:
 		op = smprintf("%s", operatorNames[node->node.UnaryOperation.operator]);
 		exprA = prettyprint(node->node.UnaryOperation.expression);
-		if(node->node.UnaryOperation.fix == prefix)
+		if(node->node.UnaryOperation.fix == Prefix)
 			result = smprintf("(%s%s)", op, exprA);
 		else
 			result = smprintf("(%s%s)", exprA, op);

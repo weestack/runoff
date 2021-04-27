@@ -30,7 +30,7 @@ void typeCheckNode(AstNode *node){
 	switch(node->tag){
 	case While:
 		typeA = typeOf(node->node.While.expression);
-		if(!buildinTypeMatch(typeA, builtintype_bool))
+		if(!buildinTypeMatch(typeA, BuiltinTypeBool))
 			printTypeFail("While loop expected bool", node->node.While.expression, typeA);
 
 		break;
@@ -39,7 +39,7 @@ void typeCheckNode(AstNode *node){
 			break;
 		}
 		typeA = typeOf(node->node.For.expressionTest);
-		if(!buildinTypeMatch(typeA, builtintype_bool))
+		if(!buildinTypeMatch(typeA, BuiltinTypeBool))
 			printTypeFail("For loop test expected bool", node->node.For.expressionTest, typeA);
 
 		break;
@@ -51,13 +51,13 @@ void typeCheckNode(AstNode *node){
 		break;
 	case If:
 		typeA = typeOf(node->node.If.expression);
-		if(!buildinTypeMatch(typeA, builtintype_bool))
+		if(!buildinTypeMatch(typeA, BuiltinTypeBool))
 			printTypeFail("if statement expected bool", node->node.If.expression, typeA);
 
 		break;
 	case ElseIf:
 		typeA = typeOf(node->node.ElseIf.expression);
-		if(!buildinTypeMatch(typeA, builtintype_bool))
+		if(!buildinTypeMatch(typeA, BuiltinTypeBool))
 			printTypeFail("if statement expected bool", node->node.ElseIf.expression, typeA);
 		break;
 	case VarDecl:
@@ -106,7 +106,7 @@ void typeCheckNode(AstNode *node){
 			free(typeBString);
 			free(errorMessage);
 		}
-		if(!buildinTypeMatch(typeA, builtintype_bool)){
+		if(!buildinTypeMatch(typeA, BuiltinTypeBool)){
 			printTypeFail("ternary operator test must be boolean", node->node.TernaryOperator.expressionTest, typeA);
 		}
 		break;
@@ -134,7 +134,7 @@ void typeCheckNode(AstNode *node){
 
 		typeB = node->node.Return.functionsym->type->tags.typeFunction.returnType;
 
-		if(typeA == NULL && !buildinTypeMatch(typeB, builtintype_void)){
+		if(typeA == NULL && !buildinTypeMatch(typeB, BuiltinTypeVoid)){
 			char *expected = typeString(typeB);
 			errors++;
 			eprintf(node->linenum, "Missing expression of type %s in return statement\n", expected);
@@ -162,9 +162,9 @@ void typeCheckNode(AstNode *node){
 	case Send:
 		typeA = typeOf(node->node.Send.message);
 		typeB = typeOf(node->node.Send.receiver);
-		if(!buildinTypeMatch(typeA, builtintype_msg))
+		if(!buildinTypeMatch(typeA, BuiltinTypeMsg))
 			printTypeFail("body of send should be a message", node->node.Send.message, typeA);
-		if(!buildinTypeMatch(typeB, builtintype_taskid))
+		if(!buildinTypeMatch(typeB, BuiltinTypeTaskid))
 			printTypeFail("receiver of send should be a taskid", node->node.Send.receiver, typeB);
 		break;
 	case BinaryOperation: /* Fall through */
@@ -217,15 +217,15 @@ Type *typeOf(AstNode *node){
 		case Identifier:
 			return node->node.Identifier.symbol->type;
 		case PinLiteral:
-			return mkBuiltinTypeDescriptor(builtintype_pinid);
+			return mkBuiltinTypeDescriptor(BuiltinTypePinid);
 		case IntLiteral:
-			return mkBuiltinTypeDescriptor(builtintype_unknownInt);
+			return mkBuiltinTypeDescriptor(BuiltinTypeUnknownInt);
 		case FloatLiteral:
-			return mkBuiltinTypeDescriptor(builtintype_float);
+			return mkBuiltinTypeDescriptor(BuiltinTypeFloat);
 		case BoolLiteral:
-			return mkBuiltinTypeDescriptor(builtintype_bool);
+			return mkBuiltinTypeDescriptor(BuiltinTypeBool);
 		case MessageLiteral:
-			return mkBuiltinTypeDescriptor(builtintype_msg);
+			return mkBuiltinTypeDescriptor(BuiltinTypeMsg);
 		case BinaryOperation:
 			return binaryOperatorType(node);
 		case UnaryOperation:
@@ -241,7 +241,7 @@ Type *typeOf(AstNode *node){
 		case TernaryOperator:
 			return typeOf(node->node.TernaryOperator.expressionTrue);
 		case Spawn:
-			return mkBuiltinTypeDescriptor(builtintype_taskid);
+			return mkBuiltinTypeDescriptor(BuiltinTypeTaskid);
 		default:
 			return NULL;
 	}
@@ -259,10 +259,10 @@ int buildinTypeMatch(Type *a, int b){
 		if (a->tags.typeBuiltin.builtinType == b){
 			return 1;
 		}
-		else if(a->tags.typeBuiltin.builtinType == builtintype_unknownInt && buildinTypeMatchInt(bType)){
+		else if(a->tags.typeBuiltin.builtinType == BuiltinTypeUnknownInt && buildinTypeMatchInt(bType)){
 			return 1;
 		}
-		else if (b == builtintype_unknownInt && buildinTypeMatchInt(a)){
+		else if (b == BuiltinTypeUnknownInt && buildinTypeMatchInt(a)){
 			return 1;
 		}
 		return 0;
@@ -279,15 +279,15 @@ int buildinTypeMatchInt(Type *a){
 		return 0;
 
 	switch(a->tags.typeBuiltin.builtinType){
-	case builtintype_uint8: /* Fall through */
-	case builtintype_uint16: /* Fall through */
-	case builtintype_uint32: /* Fall through */
-	case builtintype_uint64: /* Fall through */
-	case builtintype_int8:  /* Fall through */
-	case builtintype_int16: /* Fall through */
-	case builtintype_int32: /* Fall through */
-	case builtintype_int64: /* Fall through */
-	case builtintype_unknownInt:
+	case BuiltinTypeUint8: /* Fall through */
+	case BuiltinTypeUint16: /* Fall through */
+	case BuiltinTypeUint32: /* Fall through */
+	case BuiltinTypeUint64: /* Fall through */
+	case BuiltinTypeInt8:  /* Fall through */
+	case BuiltinTypeInt16: /* Fall through */
+	case BuiltinTypeInt32: /* Fall through */
+	case BuiltinTypeInt64: /* Fall through */
+	case BuiltinTypeUnknownInt:
 		return 1;
 	default:
 		return 0;
@@ -333,7 +333,7 @@ int numericType(Type *type){
 	if(buildinTypeMatchInt(type))
 		return 1;
 
-	if(type->tags.typeBuiltin.builtinType == builtintype_float)
+	if(type->tags.typeBuiltin.builtinType == BuiltinTypeFloat)
 		return 1;
 
 	return 0;
@@ -380,13 +380,13 @@ Type *binaryOperatorType(AstNode *node){
 	switch(node->node.BinaryOperation.operator){
 	case OpLogAnd: /*Fall through*/
 	case OpLogOr:
-		expected_left = expected_right = return_type = builtintype_bool;
+		expected_left = expected_right = return_type = BuiltinTypeBool;
 		break;
 	case OpSmallerEqual: /*Fall through*/
 	case OpGreaterEqual: /*Fall through*/
 	case OpSmallerThan:  /*Fall through*/
 	case OpGreaterThan:
-		return_type = builtintype_bool;
+		return_type = BuiltinTypeBool;
 		if(!numericType(left)){
 			other_error = "Expected numeric types";
 			break;
@@ -396,7 +396,7 @@ Type *binaryOperatorType(AstNode *node){
 		break;
 	case OpEqual: /*Fall through*/
 	case OpNotEqual:
-		return_type = builtintype_bool;
+		return_type = BuiltinTypeBool;
 		if(left == NULL || left->tag != BuiltinTypeTag){
 			other_error = "Expected builtin types";
 			break;
@@ -475,7 +475,7 @@ Type *unaryOperatorType(AstNode *node){
 	int expected = 0, returnType = 0;
 	switch (node->node.UnaryOperation.operator){
 	case OpLogNot:
-		expected = builtintype_bool;
+		expected = BuiltinTypeBool;
 		returnType = expected;
 		break;
 	case OpDecrement: /*Fall through*/

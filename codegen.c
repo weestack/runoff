@@ -5,7 +5,6 @@
 #include "auxiliary.h"
 
 char *processBlock(AstNode *, char *, int);
-char *getBuiltInTypeLiteral(int);
 char *getHelperFunctionsCode(void);
 char *buildArrayDeclIndices(AstNode *);
 char *generateParametersFromStructFields(AstNode *);
@@ -17,6 +16,25 @@ char *mkStructsFromSpawns(AstNode *);
 void changeParamNames(AstNode *);
 char *assignParamsToStruct(AstNode *);
 char *generateReceiveCaseData(AstNode *);
+
+/* Must be the same order as the BuiltinTypes enum */
+char *builtinTypeNames[] = {
+	"byte",
+	"unsigned int",
+	"unsigned long",
+	"uint64_t",
+	"char",
+	"int",
+	"long",
+	"int64_t",
+	"int",
+	"float",
+	"void",
+	"bool",
+	"int",
+	"int",
+	"char",
+};
 
 char *codegen(AstNode *tree) {
 	char *id = NULL;
@@ -148,7 +166,7 @@ char *codegen(AstNode *tree) {
 			);
 			break;
 		case BuiltinType:
-			result = smprintf("%s", getBuiltInTypeLiteral(tree->node.BuiltinType.type));
+			result = smprintf("%s", builtinTypeNames[tree->node.BuiltinType.type]);
 			break;
 		case StructType:
 			id = codegen(tree->node.StructType.identifier);
@@ -234,7 +252,7 @@ char *codegen(AstNode *tree) {
 			break;
 		case UnaryOperation:
 			expr = codegen(tree->node.UnaryOperation.expression);
-			if (tree->node.UnaryOperation.fix == postfix) {
+			if (tree->node.UnaryOperation.fix == Postfix) {
 				result= smprintf("%s%s", expr, operatorNames[tree->node.UnaryOperation.operator]);
 			}else {
 				result= smprintf("%s%s", operatorNames[tree->node.UnaryOperation.operator], expr);
@@ -340,57 +358,6 @@ char *processBlock(AstNode *node, char *sep, int end){
 	}
 	return result;
 }
-
-char *getBuiltInTypeLiteral(int type) {
-	switch (type) {
-		case builtintype_uint8:
-			return "byte";
-			break;
-		case builtintype_uint16:
-			return "unsigned int";
-			break;
-		case builtintype_uint32:
-			return "unsigned long";
-			break;
-		case builtintype_uint64:
-			return "uint64_t";
-			break;
-		case builtintype_int8:
-			return "char";
-			break;
-		case builtintype_int16:
-			return "int";
-			break;
-		case builtintype_int32:
-			return "long";
-			break;
-		case builtintype_int64:
-			return "int64_t";
-			break;
-		case builtintype_unknownInt:
-			return "int";
-			break;
-		case builtintype_float:
-			return "float";
-			break;
-		case builtintype_void:
-			return "void";
-			break;
-		case builtintype_bool:
-			return "bool";
-			break;
-		case builtintype_msg:
-		case builtintype_pinid:
-			return "int";
-			break;
-		case builtintype_taskid:
-			return "char";
-			break;
-		default:
-			return "unknownType";
-	}
-}
-
 
 char *getHelperFunctionsCode(void) {
 	FILE *fp;
@@ -653,7 +620,7 @@ char *generateReceiveCaseData(AstNode *ReceiveCaseNode){
 	AstNode *msgIdentifier = ReceiveCaseNode->node.ReceiveCase.messageName->node.Identifier.symbol->first->node.MessageIdentifier.parameters;
 	int i = 0;
 	while(parameter != NULL){
-		char *type = getBuiltInTypeLiteral(msgIdentifier->node.Parameter.type->node.BuiltinType.type);
+		char *type = builtinTypeNames[msgIdentifier->node.Parameter.type->node.BuiltinType.type];
 		char *old_decl = decl;
 		char *id = codegen(parameter);
 		decl = smprintf("%s %s;\n%s", type, id, decl);

@@ -80,7 +80,7 @@ static void checkTreeHasSetup(AstNode *tree){
 		t = s->type->tags.typeFunction;
 		if(t.arity == 0
 			&& t.returnType->tag == BuiltinTypeTag
-			&& t.returnType->tags.typeBuiltin.builtinType == builtintype_void){
+			&& t.returnType->tags.typeBuiltin.builtinType == BuiltinTypeVoid){
 			checkAllSpawnsInSetup(tree, node->node.DefineFunction.statements);
 			return;
 		}
@@ -201,18 +201,18 @@ static AstNode *getDefaultValue(Type *type){
 		return NULL;
 
 	switch(type->tags.typeBuiltin.builtinType){
-	case builtintype_uint8:
-	case builtintype_uint16:
-	case builtintype_uint32:
-	case builtintype_uint64:
-	case builtintype_int8:
-	case builtintype_int16:
-	case builtintype_int32:
-	case builtintype_int64:
+	case BuiltinTypeUint8:
+	case BuiltinTypeUint16:
+	case BuiltinTypeUint32:
+	case BuiltinTypeUint64:
+	case BuiltinTypeInt8:
+	case BuiltinTypeInt16:
+	case BuiltinTypeInt32:
+	case BuiltinTypeInt64:
 		return mkIntLiteralNode(0);
-	case builtintype_float:
+	case BuiltinTypeFloat:
 		return mkFloatLiteralNode(0);
-	case builtintype_bool:
+	case BuiltinTypeBool:
 		return mkBoolLiteralNode(0);
 	default:
 		return NULL;

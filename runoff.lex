@@ -65,21 +65,21 @@ punctuation [\[\]\(\)\{\};:=,\.\?]
 "true" {yylval.astNode = mkBoolLiteralNode(1); return bool_literal;}
 "false" {yylval.astNode = mkBoolLiteralNode(0); return bool_literal;}
 
-uint8	{yylval.astNode = mkBuiltinTypeNode(builtintype_uint8); return builtin_type;}
-uint16	{yylval.astNode = mkBuiltinTypeNode(builtintype_uint16); return builtin_type;}
-uint32	{yylval.astNode = mkBuiltinTypeNode(builtintype_uint32); return builtin_type;}
-uint64	{yylval.astNode = mkBuiltinTypeNode(builtintype_uint64); return builtin_type;}
-int8	{yylval.astNode = mkBuiltinTypeNode(builtintype_int8); return builtin_type;}
-int16	{yylval.astNode = mkBuiltinTypeNode(builtintype_int16); return builtin_type;}
-int32	{yylval.astNode = mkBuiltinTypeNode(builtintype_int32); return builtin_type;}
-int64	{yylval.astNode = mkBuiltinTypeNode(builtintype_int64); return builtin_type;}
-int	{yylval.astNode = mkBuiltinTypeNode(builtintype_int32); return builtin_type;}
-float	{yylval.astNode = mkBuiltinTypeNode(builtintype_float); return builtin_type;}
-void	{yylval.astNode = mkBuiltinTypeNode(builtintype_void); return builtin_type;}
-bool	{yylval.astNode = mkBuiltinTypeNode(builtintype_bool); return builtin_type;}
-msg		{yylval.astNode = mkBuiltinTypeNode(builtintype_msg); return builtin_type;}
-taskid  {yylval.astNode = mkBuiltinTypeNode(builtintype_taskid); return builtin_type;}
-pinid {yylval.astNode = mkBuiltinTypeNode(builtintype_pinid); return builtin_type;}
+uint8	{yylval.astNode = mkBuiltinTypeNode(BuiltinTypeUint8); return builtin_type;}
+uint16	{yylval.astNode = mkBuiltinTypeNode(BuiltinTypeUint16); return builtin_type;}
+uint32	{yylval.astNode = mkBuiltinTypeNode(BuiltinTypeUint32); return builtin_type;}
+uint64	{yylval.astNode = mkBuiltinTypeNode(BuiltinTypeUint64); return builtin_type;}
+int8	{yylval.astNode = mkBuiltinTypeNode(BuiltinTypeInt8); return builtin_type;}
+int16	{yylval.astNode = mkBuiltinTypeNode(BuiltinTypeInt16); return builtin_type;}
+int32	{yylval.astNode = mkBuiltinTypeNode(BuiltinTypeInt32); return builtin_type;}
+int64	{yylval.astNode = mkBuiltinTypeNode(BuiltinTypeInt64); return builtin_type;}
+int	{yylval.astNode = mkBuiltinTypeNode(BuiltinTypeInt32); return builtin_type;}
+float	{yylval.astNode = mkBuiltinTypeNode(BuiltinTypeFloat); return builtin_type;}
+void	{yylval.astNode = mkBuiltinTypeNode(BuiltinTypeVoid); return builtin_type;}
+bool	{yylval.astNode = mkBuiltinTypeNode(BuiltinTypeBool); return builtin_type;}
+msg		{yylval.astNode = mkBuiltinTypeNode(BuiltinTypeMsg); return builtin_type;}
+taskid  {yylval.astNode = mkBuiltinTypeNode(BuiltinTypeTaskid); return builtin_type;}
+pinid {yylval.astNode = mkBuiltinTypeNode(BuiltinTypePinid); return builtin_type;}
 
 "&&" {return and_op;}
 "||" {return or_op;}
