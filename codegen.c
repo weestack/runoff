@@ -269,7 +269,7 @@ char *codegen(AstNode *tree) {
 		case Send:
 			id = codegen(tree->node.Send.receiver);
 			expr = codegen(tree->node.Send.message);
-			result = smprintf("xQueueSend(%s,(void *) &%s,INCLUDE_vTaskSuspend);", id, expr);
+			result = smprintf("xQueueSend(Mailbox[%s],(void *) &%s,INCLUDE_vTaskSuspend);", id, expr);
 			break;
 		case BinaryOperation:
 			expr = codegen(tree->node.BinaryOperation.expression_left);
