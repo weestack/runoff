@@ -1,21 +1,22 @@
 #include <Arduino_FreeRTOS.h>
 #include <queue.h>
+#include <stdint.h>
 
 #define messageQueueSize 3
-#define runoff_uint8	byte
-#define runoff_uint16	unsigned int
-#define runoff_uint32	unsigned long
+#define runoff_uint8	uint8_t
+#define runoff_uint16	uint16_t
+#define runoff_uint32	uint32_t
 #define runoff_uint64	uint64_t
-#define runoff_int8	char
-#define runoff_int16	int
-#define runoff_int32	long
+#define runoff_int8	int8_t
+#define runoff_int16	int16_t
+#define runoff_int32	int32_t
 #define runoff_int64	int64_t
 #define runoff_float	float
 #define runoff_void	void
 #define runoff_bool	bool
 #define runoff_msg	struct Message
-#define runoff_taskid	char
-#define runoff_pinid	int
+#define runoff_taskid	int8_t
+#define runoff_pinid	int8_t
 
 
 void loop(){}
