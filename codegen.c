@@ -310,7 +310,7 @@ char *codegen(AstNode *tree) {
 		case MessageLiteral:
 			id = codegen(tree->node.MessageLiteral.identifier);
 			params = processBlock(tree->node.MessageLiteral.arguments, ",", 0); 
-			result = smprintf("(struct Message){%s, (struct %s){%s}}", id, id, params);
+			result = smprintf("(struct Message){%s, { .%s = (struct %s){%s}}}", id, id, id, params);
 			break;
 		default:
 			result = smprintf("");
