@@ -327,6 +327,7 @@ void handleDefineTask(AstNode *function){
 
 	sym = retrieveSymbol(function->node.DefineTask.identifier);
 	sym->type = t;
+	sym->first = function;
 }
 
 void handleMessageIdentifier(AstNode *function){

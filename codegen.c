@@ -12,7 +12,6 @@ char *constructMessageEnum(AstNode *);
 char *constructMessageStruct(AstNode *);
 char *constructMessageUnionStruct(AstNode *);
 char *mkStructsFromSpawns(AstNode *);
-void changeParamNames(AstNode *);
 char *assignParamsToStruct(AstNode *);
 char *generateReceiveCaseData(AstNode *);
 
@@ -55,7 +54,6 @@ char *codegen(AstNode *tree) {
 			result = smprintf("%s%s %s(%s) {%s %s}", preCodeGen, type, id, params, extraCode, stmts);
 			break;
 		case DefineTask:
-			changeParamNames(tree->node.DefineTask.parameters);
 			id = codegen(tree->node.DefineTask.identifier);
 			params = processBlock(tree->node.DefineTask.parameters, ";\n", 1);
 			intlit = smprintf("char self = struct_args->self;\n");
@@ -530,17 +528,6 @@ char *mkStructsFromSpawns(AstNode *tree){
 	return result;
 }
 
-void changeParamNames(AstNode *tree){
-	AstNode *child;
-	int i = 0;
-	child = tree;
-	while(child != NULL){
-		free(child->node.Parameter.identifier->node.Identifier.symbol->name);
-		child->node.Parameter.identifier->node.Identifier.symbol->name = smprintf("arg_%d", i++);
-		child = child->next;
-	}
-}
-
 char *assignParamsToStruct(AstNode *spawnNode){
 	char *result;
 	char *old;
@@ -550,12 +537,13 @@ char *assignParamsToStruct(AstNode *spawnNode){
 		id,
 		spawnNode->node.Spawn.taskId);
 	AstNode *child = spawnNode->node.Spawn.arguments;
+	AstNode *parameter = spawnNode->node.Spawn.identifier->node.Identifier.symbol->first->node.DefineTask.parameters;
 	free(id);
-	result = smprintf("Mailbox[%d] = xQueueCreate(messageQueueSize, (UBaseType_t)sizeof(Message));\n%s.self = %d;\n",spawnNode->node.Spawn.taskId,structName, spawnNode->node.Spawn.taskId);
 
+	result = smprintf("Mailbox[%d] = xQueueCreate(messageQueueSize, (UBaseType_t)sizeof(Message));\n%s.self = %d;\n",spawnNode->node.Spawn.taskId,structName, spawnNode->node.Spawn.taskId);
 	while(child != NULL){
 		char *expr = codegen(child);
-		char *field = smprintf("arg_%d", i);
+		char *field = codegen(parameter->node.Parameter.identifier);
 		Type *t = typeOf(child);
 		old = result;
 		if(t->tag == ArrayTypeTag){
@@ -568,9 +556,10 @@ char *assignParamsToStruct(AstNode *spawnNode){
 				field
 			);
 		} else {
-			result = smprintf("%s%s.runoff_%s = %s;\n", result, structName, field, expr);
+			result = smprintf("%s%s.%s = %s;\n", result, structName, field, expr);
 		}
 		child = child->next;
+		parameter = parameter->next;
 		i++;
 		free(expr);
 		free(old);
