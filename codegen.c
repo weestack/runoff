@@ -44,8 +44,7 @@ char *codegen(AstNode *tree) {
 			break;
 		case DefineFunction:
 			id = codegen(tree->node.DefineFunction.identifier);
-			intlit = codegen(tree->node.DefineFunction.identifier);
-			if(strcmp(intlit, "setup") == 0)
+			if(strcmp(tree->node.DefineFunction.identifier->node.Identifier.symbol->name, "setup") == 0)
 				preCodeGen = mkStructsFromSpawns(tree->node.DefineFunction.statements);
 			else 
 				preCodeGen = smprintf("");
@@ -194,7 +193,7 @@ char *codegen(AstNode *tree) {
 			}
 		break;
 		case Identifier:
-			result = smprintf("%s", tree->node.Identifier.symbol->name);
+			result = smprintf("runoff_%s", tree->node.Identifier.symbol->name);
 			break;
 		case ExprStmt:
 			expr = codegen(tree->node.ExprStmt.expression);
@@ -508,7 +507,9 @@ char *mkStructsFromSpawns(AstNode *tree){
 	char *old;
 	char *id;
 	AstNode *child;
-	if(tree == NULL) return smprintf("");
+	if(tree == NULL)
+		return smprintf("");
+
 	child = tree;
 	while(child != NULL){
 		if(child->tag == Spawn){
@@ -544,12 +545,12 @@ char *assignParamsToStruct(AstNode *spawnNode){
 	char *result;
 	char *old;
 	int i = 0;
+	char *id = codegen(spawnNode->node.Spawn.identifier);
 	char *structName = smprintf("%s_%d", 
-		spawnNode->node.Spawn.identifier->node.Identifier.identifier, 
+		id, 
 		spawnNode->node.Spawn.taskId);
-	AstNode *child;
-	child = spawnNode->node.Spawn.arguments;
-	
+	AstNode *child = spawnNode->node.Spawn.arguments;
+	free(id);
 	result = smprintf("Mailbox[%d] = xQueueCreate(messageQueueSize, (UBaseType_t)sizeof(Message));\n%s.self = %d;\n",spawnNode->node.Spawn.taskId,structName, spawnNode->node.Spawn.taskId);
 
 	while(child != NULL){

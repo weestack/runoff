@@ -38,44 +38,44 @@ void runoff_createTask(TaskFunction_t taskFunction, void *args){
 }
 
 // Helper functions
-runoff_void turnOn(runoff_pinid pin){
+runoff_void runoff_turnOn(runoff_pinid pin){
   digitalWrite(pin, HIGH);
 }
 
-runoff_void turnOff(runoff_pinid pin){
+runoff_void runoff_turnOff(runoff_pinid pin){
   digitalWrite(pin, LOW);
 }
 
-runoff_bool readInput(runoff_pinid pin){
+runoff_bool runoff_readInput(runoff_pinid pin){
   return digitalRead(pin);
 }
 
-runoff_uint16 readAnalogInput(runoff_pinid pin){
-	return 1234; /* TODO */
+runoff_uint16 runoff_readAnalogInput(runoff_pinid pin){
+	return analogRead(pin);
 }
 
-runoff_void analogWrite(runoff_pinid pin, runoff_uint8){
-	/* TODO */
+runoff_void runoff_analogWrite(runoff_pinid pin, runoff_uint8 val){
+	analogWrite(pin, val);
 }
 
-runoff_void inputPin(runoff_pinid pin, runoff_taskid task, runoff_msg lowmsg, runoff_msg highmsg);
+runoff_void runoff_inputPin(runoff_pinid pin, runoff_taskid task, runoff_msg lowmsg, runoff_msg highmsg);
 
-runoff_void outputPin(runoff_pinid pin){
+runoff_void runoff_outputPin(runoff_pinid pin){
   pinMode(pin, OUTPUT);
 }
 
-runoff_void simpleInputPin(runoff_pinid pin){
+runoff_void runoff_simpleInputPin(runoff_pinid pin){
   pinMode(pin, INPUT);
 }
 
-runoff_void setOutput(runoff_pinid pin, runoff_bool b){
+runoff_void runoff_setOutput(runoff_pinid pin, runoff_bool b){
 	if(b)
-		turnOn(pin);
+		runoff_turnOn(pin);
 	else
-		turnOff(pin);
+		runoff_turnOff(pin);
 }
 
-runoff_void Delay(runoff_uint32 miliSeconds){
+runoff_void runoff_delay(runoff_uint32 miliSeconds){
   vTaskDelay(pdMS_TO_TICKS(miliSeconds));
 }
 // End of helper file
