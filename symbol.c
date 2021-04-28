@@ -174,12 +174,10 @@ void insertBuiltinFunctions(void) {
 	inputPinParameters[3] = mkBuiltinTypeDescriptor(BuiltinTypeMsg);
 	simpleInputPinParameters[0] = mkBuiltinTypeDescriptor(BuiltinTypePinid);
 	outputPinParameters[0] = mkBuiltinTypeDescriptor(BuiltinTypePinid);
-	analogInputPinParameters[0] = mkBuiltinTypeDescriptor(BuiltinTypePinid);
-	analogOutputPinParameters[0] = mkBuiltinTypeDescriptor(BuiltinTypePinid);
 	setOutputParameters[0] = mkBuiltinTypeDescriptor(BuiltinTypePinid);
 	setOutputParameters[1] = mkBuiltinTypeDescriptor(BuiltinTypeBool);
 	analogWriteParameters[0] = mkBuiltinTypeDescriptor(BuiltinTypePinid);
-	analogWriteParameters[1] = mkBuiltinTypeDescriptor(BuiltinTypeUint16);
+	analogWriteParameters[1] = mkBuiltinTypeDescriptor(BuiltinTypeUint8);
 
 	enterSymbol("turnOn", mkFunctionTypeDescriptor(1,turnOnParameters,mkBuiltinTypeDescriptor(BuiltinTypeVoid)));
 	enterSymbol("turnOff", mkFunctionTypeDescriptor(1,turnOffParameters,mkBuiltinTypeDescriptor(BuiltinTypeVoid)));
@@ -189,8 +187,6 @@ void insertBuiltinFunctions(void) {
 	enterSymbol("inputPin", mkFunctionTypeDescriptor(4,inputPinParameters,mkBuiltinTypeDescriptor(BuiltinTypeVoid)));
 	enterSymbol("simpleInputPin", mkFunctionTypeDescriptor(1,simpleInputPinParameters,mkBuiltinTypeDescriptor(BuiltinTypeVoid)));
 	enterSymbol("outputPin", mkFunctionTypeDescriptor(1,outputPinParameters,mkBuiltinTypeDescriptor(BuiltinTypeVoid)));
-	enterSymbol("analogInputPin", mkFunctionTypeDescriptor(1,analogInputPinParameters,mkBuiltinTypeDescriptor(BuiltinTypeVoid)));
-	enterSymbol("analogOutputPin", mkFunctionTypeDescriptor(1,analogOutputPinParameters,mkBuiltinTypeDescriptor(BuiltinTypeVoid)));
 	enterSymbol("setOutput", mkFunctionTypeDescriptor(2,setOutputParameters,mkBuiltinTypeDescriptor(BuiltinTypeVoid)));
 	enterSymbol("analogWrite", mkFunctionTypeDescriptor(2,analogWriteParameters,mkBuiltinTypeDescriptor(BuiltinTypeVoid)));
 }
