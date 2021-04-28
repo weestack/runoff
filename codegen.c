@@ -65,7 +65,7 @@ char *codegen(AstNode *tree) {
 				id, id, expr
 			);
 			stmts = processBlock(tree->node.DefineTask.statements, "\n", 1);
-			result = smprintf("struct %s{char self;%s};\nvoid %s(void *args) {%s %s}",
+			result = smprintf("struct %s{runoff_taskid self;%s};\nvoid %s(void *args) {%s %s}",
 				id, params, id, extraCode, stmts
 			);
 			break;
@@ -125,7 +125,7 @@ char *codegen(AstNode *tree) {
 			break;
 		case Receive:
 			stmts = processBlock(tree->node.Receive.cases, ";", 0);
-			result = smprintf("struct Message m;\nxQueueReceive(Mailbox[self], &m, portMAX_DELAY);\nswitch(m.Tag){%s}", stmts);
+			result = smprintf("runoff_msg m;\nxQueueReceive(Mailbox[self], &m, portMAX_DELAY);\nswitch(m.Tag){%s}", stmts);
 			break;
 		case ReceiveCase:
 			stmts = codegen(tree->node.ReceiveCase.statements);
@@ -144,7 +144,7 @@ char *codegen(AstNode *tree) {
 		case Spawn:
 			id = codegen(tree->node.Spawn.identifier);
 			params = assignParamsToStruct(tree);
-			result = smprintf("%s\nrunoff_createTask(%s, (void *)&%s_%d)",
+			result = smprintf("%s\ncreateTask(%s, (void *)&%s_%d)",
 				params,	id, id, tree->node.Spawn.taskId
 			);
 			break;
@@ -269,7 +269,7 @@ char *codegen(AstNode *tree) {
 		case Send:
 			id = codegen(tree->node.Send.receiver);
 			expr = codegen(tree->node.Send.message);
-			result = smprintf("{struct Message __m = %s; xQueueSend(Mailbox[%s],(void *)&__m,INCLUDE_vTaskSuspend);}", expr, id);
+			result = smprintf("{runoff_msg m = %s; xQueueSend(Mailbox[%s],(void *)&m,INCLUDE_vTaskSuspend);}", expr, id);
 			break;
 		case BinaryOperation:
 			expr = codegen(tree->node.BinaryOperation.expression_left);
@@ -292,7 +292,7 @@ char *codegen(AstNode *tree) {
 		case MessageLiteral:
 			id = codegen(tree->node.MessageLiteral.identifier);
 			params = processBlock(tree->node.MessageLiteral.arguments, ",", 0);
-			result = smprintf("(struct Message){%s, { .%s = (struct %s){%s}}}", id, id, id, params);
+			result = smprintf("(runoff_msg){%s, { .%s = (struct %s){%s}}}", id, id, id, params);
 			break;
 		default:
 			result = smprintf("");
@@ -496,7 +496,7 @@ char *constructMessageUnionStruct(AstNode *tree){
 		free(old);
 		child = child->next;
 	}
-	result = smprintf("struct Message { int Tag; union {%s} data;};", structNames);
+	result = smprintf("runoff_msg { int Tag; union {%s} data;};", structNames);
 
 	free(structNames);
 	return result;
@@ -588,7 +588,7 @@ char *generateReceiveCaseData(AstNode *ReceiveCaseNode){
 	AstNode *msgIdentifier = ReceiveCaseNode->node.ReceiveCase.messageName->node.Identifier.symbol->first->node.MessageIdentifier.parameters;
 
 	while(parameter != NULL){
-		char *type = smprintf("runoff_%s", builtintypeNames[msgIdentifier->node.Parameter.type->node.BuiltinType.type]);
+		char *type = codegen(msgIdentifier->node.Parameter.type);
 		char *old_decl = decl;
 		char *id = codegen(parameter);
 		char *idfield = codegen(msgIdentifier->node.Parameter.identifier);

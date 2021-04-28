@@ -21,7 +21,7 @@
 
 void loop(){}
 // Helper function to create tasks
-void runoff_createTask(TaskFunction_t taskFunction, void *args){
+void createTask(TaskFunction_t taskFunction, void *args){
   BaseType_t xReturned;
   
   /* Create the task, storing the handle. */
