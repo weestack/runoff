@@ -58,13 +58,13 @@ runoff_void runoff_analogWrite(runoff_pinid pin, runoff_uint8 val){
 	analogWrite(pin, val);
 }
 
-runoff_void runoff_inputPin(runoff_pinid pin, runoff_taskid task, runoff_msg lowmsg, runoff_msg highmsg);
+runoff_void runoff_advancedInputPin(runoff_pinid pin, runoff_taskid task, runoff_msg lowmsg, runoff_msg highmsg);
 
 runoff_void runoff_outputPin(runoff_pinid pin){
   pinMode(pin, OUTPUT);
 }
 
-runoff_void runoff_simpleInputPin(runoff_pinid pin){
+runoff_void runoff_inputPin(runoff_pinid pin){
   pinMode(pin, INPUT);
 }
 

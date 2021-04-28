@@ -155,8 +155,8 @@ void insertBuiltinFunctions(void) {
 	Type **readInputParameters = malloc(sizeof(Type*) * 1);
 	Type **readAnalogInputParameters = malloc(sizeof(Type*) * 1);
 	Type **delayParameters = malloc(sizeof(Type*) * 1);
-	Type **inputPinParameters = malloc(sizeof(Type*) * 4);
-	Type **simpleInputPinParameters = malloc(sizeof(Type*) * 1);
+	Type **advancedInputPinParameters = malloc(sizeof(Type*) * 4);
+	Type **inputPinParameters = malloc(sizeof(Type*) * 1);
 	Type **outputPinParameters = malloc(sizeof(Type*) * 1);
 	Type **setOutputParameters = malloc(sizeof(Type*) * 2);
 	Type **analogWriteParameters = malloc(sizeof(Type*) * 2);
@@ -166,11 +166,11 @@ void insertBuiltinFunctions(void) {
 	readInputParameters[0] = mkBuiltinTypeDescriptor(BuiltinTypePinid);
 	readAnalogInputParameters[0] = mkBuiltinTypeDescriptor(BuiltinTypePinid);
 	delayParameters[0] = mkBuiltinTypeDescriptor(BuiltinTypeUint32);
+	advancedInputPinParameters[0] = mkBuiltinTypeDescriptor(BuiltinTypePinid);
+	advancedInputPinParameters[1] = mkBuiltinTypeDescriptor(BuiltinTypeTaskid);
+	advancedInputPinParameters[2] = mkBuiltinTypeDescriptor(BuiltinTypeMsg);
+	advancedInputPinParameters[3] = mkBuiltinTypeDescriptor(BuiltinTypeMsg);
 	inputPinParameters[0] = mkBuiltinTypeDescriptor(BuiltinTypePinid);
-	inputPinParameters[1] = mkBuiltinTypeDescriptor(BuiltinTypeTaskid);
-	inputPinParameters[2] = mkBuiltinTypeDescriptor(BuiltinTypeMsg);
-	inputPinParameters[3] = mkBuiltinTypeDescriptor(BuiltinTypeMsg);
-	simpleInputPinParameters[0] = mkBuiltinTypeDescriptor(BuiltinTypePinid);
 	outputPinParameters[0] = mkBuiltinTypeDescriptor(BuiltinTypePinid);
 	setOutputParameters[0] = mkBuiltinTypeDescriptor(BuiltinTypePinid);
 	setOutputParameters[1] = mkBuiltinTypeDescriptor(BuiltinTypeBool);
@@ -181,9 +181,15 @@ void insertBuiltinFunctions(void) {
 	enterSymbol("turnOff", mkFunctionTypeDescriptor(1,turnOffParameters,mkBuiltinTypeDescriptor(BuiltinTypeVoid)));
 	enterSymbol("readInput", mkFunctionTypeDescriptor(1,readInputParameters,mkBuiltinTypeDescriptor(BuiltinTypeBool)));
 	enterSymbol("readAnalogInput", mkFunctionTypeDescriptor(1,readAnalogInputParameters,mkBuiltinTypeDescriptor(BuiltinTypeUint16)));
+<<<<<<< HEAD
 	enterSymbol("delay", mkFunctionTypeDescriptor(1,delayParameters,mkBuiltinTypeDescriptor(BuiltinTypeVoid)));
 	enterSymbol("inputPin", mkFunctionTypeDescriptor(4,inputPinParameters,mkBuiltinTypeDescriptor(BuiltinTypeVoid)));
 	enterSymbol("simpleInputPin", mkFunctionTypeDescriptor(1,simpleInputPinParameters,mkBuiltinTypeDescriptor(BuiltinTypeVoid)));
+=======
+	enterSymbol("Delay", mkFunctionTypeDescriptor(1,delayParameters,mkBuiltinTypeDescriptor(BuiltinTypeVoid)));
+	enterSymbol("advancedInputPin", mkFunctionTypeDescriptor(4,advancedInputPinParameters,mkBuiltinTypeDescriptor(BuiltinTypeVoid)));
+	enterSymbol("inputPin", mkFunctionTypeDescriptor(1,inputPinParameters,mkBuiltinTypeDescriptor(BuiltinTypeVoid)));
+>>>>>>> e45d84e (Rename inputPin to advancedInputPin)
 	enterSymbol("outputPin", mkFunctionTypeDescriptor(1,outputPinParameters,mkBuiltinTypeDescriptor(BuiltinTypeVoid)));
 	enterSymbol("setOutput", mkFunctionTypeDescriptor(2,setOutputParameters,mkBuiltinTypeDescriptor(BuiltinTypeVoid)));
 	enterSymbol("analogWrite", mkFunctionTypeDescriptor(2,analogWriteParameters,mkBuiltinTypeDescriptor(BuiltinTypeVoid)));

@@ -49,7 +49,7 @@ task B(taskid other) {
 
 function setup() -> void {
 	taskid i = spawn A();
-	inputPin(LED1Pin, i, Button1Click{}, Button1Release{});
+	advancedInputPin(LED1Pin, i, Button1Click{}, Button1Release{});
 	outputPin(LED2Pin);
 	outputPin(LED3Pin);
 }

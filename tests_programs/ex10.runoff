@@ -34,7 +34,7 @@ function setup() -> void {
 	taskid mana;
 	taskid nama = spawn ledhandler();
 	mana = spawn ledhandler();
-	inputPin(ButtonPin, nama, ButtonPressed{}, ButtonReleased{1, 2.0});
+	advancedInputPin(ButtonPin, nama, ButtonPressed{}, ButtonReleased{1, 2.0});
 	outputPin(LEDPin);
 	otherway();
 }
