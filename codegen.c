@@ -476,8 +476,8 @@ char *constructMessageStruct(AstNode *tree){
 		while(paramChild != NULL){
 			currentChildType = codegen(paramChild->node.Parameter.type);
 			old = currentStruct;
-			currentStruct = smprintf("%s arg_%d;\n%s",
-					currentChildType, i, currentStruct
+			currentStruct = smprintf("%s%s arg_%d;\n",
+					currentStruct,currentChildType, i
 					);
 			free(old);
 			free(currentChildType);
@@ -536,7 +536,7 @@ char *mkStructsFromSpawns(AstNode *tree){
 		} else {
 			AstNode *children = child->children;
 			old = result;
-			result = smprintf("%s %s", result, mkStructsFromSpawns(children));
+			result = smprintf("%s %s",mkStructsFromSpawns(children), result);
 			/* Renember to free the children! */
 		}
 		child=child->chain;
