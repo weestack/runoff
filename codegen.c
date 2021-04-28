@@ -459,7 +459,7 @@ char *constructMessageStruct(AstNode *tree){
 		while(paramChild != NULL){
 			currentChildType = codegen(paramChild->node.Parameter.type);
 			old = currentStruct;
-			currentStruct = smprintf("%s%s runoff_arg_%d;\n",
+			currentStruct = smprintf("%s%s arg_%d;\n",
 					currentStruct,currentChildType, i
 					);
 			free(old);
