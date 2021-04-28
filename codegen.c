@@ -30,7 +30,7 @@ char *builtinTypeNames[] = {
 	"float",
 	"void",
 	"bool",
-	"int",
+	"struct Message",
 	"int",
 	"char",
 };
@@ -299,6 +299,11 @@ char *codegen(AstNode *tree) {
 			break;
 		case BoolLiteral:
 			result = smprintf("%s", tree->node.BoolLiteral.value ? "true" : "false");
+			break;
+		case MessageLiteral:
+			id = codegen(tree->node.MessageLiteral.identifier);
+			params = processBlock(tree->node.MessageLiteral.arguments, ",", 0); 
+			result = smprintf("(struct Message){%s, (struct %s){%s}}", id, id, params);
 			break;
 		default:
 			result = smprintf("");
