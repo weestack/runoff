@@ -46,7 +46,7 @@ char *codegen(AstNode *tree) {
 			id = codegen(tree->node.DefineFunction.identifier);
 			if(strcmp(tree->node.DefineFunction.identifier->node.Identifier.symbol->name, "setup") == 0)
 				preCodeGen = mkStructsFromSpawns(tree->node.DefineFunction.statements);
-			else 
+			else
 				preCodeGen = smprintf("");
 			type = codegen(tree->node.DefineFunction.type);
 			params = processBlock(tree->node.DefineFunction.parameters, ", ", 0);
@@ -65,7 +65,7 @@ char *codegen(AstNode *tree) {
 				id, id, expr
 			);
 			stmts = processBlock(tree->node.DefineTask.statements, "\n", 1);
-			result = smprintf("struct %s{char self;%s};\nvoid %s(void *args) {%s %s}", 
+			result = smprintf("struct %s{char self;%s};\nvoid %s(void *args) {%s %s}",
 				id, params, id, extraCode, stmts
 			);
 			break;
@@ -134,17 +134,17 @@ char *codegen(AstNode *tree) {
 				result = smprintf("default: if(1){%s}\nbreak;", stmts);
 			} else {
 				if(tree->node.ReceiveCase.dataNames == NULL){
-					result = smprintf("case %s: if(1){%s}\nbreak;", id, stmts);	
+					result = smprintf("case %s: if(1){%s}\nbreak;", id, stmts);
 				} else {
 					extraCode = generateReceiveCaseData(tree);
-					result = smprintf("case %s: if(1){%s%s}\nbreak;", id, extraCode, stmts); 
+					result = smprintf("case %s: if(1){%s%s}\nbreak;", id, extraCode, stmts);
 				}
 			}
 			break;
 		case Spawn:
-			id = codegen(tree->node.Spawn.identifier);	
-			params = assignParamsToStruct(tree);			
-			result = smprintf("%s\nrunoff_createTask(%s, (void *)&%s_%d)", 
+			id = codegen(tree->node.Spawn.identifier);
+			params = assignParamsToStruct(tree);
+			result = smprintf("%s\nrunoff_createTask(%s, (void *)&%s_%d)",
 				params,	id, id, tree->node.Spawn.taskId
 			);
 			break;
@@ -203,7 +203,7 @@ char *codegen(AstNode *tree) {
 			if(tree->node.Assignment.expression != NULL && tree->node.Assignment.expression->tag == Spawn){
 				id = codegen(tree->node.Assignment.location);
 				expr = codegen(tree->node.Assignment.expression);
-				result = smprintf("%s = %d; %s", id, 
+				result = smprintf("%s = %d; %s", id,
 					tree->node.Assignment.expression->node.Spawn.taskId, expr
 				);
 			} else {
@@ -254,8 +254,8 @@ char *codegen(AstNode *tree) {
 			if(tree->node.VarDecl.expression != NULL && tree->node.VarDecl.expression->tag == Spawn){
 				id = codegen(tree->node.VarDecl.identifier);
 				expr = codegen(tree->node.VarDecl.expression);
-				result = smprintf("char %s = %d;%s", id, 
-					tree->node.VarDecl.expression->node.Spawn.taskId, 
+				result = smprintf("char %s = %d;%s", id,
+					tree->node.VarDecl.expression->node.Spawn.taskId,
 					expr
 				);
 			} else {
@@ -269,7 +269,7 @@ char *codegen(AstNode *tree) {
 		case Send:
 			id = codegen(tree->node.Send.receiver);
 			expr = codegen(tree->node.Send.message);
-			result = smprintf("xQueueSend(Mailbox[%s],(void *) &(%s),INCLUDE_vTaskSuspend);", id, expr);
+			result = smprintf("{struct Message __m = %s; xQueueSend(Mailbox[%s],(void *)&__m,INCLUDE_vTaskSuspend);}", expr, id);
 			break;
 		case BinaryOperation:
 			expr = codegen(tree->node.BinaryOperation.expression_left);
@@ -291,7 +291,7 @@ char *codegen(AstNode *tree) {
 			break;
 		case MessageLiteral:
 			id = codegen(tree->node.MessageLiteral.identifier);
-			params = processBlock(tree->node.MessageLiteral.arguments, ",", 0); 
+			params = processBlock(tree->node.MessageLiteral.arguments, ",", 0);
 			result = smprintf("(struct Message){%s, { .%s = (struct %s){%s}}}", id, id, id, params);
 			break;
 		default:
@@ -362,7 +362,7 @@ char *generateParametersFromStructFields(AstNode *tree){
 	char *struct_id;
 	char *struct_type;
 	if(tree == NULL) return smprintf("");
-	
+
 	result = smprintf("");
 	while(child != NULL){
 		old = result;
@@ -372,7 +372,7 @@ char *generateParametersFromStructFields(AstNode *tree){
 			struct_id = smprintf("%s_original", id);
 			struct_type = smprintf("%s *", type);
 		} else {
-			struct_id = smprintf("%s", id); 
+			struct_id = smprintf("%s", id);
 			struct_type = smprintf("%s", type);
 		}
 		result = smprintf("%s %s = struct_args->%s;\n%s",
@@ -452,20 +452,20 @@ char *constructMessageStruct(AstNode *tree){
 	char *codeBlock = smprintf("");
 	char *currentStruct;
 	char *old;
-	int i=0;
 	while(child != NULL){
 		paramChild = child->node.MessageIdentifier.parameters;
 		currentStruct = smprintf("");
 		while(paramChild != NULL){
+			char *name = codegen(paramChild->node.Parameter.identifier);
 			currentChildType = codegen(paramChild->node.Parameter.type);
 			old = currentStruct;
-			currentStruct = smprintf("%s%s arg_%d;\n",
-					currentStruct,currentChildType, i
+			currentStruct = smprintf("%s%s %s;\n",
+					currentStruct,currentChildType, name
 					);
 			free(old);
 			free(currentChildType);
+			free(name);
 			paramChild = paramChild->next;
-			i++;
 		}
 		old = codeBlock;
 		codeBlock = smprintf("struct %s{%s};\n%s",
@@ -515,7 +515,7 @@ char *mkStructsFromSpawns(AstNode *tree){
 		if(child->tag == Spawn){
 			id = codegen(child->node.Spawn.identifier);
 			old = result;
-			result = smprintf("struct %s %s_%d;\n", 
+			result = smprintf("struct %s %s_%d;\n",
 				id, id, child->node.Spawn.taskId, child->node.Spawn.taskId);
 			free(id);
 		} else {
@@ -536,7 +536,7 @@ void changeParamNames(AstNode *tree){
 	child = tree;
 	while(child != NULL){
 		free(child->node.Parameter.identifier->node.Identifier.symbol->name);
-		child->node.Parameter.identifier->node.Identifier.symbol->name = smprintf("runoff_arg_%d", i++);
+		child->node.Parameter.identifier->node.Identifier.symbol->name = smprintf("arg_%d", i++);
 		child = child->next;
 	}
 }
@@ -546,8 +546,8 @@ char *assignParamsToStruct(AstNode *spawnNode){
 	char *old;
 	int i = 0;
 	char *id = codegen(spawnNode->node.Spawn.identifier);
-	char *structName = smprintf("%s_%d", 
-		id, 
+	char *structName = smprintf("%s_%d",
+		id,
 		spawnNode->node.Spawn.taskId);
 	AstNode *child = spawnNode->node.Spawn.arguments;
 	free(id);
@@ -555,7 +555,7 @@ char *assignParamsToStruct(AstNode *spawnNode){
 
 	while(child != NULL){
 		char *expr = codegen(child);
-		char *field = smprintf("runoff_arg_%d", i);
+		char *field = smprintf("arg_%d", i);
 		Type *t = typeOf(child);
 		old = result;
 		if(t->tag == ArrayTypeTag){
@@ -568,7 +568,7 @@ char *assignParamsToStruct(AstNode *spawnNode){
 				field
 			);
 		} else {
-			result = smprintf("%s%s.%s = %s;\n", result, structName, field, expr);
+			result = smprintf("%s%s.runoff_%s = %s;\n", result, structName, field, expr);
 		}
 		child = child->next;
 		i++;
@@ -586,22 +586,22 @@ char *generateReceiveCaseData(AstNode *ReceiveCaseNode){
 	char *old;
 	AstNode *parameter = ReceiveCaseNode->node.ReceiveCase.dataNames;
 	AstNode *msgIdentifier = ReceiveCaseNode->node.ReceiveCase.messageName->node.Identifier.symbol->first->node.MessageIdentifier.parameters;
-	int i = 0;
+
 	while(parameter != NULL){
 		char *type = smprintf("runoff_%s", builtintypeNames[msgIdentifier->node.Parameter.type->node.BuiltinType.type]);
 		char *old_decl = decl;
 		char *id = codegen(parameter);
+		char *idfield = codegen(msgIdentifier->node.Parameter.identifier);
 		decl = smprintf("%s %s;\n%s", type, id, decl);
 
 		old = result;
-		result = smprintf("%s = m.data.%s.runoff_arg_%d;\n%s", id, idBOSS, i, result);
+		result = smprintf("%s = m.data.%s.%s;\n%s", id, idBOSS, idfield, result);
 		parameter = parameter->next;
 		msgIdentifier = msgIdentifier->next;
 		free(old_decl);
 		free(old);
 		free(id);
 		free(type);
-		i++;
 	}
 	old = result;
 	result = smprintf("%s%s", decl, result);

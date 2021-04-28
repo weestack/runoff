@@ -3,12 +3,12 @@ messages {
   ButtonReleased;
 }
 
-task blinker(pinid pin, uint32 _delay) {
+task blinker(pinid pin, uint32 adelay) {
   for(;;) {
     turnOn(pin);
-    Delay(_delay);
+    delay(adelay);
     turnOff(pin);
-    Delay(_delay);
+    delay(adelay);
   }
 }
 
@@ -42,10 +42,12 @@ task messagesHandler(pinid button, taskid stask) {
 
 
 function setup() -> void {
+    outputPin(12P);
     outputPin(13P);
     outputPin(9P);
     simpleInputPin(7P);
     spawn blinker(13P, 500);
+    spawn blinker(12P, 750);
     taskid spawnPressID = spawn blinkOnPress(9P);
     spawn messagesHandler(7P, spawnPressID);
 }
