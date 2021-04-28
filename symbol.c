@@ -158,8 +158,6 @@ void insertBuiltinFunctions(void) {
 	Type **inputPinParameters = malloc(sizeof(Type*) * 4);
 	Type **simpleInputPinParameters = malloc(sizeof(Type*) * 1);
 	Type **outputPinParameters = malloc(sizeof(Type*) * 1);
-	Type **analogInputPinParameters = malloc(sizeof(Type*) * 1);
-	Type **analogOutputPinParameters = malloc(sizeof(Type*) * 1);
 	Type **setOutputParameters = malloc(sizeof(Type*) * 2);
 	Type **analogWriteParameters = malloc(sizeof(Type*) * 2);
 
