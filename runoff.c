@@ -109,6 +109,8 @@ main(int argc, char *argv[])
 	if(verifyflag)
 		verifycode(code);
 
+	printf("Missing FreeRTOS bundle, FATAL ERROR\n" );
+
 	return 0;
 }
 
@@ -134,4 +136,3 @@ char *indent(char *code){
 	system(cmd);
 	return readFile(tmpname);
 }
-
