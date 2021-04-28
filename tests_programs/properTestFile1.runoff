@@ -2,7 +2,8 @@ pinid LED1 = 13P;
 pinid LED2 = 8P;
 
 messages {
-	hello;
+	ButtonPressed;
+	ButtonReleased;
 }
 
 task ledhandler(pinid led, uint32 miliseconds){
@@ -14,9 +15,12 @@ task ledhandler(pinid led, uint32 miliseconds){
 	}
 }
 
+
+
+
 function setup() -> void {
-	pinMode(LED1, OUTPUT);
-	pinMode(LED2, OUTPUT);
+	outputPin(LED1);
+	outputPin(LED2);
 	uint32 a = 500;
 	uint32 b = 1000;
 	spawn ledhandler(LED1, a);

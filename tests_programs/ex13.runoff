@@ -34,9 +34,8 @@ function otherway() -> bool {
 function setup() -> void {
 	int[10] f;
 	f[0] = 5;
+	otherway();
 	taskid mana;
-	taskid nama = spawn ledhandler(1, 2, f);
 	mana = spawn ledhandler(1,2,f);
-	inputPin(ButtonPin, nama, ButtonPressed{}, ButtonReleased{1, 2.0});
 	outputPin(LEDPin);
 }
