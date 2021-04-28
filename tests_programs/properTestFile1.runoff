@@ -9,9 +9,9 @@ messages {
 task ledhandler(pinid led, uint32 miliseconds){
 	for(;;){
 		turnOn(led);
-		Delay(miliseconds);
+		delay(miliseconds);
 		turnOff(led);
-		Delay(miliseconds);
+		delay(miliseconds);
 	}
 }
 
