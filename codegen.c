@@ -459,7 +459,7 @@ char *constructMessageStruct(AstNode *tree){
 		while(paramChild != NULL){
 			currentChildType = codegen(paramChild->node.Parameter.type);
 			old = currentStruct;
-			currentStruct = smprintf("%s%s arg_%d;\n",
+			currentStruct = smprintf("%s%s runoff_arg_%d;\n",
 					currentStruct,currentChildType, i
 					);
 			free(old);
@@ -536,7 +536,7 @@ void changeParamNames(AstNode *tree){
 	child = tree;
 	while(child != NULL){
 		free(child->node.Parameter.identifier->node.Identifier.symbol->name);
-		child->node.Parameter.identifier->node.Identifier.symbol->name = smprintf("arg_%d", i++);
+		child->node.Parameter.identifier->node.Identifier.symbol->name = smprintf("runoff_arg_%d", i++);
 		child = child->next;
 	}
 }
@@ -555,7 +555,7 @@ char *assignParamsToStruct(AstNode *spawnNode){
 
 	while(child != NULL){
 		char *expr = codegen(child);
-		char *field = smprintf("arg_%d", i);
+		char *field = smprintf("runoff_arg_%d", i);
 		Type *t = typeOf(child);
 		old = result;
 		if(t->tag == ArrayTypeTag){
@@ -594,7 +594,7 @@ char *generateReceiveCaseData(AstNode *ReceiveCaseNode){
 		decl = smprintf("%s %s;\n%s", type, id, decl);
 
 		old = result;
-		result = smprintf("%s = m.data.%s.arg_%d;\n%s", id, idBOSS, i, result);
+		result = smprintf("%s = m.data.%s.runoff_arg_%d;\n%s", id, idBOSS, i, result);
 		parameter = parameter->next;
 		msgIdentifier = msgIdentifier->next;
 		free(old_decl);
