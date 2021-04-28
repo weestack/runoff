@@ -1,0 +1,51 @@
+messages {
+  ButtonPressed;
+  ButtonReleased;
+}
+
+task blinker(pinid pin, uint32 _delay) {
+  for(;;) {
+    turnOn(pin);
+    Delay(_delay);
+    turnOff(pin);
+    Delay(_delay);
+  }
+}
+
+
+task blinkOnPress(pinid led) {
+  for(;;) {
+    receive {
+      case ButtonPressed{}: turnOn(led);
+      case ButtonReleased{}: turnOff(led);
+      default:
+    }
+  }
+}
+
+
+task messagesHandler(pinid button, taskid stask) {
+  bool t = false;
+  bool last = t;
+  for(;;){
+    t = readInput(button);
+    if(t != last){
+      if(t){
+        send ButtonPressed{} to stask;
+      } else {
+        send ButtonReleased{} to stask;
+      }
+    }
+    last = t;
+  }
+}
+
+
+function setup() -> void {
+    outputPin(13P);
+    outputPin(9P);
+    simpleInputPin(7P);
+    spawn blinker(13P, 500);
+    taskid spawnPressID = spawn blinkOnPress(9P);
+    spawn messagesHandler(7P, spawnPressID);
+}
