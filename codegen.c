@@ -76,7 +76,9 @@ char *codegen(AstNode *tree) {
 			changeParamNames(tree->node.DefineTask.parameters);
 			id = codegen(tree->node.DefineTask.identifier);
 			params = processBlock(tree->node.DefineTask.parameters, ";\n", 1);
-			expr = generateParametersFromStructFields(tree->node.DefineTask.parameters);
+			intlit = smprintf("char self = struct_args->self;\n");
+			type = generateParametersFromStructFields(tree->node.DefineTask.parameters);
+			expr = smprintf("%s %s", intlit, type);
 			extraCode = smprintf("struct %s *struct_args = (struct %s *)args;\n%s",
 				id, id, expr
 			);
@@ -282,6 +284,11 @@ char *codegen(AstNode *tree) {
 				result = smprintf("%s %s%s%s%s", type, id, intlit, expr, tree->node.VarDecl.toplevel == 1 ? ";" : "");
 			}
 			break;
+		case Send:
+			id = codegen(tree->node.Send.receiver);
+			expr = codegen(tree->node.Send.message);
+			result = smprintf("xQueueSend(%s,(void *) &%s,INCLUDE_vTaskSuspend);", id, expr);
+			break;
 		case BinaryOperation:
 			expr = codegen(tree->node.BinaryOperation.expression_left);
 			type = codegen(tree->node.BinaryOperation.expression_right);
@@ -368,7 +375,7 @@ char *generateParametersFromStructFields(AstNode *tree){
 	char *struct_type;
 	if(tree == NULL) return smprintf("");
 	
-	result = smprintf("char self = struct_args->self;\n");
+	result = smprintf("");
 	while(child != NULL){
 		old = result;
 		id = codegen(child->node.Parameter.identifier);
