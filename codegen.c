@@ -16,25 +16,6 @@ void changeParamNames(AstNode *);
 char *assignParamsToStruct(AstNode *);
 char *generateReceiveCaseData(AstNode *);
 
-/* Must be the same order as the BuiltinTypes enum */
-char *builtinTypeNames[] = {
-	"byte",
-	"unsigned int",
-	"unsigned long",
-	"uint64_t",
-	"char",
-	"int",
-	"long",
-	"int64_t",
-	"int",
-	"float",
-	"void",
-	"bool",
-	"struct Message",
-	"int",
-	"char",
-};
-
 char *codegen(AstNode *tree) {
 	char *id = NULL;
 	char *type = NULL;
@@ -47,6 +28,7 @@ char *codegen(AstNode *tree) {
 	char *indicies = NULL;
 	char *extraCode = NULL;
 	char *preCodeGen = NULL;
+	char *postCodeGen = NULL;
 
 	char *result = NULL;
 
@@ -55,9 +37,10 @@ char *codegen(AstNode *tree) {
 	switch (tree->tag) {
 		case Prog:
 			/* Special case include helper functions! */
-			preCodeGen = smprintf("%s\n#define numberOfSpawns %d\nTaskHandle_t handlers[numberOfSpawns];\n/*End of preCodeGen*/\n", readFile("arduino_helpers.ino"), tree->node.Prog.spawnCount);
+			preCodeGen = readFile("arduino_helpers_before.ino");
+			postCodeGen = readFile("arduino_helpers_after.ino");
 			params = processBlock(tree->node.Prog.toplevels, "\n", 0);
-			result = smprintf("%s\nQueueHandle_t Mailbox[%d];\n%s\n", preCodeGen, tree->node.Prog.spawnCount,params);
+			result = smprintf("%s\nQueueHandle_t Mailbox[%d];\n%s\n%s\n", preCodeGen, tree->node.Prog.spawnCount,params, postCodeGen);
 			break;
 		case DefineFunction:
 			id = codegen(tree->node.DefineFunction.identifier);
@@ -167,7 +150,7 @@ char *codegen(AstNode *tree) {
 			);
 			break;
 		case BuiltinType:
-			result = smprintf("%s", builtinTypeNames[tree->node.BuiltinType.type]);
+			result = smprintf("runoff_%s", builtintypeNames[tree->node.BuiltinType.type]);
 			break;
 		case StructType:
 			id = codegen(tree->node.StructType.identifier);
@@ -310,7 +293,7 @@ char *codegen(AstNode *tree) {
 		case MessageLiteral:
 			id = codegen(tree->node.MessageLiteral.identifier);
 			params = processBlock(tree->node.MessageLiteral.arguments, ",", 0); 
-			result = smprintf("(struct Message){%s, (struct %s){%s}}", id, id, params);
+			result = smprintf("(struct Message){%s, { .%s = (struct %s){%s}}}", id, id, id, params);
 			break;
 		default:
 			result = smprintf("");
@@ -327,6 +310,7 @@ char *codegen(AstNode *tree) {
 	free(indicies);
 	free(extraCode);
 	free(preCodeGen);
+	free(postCodeGen);
 
 	return result;
 }
@@ -476,8 +460,8 @@ char *constructMessageStruct(AstNode *tree){
 		while(paramChild != NULL){
 			currentChildType = codegen(paramChild->node.Parameter.type);
 			old = currentStruct;
-			currentStruct = smprintf("%s arg_%d;\n%s",
-					currentChildType, i, currentStruct
+			currentStruct = smprintf("%s%s arg_%d;\n",
+					currentStruct,currentChildType, i
 					);
 			free(old);
 			free(currentChildType);
@@ -536,7 +520,7 @@ char *mkStructsFromSpawns(AstNode *tree){
 		} else {
 			AstNode *children = child->children;
 			old = result;
-			result = smprintf("%s %s", result, mkStructsFromSpawns(children));
+			result = smprintf("%s %s",mkStructsFromSpawns(children), result);
 			/* Renember to free the children! */
 		}
 		child=child->chain;
@@ -566,7 +550,7 @@ char *assignParamsToStruct(AstNode *spawnNode){
 	AstNode *child;
 	child = spawnNode->node.Spawn.arguments;
 	
-	result = smprintf("Mailbox[%d] = xQueueCreate(messageQueueSize, sizeof(Message));\n%s.self = %d;\n",spawnNode->node.Spawn.taskId,structName, spawnNode->node.Spawn.taskId);
+	result = smprintf("Mailbox[%d] = xQueueCreate(messageQueueSize, (UBaseType_t)sizeof(Message));\n%s.self = %d;\n",spawnNode->node.Spawn.taskId,structName, spawnNode->node.Spawn.taskId);
 
 	while(child != NULL){
 		char *expr = codegen(child);
@@ -603,18 +587,19 @@ char *generateReceiveCaseData(AstNode *ReceiveCaseNode){
 	AstNode *msgIdentifier = ReceiveCaseNode->node.ReceiveCase.messageName->node.Identifier.symbol->first->node.MessageIdentifier.parameters;
 	int i = 0;
 	while(parameter != NULL){
-		char *type = builtinTypeNames[msgIdentifier->node.Parameter.type->node.BuiltinType.type];
+		char *type = smprintf("runoff_%s", builtintypeNames[msgIdentifier->node.Parameter.type->node.BuiltinType.type]);
 		char *old_decl = decl;
 		char *id = codegen(parameter);
 		decl = smprintf("%s %s;\n%s", type, id, decl);
 
 		old = result;
-		result = smprintf("%s%s = m.data.%s.arg_%d;\n", result, id, idBOSS, i);
+		result = smprintf("%s = m.data.%s.arg_%d;\n%s", id, idBOSS, i, result);
 		parameter = parameter->next;
 		msgIdentifier = msgIdentifier->next;
 		free(old_decl);
 		free(old);
 		free(id);
+		free(type);
 		i++;
 	}
 	old = result;
