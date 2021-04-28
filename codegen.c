@@ -609,7 +609,7 @@ char *generateReceiveCaseData(AstNode *ReceiveCaseNode){
 		decl = smprintf("%s %s;\n%s", type, id, decl);
 
 		old = result;
-		result = smprintf("%s%s = m.data.%s.arg_%d;\n", result, id, idBOSS, i);
+		result = smprintf("%s = m.data.%s.arg_%d;\n%s", id, idBOSS, i, result);
 		parameter = parameter->next;
 		msgIdentifier = msgIdentifier->next;
 		free(old_decl);
