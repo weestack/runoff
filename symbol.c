@@ -6,7 +6,6 @@
 
 static SymbolTable* symbolTable;
 static SymbolTable* current;
-
 static Symbol *enterSymbol(char *, Type*);
 static Symbol *declaredLocally(char *);
 static void insertBuiltinFunctions(void);
