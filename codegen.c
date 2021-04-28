@@ -561,7 +561,7 @@ char *assignParamsToStruct(AstNode *spawnNode){
 	AstNode *child;
 	child = spawnNode->node.Spawn.arguments;
 	
-	result = smprintf("Mailbox[%d] = xQueueCreate(messageQueueSize, sizeof(Message));\n%s.self = %d;\n",spawnNode->node.Spawn.taskId,structName, spawnNode->node.Spawn.taskId);
+	result = smprintf("Mailbox[%d] = xQueueCreate(messageQueueSize, (UBaseType_t)sizeof(Message));\n%s.self = %d;\n",spawnNode->node.Spawn.taskId,structName, spawnNode->node.Spawn.taskId);
 
 	while(child != NULL){
 		char *expr = codegen(child);

@@ -1,7 +1,6 @@
 #include <Arduino_FreeRTOS.h>
 #include <queue.h>
 
-#define configUSE_TIME_SLICING 1
 #define messageQueueSize 3
 
 void loop(){}
@@ -42,5 +41,9 @@ void outputPin(int pin){
 
 void simpleInputPin(int pin){
   pinMode(pin, INPUT);
+}
+
+void Delay(int miliSeconds){
+  vTaskDelay(pdMS_TO_TICKS(miliSeconds));
 }
 // End of helper file

@@ -186,7 +186,7 @@ void insertBuiltinFunctions(void) {
 	enterSymbol("turnOff", mkFunctionTypeDescriptor(1,turnOffParameters,mkBuiltinTypeDescriptor(BuiltinTypeVoid)));
 	enterSymbol("readInput", mkFunctionTypeDescriptor(1,readInputParameters,mkBuiltinTypeDescriptor(BuiltinTypeBool)));
 	enterSymbol("readAnalogInput", mkFunctionTypeDescriptor(1,readAnalogInputParameters,mkBuiltinTypeDescriptor(BuiltinTypeUint16)));
-	enterSymbol("delay", mkFunctionTypeDescriptor(1,delayParameters,mkBuiltinTypeDescriptor(BuiltinTypeVoid)));
+	enterSymbol("Delay", mkFunctionTypeDescriptor(1,delayParameters,mkBuiltinTypeDescriptor(BuiltinTypeVoid)));
 	enterSymbol("inputPin", mkFunctionTypeDescriptor(4,inputPinParameters,mkBuiltinTypeDescriptor(BuiltinTypeVoid)));
 	enterSymbol("simpleInputPin", mkFunctionTypeDescriptor(1,simpleInputPinParameters,mkBuiltinTypeDescriptor(BuiltinTypeVoid)));
 	enterSymbol("outputPin", mkFunctionTypeDescriptor(1,outputPinParameters,mkBuiltinTypeDescriptor(BuiltinTypeVoid)));
