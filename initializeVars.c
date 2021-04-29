@@ -24,7 +24,7 @@ static void insertInitCode(AstNode *exprstmt){
 	if(type->tag == BuiltinTypeTag && !sym->initializedVar)
 		decl->node.VarDecl.expression = getDefaultValue(type);
 
-	if(type->tag == ArrayTypeTag && getDefaultValue(type) != NULL){
+	if(type->tag == ArrayTypeTag && getDefaultValue(type->tags.typeArray.elementType) != NULL){
 		int i;
 		AstNode *list = exprstmt;
 		for(i = 0; i < type->tags.typeArray.size; i++){
