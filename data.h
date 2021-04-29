@@ -10,7 +10,6 @@ enum NodeTypes {
 	DefineTask,
 	DefineStruct,
 	DefineMessage,
-	IncludeRunoffFile,
 	MessageIdentifier,
 	StructMember,
 	Parameter,
@@ -121,7 +120,6 @@ typedef struct DefineFunctionNode DefineFunctionNode;
 typedef struct DefineStructNode DefineStructNode;
 typedef struct DefineTaskNode DefineTaskNode;
 typedef struct DefineMessageNode DefineMessageNode;
-typedef struct IncludeRunoffFileNode IncludeRunoffFileNode;
 typedef struct MessageIdentifierNode MessageIdentifierNode;
 typedef struct StructMemberNode StructMemberNode;
 typedef struct ParameterNode ParameterNode;
@@ -199,11 +197,6 @@ struct DefineMessageNode {
 	AstNode *messagesIdentifiers;
 };
 AstNode *mkDefineMessageNode(AstNode *);
-
-struct IncludeRunoffFileNode {
-	AstNode *identifier;
-};
-AstNode *mkIncludeRunoffFileNode(AstNode *);
 
 struct MessageIdentifierNode {
 	AstNode *identifier;
@@ -426,7 +419,6 @@ struct AstNode {
 		DefineTaskNode DefineTask;
 		DefineStructNode DefineStruct;
 		DefineMessageNode DefineMessage;
-		IncludeRunoffFileNode IncludeRunoffFile;
 		MessageIdentifierNode MessageIdentifier;
 		StructMemberNode StructMember;
 		ParameterNode Parameter;

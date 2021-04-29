@@ -20,11 +20,7 @@ punctuation [\[\]\(\)\{\};:=,\.\?]
 "#".*\n
 "->" {return right_arrow;}
 
-"include" {return include_keyword;}
-
 "struct" {return struct_keyword;}
-
-
 "messages" {return messages;}
 "function" {return function;}
 "task" {return task;}
@@ -101,10 +97,6 @@ pinid {yylval.astNode = mkBuiltinTypeNode(BuiltinTypePinid); return builtin_type
 ">" {return greater_than;}
 "%" {return modulo;}
 (\+|-|\*|\/|!) {return yytext[0];}
-
-
-
-
 
 {identifier} {yylval.astNode = mkIdentifierNode(strdup(yytext)); return identifier;}
 [ \t\n\r]+ /* skip whitespce, tab and newline */

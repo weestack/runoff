@@ -97,12 +97,6 @@ AstNode *mkDefineMessageNode(AstNode *messagesIdentifiers){
 	return node;
 }
 
-AstNode *mkIncludeRunoffFileNode(AstNode *identifier){
-	AstNode *node = mkNode(IncludeRunoffFile, identifier);
-	SETCHILD(IncludeRunoffFile,identifier);
-	return node;
-}
-
 AstNode *mkMessageIdentifierNode(AstNode *identifier, AstNode *parameters){
 	AstNode *node = mkNode(MessageIdentifier, identifier);
 	SETCHILD(MessageIdentifier,identifier);

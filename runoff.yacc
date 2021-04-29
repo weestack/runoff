@@ -56,8 +56,6 @@
 	send_keyword
 	to_keyword
 
-	include_keyword
-
 	bitwise_and
 	bitwise_or
 	bitwise_xor
@@ -96,7 +94,6 @@ Toplevel: function identifier '(' ParametersList ')' right_arrow Type '{' Statem
 	| struct_keyword identifier '{' StructMembers '}' {$$=mkDefineStructNode($2, $4);}
 	| messages '{' MessageIdentifiers '}' {$$ = mkDefineMessageNode($3);}
 	| Type identifier '=' Expression ';' {$$ = mkVarDeclNode($1, $2, $4, 1);}
-	/*| include_keyword '(' identifier ')' ';'*/
 	;
 
 MessageIdentifiers: MessageIdentifiers MessageIdentifier {$$ = append_node($1, $2);}

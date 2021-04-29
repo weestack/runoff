@@ -14,8 +14,8 @@ char *operatorNames[] = {
 	"<=",
 	"==",
 	"!=",
-	"--",
 	"++",
+	"--",
 	"<",
 	">",
 	"%",
@@ -105,10 +105,6 @@ char *prettyprint(AstNode *node)
 	case DefineMessage:
 		messages = prettyprintlist(node->node.DefineMessage.messagesIdentifiers, ";\n", 1);
 		result = smprintf("messages {\n%s}", messages);
-		break;
-	case IncludeRunoffFile:
-		id = prettyprint(node->node.IncludeRunoffFile.identifier);
-		result = smprintf("include(%s);", id);
 		break;
 	case MessageIdentifier:
 		id = prettyprint(node->node.MessageIdentifier.identifier);
