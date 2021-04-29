@@ -193,12 +193,15 @@ static void checkVarInitialized(AstNode *tree){
 		}
 	}else if(type->tag == ArrayTypeTag && !entireArrayInitialized(sym) && tree->parent->tag != Assignment){
 		int i = 0;
-		eprintf(tree->linenum, "Warning: Elements of array '%s' might not be initialized at indices: ", sym->name);
-		for(i = 0; i < type->tags.typeArray.size; i++){
-			if(sym->initializedArray[i] == 0)
-				printf("%d ", i);
+		AstNode *expr = getDefaultValue(type->tags.typeArray.elementType);
+		if(expr == NULL){
+			eprintf(tree->linenum, "Warning: Elements of array '%s' might not be initialized at indices: ", sym->name);
+			for(i = 0; i < type->tags.typeArray.size; i++){
+				if(sym->initializedArray[i] == 0)
+					printf("%d ", i);
+			}
+			printf("\n");
 		}
-		printf("\n");
 	}
 }
 

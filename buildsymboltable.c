@@ -428,7 +428,7 @@ void handleAssignment(AstNode *node){
 	case ArrayLocation:
 		id = loc->node.ArrayLocation.identifier;
 		sym = id->node.Identifier.symbol;
-		for(ix = loc->node.ArrayLocation.indicies; ix->next != NULL; ix = ix->next)
+		for(ix = loc->node.ArrayLocation.indicies; ix->next != NULL; ix = ix->next);
 		if(ix->tag == IntLiteral)
 			sym->initializedArray[ix->node.IntLiteral.value] = 1;
 		break;
