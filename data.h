@@ -458,6 +458,7 @@ struct AstNode {
 	AstNode *next; /* The next element in the list */
 	AstNode *chain; /* The next element in the chain of children */
 	AstNode *children; /* The first child of this node */
+	AstNode *parent; /* The parent node */
 };
 AstNode *append_node(AstNode *, AstNode *);
 int nodeLength(AstNode *);
@@ -466,7 +467,8 @@ struct Symbol {
 	char* name;
 	Type *type;
 	int globalvar;
-	int initialized;
+	int initializedVar;
+	int *initializedArray;
 	int used;
 	int linenum; /* the line number where the symbol first appeared */
 	Symbol* next;

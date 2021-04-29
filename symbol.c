@@ -84,10 +84,16 @@ Symbol *enterSymbol(char *name, Type *type){
 	symbol->name = name;
 	symbol->type = type;
 	symbol->globalvar = 0;
-	symbol->initialized = 0;
+	symbol->initializedVar = 0;
 	symbol->used = 0;
 	symbol->next = current->symbols;
 	current->symbols = symbol;
+	
+	if(type != NULL && type->tag == ArrayTypeTag)
+		symbol->initializedArray = malloc(sizeof(int) * type->tags.typeArray.size);
+	else if(type != NULL)
+		symbol->initializedArray = NULL;
+
 	return symbol;
 }
 

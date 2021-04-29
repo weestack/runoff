@@ -10,6 +10,7 @@ static void checkSwitchHasDefault(AstNode *tree);
 static void checkReceiveHasDefault(AstNode *tree);
 static void checkNotGlobalVar(AstNode *tree);
 static void checkHasMaxOneMessageBlock(AstNode *tree);
+static int entireArrayInitialized(Symbol *sym);
 static void checkVarInitialized(AstNode *tree);
 static void checkAllSpawnsInSetup(AstNode *prog, AstNode *stmts);
 static int countSpawns(AstNode *nodes, int recurse);
@@ -168,6 +169,7 @@ static void checkHasMaxOneMessageBlock(AstNode *tree){
 static void checkVarInitialized(AstNode *tree){
 	AstNode *id;
 	Symbol *sym;
+	Type *type;
 	switch(tree->tag){
 	case VariableLocation:
 		id = tree->node.VariableLocation.identifier;
@@ -183,8 +185,9 @@ static void checkVarInitialized(AstNode *tree){
 	}
 
 	sym = id->node.Identifier.symbol;
-	if(!sym->initialized){
-		AstNode *expr = getDefaultValue(sym->type);
+	type = sym->type;
+	if(type->tag == BuiltinTypeTag && !sym->initializedVar){
+		AstNode *expr = getDefaultValue(type);
 		if(expr != NULL){
 			/* replace the occurence of variable v with v=e where e is the default value.*/
 			AstNode *loc = malloc(sizeof(AstNode));
@@ -192,12 +195,29 @@ static void checkVarInitialized(AstNode *tree){
 			tree->tag = Assignment;
 			tree->node.Assignment.location = loc;
 			tree->node.Assignment.expression = expr;
-			sym->initialized = 1;
+			sym->initializedVar = 1;
 		}else{
 			eprintf(tree->linenum, "Variable '%s' is not initialized when used here\n", sym->name);
 			errors++;
 		}
+	}else if(type->tag == ArrayTypeTag && !entireArrayInitialized(sym) && tree->parent->tag != Assignment){
+		int i = 0;
+		eprintf(tree->linenum, "Warning: Elements of array '%s' might not be initialized at indices: ", sym->name);
+		for(i = 0; i < type->tags.typeArray.size; i++){
+			if(sym->initializedArray[i] == 0)
+				printf("%d ", i);
+		}
+		printf("\n");
 	}
+}
+
+static int entireArrayInitialized(Symbol *sym){
+	int i;
+	for(i = 0; i < sym->type->tags.typeArray.size; i++){
+		if(sym->initializedArray[i] == 0)
+			return 0;
+	}
+	return 1;
 }
 
 static AstNode *getDefaultValue(Type *type){

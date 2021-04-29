@@ -88,7 +88,12 @@ Type *processNode(AstNode *node){
 		vartype = processNode(node->node.Parameter.type);
 		errors += insertSymbol(node->node.Parameter.identifier, vartype);
 		sym = retrieveSymbol(node->node.Parameter.identifier);
-		sym->initialized = 1;
+		if(vartype->tag == ArrayTypeTag){
+			int i;
+			for(i = 0; i < vartype->tags.typeArray.size; i++)
+				sym->initializedArray[i] = 1;
+		}else if(vartype->tag == BuiltinTypeTag)
+			sym->initializedVar = 1;
 		break;
 	case BuiltinType:
 		return mkBuiltinTypeDescriptor(node->node.BuiltinType.type);
@@ -143,7 +148,7 @@ Type *processNode(AstNode *node){
 		sym = retrieveSymbol(node->node.VarDecl.identifier);
 		sym->globalvar = node->node.VarDecl.toplevel;
 		if(node->node.VarDecl.expression != NULL)
-			sym->initialized = 1;
+			sym->initializedVar = 1;
 		return NULL; /* special case */
 	case VariableLocation:
 		sym = retrieveSymbol(node->node.VariableLocation.identifier);
@@ -387,7 +392,13 @@ void handleReceiveCase(AstNode *node){
 		Symbol *tmpsym;
 		errors += insertSymbol(arg, params[paramnr]);
 		tmpsym = retrieveSymbol(arg);
-		tmpsym->initialized = 1;
+		if(tmpsym->type->tag == ArrayTypeTag){
+			int i;
+			for(i = 0; i < tmpsym->type->tags.typeArray.size; i++)
+				sym->initializedArray[i] = 1;
+		}else if(tmpsym->type->tag == BuiltinTypeTag)
+			sym->initializedVar = 1;
+		tmpsym->initializedVar = 1;
 	}
 	if(paramnr != paramcount || arg != NULL){
 		errors++;
@@ -401,27 +412,28 @@ void handleAssignment(AstNode *node){
 	AstNode *loc = node->node.Assignment.location;
 	AstNode *expr = node->node.Assignment.expression;
 	AstNode *id = NULL;
+	AstNode *ix;
 	Symbol *sym;
 
 	processNode(expr);
 	processNode(loc);
 
-	/* TODO fix for structs and arrays. Right now, assignment to one field/element marks the whole thing as initialized :--) */
+	/* TODO fix for structs. The array stuff only works for 1D arrays..... */
 	switch(loc->tag){
 	case VariableLocation:
 		id = loc->node.VariableLocation.identifier;
+		sym = id->node.Identifier.symbol;
+		sym->initializedVar = 1;
 		break;
 	case ArrayLocation:
-		id = loc->node.VariableLocation.identifier;
+		id = loc->node.ArrayLocation.identifier;
+		sym = id->node.Identifier.symbol;
+		for(ix = loc->node.ArrayLocation.indicies; ix->next != NULL; ix = ix->next)
+		if(ix->tag == IntLiteral)
+			sym->initializedArray[ix->node.IntLiteral.value] = 1;
 		break;
 	case StructLocation:
 		id = loc->node.StructLocation.identifier;
 		break;
 	}
-
-	if(id != NULL){
-		sym = id->node.Identifier.symbol;
-		sym->initialized = 1;
-	}
-
 }

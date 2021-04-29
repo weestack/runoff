@@ -57,8 +57,11 @@ static AstNode *chain(AstNode *a, AstNode *b){
 
 #define SETCHILD(Tag, A) \
 	do{ \
+		AstNode *tmp; \
 		node->node.Tag.A = A; \
 		node->children = chain(node->children, node->node.Tag.A); \
+		for(tmp = node->node.Tag.A; tmp != NULL; tmp = tmp->next) \
+			tmp->parent = node; \
 	}while(0)
 
 AstNode *mkProgNode(AstNode *toplevels){
