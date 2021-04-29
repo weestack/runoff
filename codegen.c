@@ -205,7 +205,7 @@ char *codegen(AstNode *tree) {
 				);
 			} else if(tree->node.Assignment.location->tag == ArrayLocation && tree->node.Assignment.expression->tag == ArrayLocation){
 				expr = processBlock(tree->node.Assignment.expression, "", 0);
-				result = smprintf("memcpy(%s, %s)", id, expr);
+				result = smprintf("memcpy(%s, %s, sizeof(%s))", id, expr, id);
 			}else {
 				expr = processBlock(tree->node.Assignment.expression, "", 0);
 				result = smprintf("(%s = %s)", id, expr);
@@ -267,7 +267,6 @@ char *codegen(AstNode *tree) {
 				);
 			} else {
 				type = smprintf("%s%s", tree->node.VarDecl.toplevel == 1 ? "const " : "", codegen(tree->node.VarDecl.type));
-				printf("This is a tag: %d\n", tree->node.VarDecl.type->tag);
 				intlit = tree->node.VarDecl.type->tag == ArrayType ? buildArrayDeclIndices(tree->node.VarDecl.type) : smprintf("");
 				expr = tree->node.VarDecl.expression != NULL ? smprintf(" = %s", codegen(tree->node.VarDecl.expression)) : smprintf("");
 				result = smprintf("%s %s%s%s%s", type, id, intlit, expr, tree->node.VarDecl.toplevel == 1 ? ";" : "");
@@ -369,6 +368,7 @@ char *mkAdvancedInputCode(AstNode *tree){
 
 char *buildArrayDeclIndices(AstNode *node) {
 	char *buffer = smprintf("[%s]", codegen(node->node.ArrayType.int_literal));
+	printf("Building indicies at line %d!\n", node->linenum);
 	while (node->node.ArrayType.type->tag == ArrayType) {
 		char *tmp = buffer;
 		node = node->node.ArrayType.type;
@@ -421,7 +421,7 @@ char *generateParametersFromStructFields(AstNode *tree){
 		old = result;
 		id = codegen(child->node.Parameter.identifier);
 		type = codegen(child->node.Parameter.type);
-		if(child->node.Parameter.type->tag == ArrayTypeTag){
+		if(child->node.Parameter.type->tag == ArrayType){
 			struct_id = smprintf("%s_original", id);
 			struct_type = smprintf("%s *", type);
 		} else {
@@ -455,7 +455,7 @@ char *generatePassByValue(AstNode *tree) {
 	while(child != NULL){
 		prev = smprintf("%s", result);
 		switch (child->node.Parameter.type->tag) {
-			case ArrayTypeTag:
+			case ArrayType:
 				childstr = smprintf("%s %s%s; memcpy(%s, %s, sizeof(%s));",
 						codegen(child->node.Parameter.type->node.ArrayType.type),
 						codegen(child->node.Parameter.identifier),
