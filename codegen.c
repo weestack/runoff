@@ -5,6 +5,7 @@
 #include "auxiliary.h"
 
 char *processBlock(AstNode *, char *, int);
+char *setupPreCodeGen(AstNode *);
 char *buildArrayDeclIndices(AstNode *);
 char *generateParametersFromStructFields(AstNode *);
 char *generatePassByValue(AstNode *);
@@ -14,6 +15,7 @@ char *constructMessageUnionStruct(AstNode *);
 char *mkStructsFromSpawns(AstNode *);
 char *assignParamsToStruct(AstNode *);
 char *generateReceiveCaseData(AstNode *);
+char *mkAdvancedInputCode(AstNode *);
 
 char *codegen(AstNode *tree) {
 	char *id = NULL;
@@ -27,7 +29,6 @@ char *codegen(AstNode *tree) {
 	char *indicies = NULL;
 	char *extraCode = NULL;
 	char *preCodeGen = NULL;
-	char *postCodeGen = NULL;
 
 	char *result = NULL;
 
@@ -35,16 +36,14 @@ char *codegen(AstNode *tree) {
 
 	switch (tree->tag) {
 		case Prog:
-			/* Special case include helper functions! */
-			preCodeGen = readFile("arduino_helpers_before.ino");
-			postCodeGen = readFile("arduino_helpers_after.ino");
+			preCodeGen = readFile("arduino_support_code.ino");
 			params = processBlock(tree->node.Prog.toplevels, "\n", 0);
-			result = smprintf("%s\nQueueHandle_t Mailbox[%d];\n%s\n%s\n", preCodeGen, tree->node.Prog.spawnCount,params, postCodeGen);
+			result = smprintf("%s\nQueueHandle_t Mailbox[%d];\n%s\n", preCodeGen, tree->node.Prog.spawnCount,params);
 			break;
 		case DefineFunction:
 			id = codegen(tree->node.DefineFunction.identifier);
 			if(strcmp(tree->node.DefineFunction.identifier->node.Identifier.symbol->name, "setup") == 0)
-				preCodeGen = mkStructsFromSpawns(tree->node.DefineFunction.statements);
+				preCodeGen = setupPreCodeGen(tree);
 			else
 				preCodeGen = smprintf("");
 			type = codegen(tree->node.DefineFunction.type);
@@ -244,9 +243,17 @@ char *codegen(AstNode *tree) {
 			result = smprintf("return %s;", expr);
 			break;
 		case FunctionCall:
-			id = codegen(tree->node.FunctionCall.identifier);
 			params = processBlock(tree->node.FunctionCall.arguments, ",", 0);
-			result = smprintf("%s(%s)", id, params);
+			if(strcmp(tree->node.FunctionCall.identifier->node.Identifier.symbol->name, "advancedInputPin") == 0){
+				id = smprintf("advancedPinHandler_%p", (void*)tree);
+				preCodeGen = smprintf("advancedInputStruct_%p = (struct AdvancedInputStruct){%s};",
+					(void*)tree, params);
+				intlit = codegen(tree->node.FunctionCall.arguments);
+				result = smprintf("%s\nattachInterrupt(digitalPinToInterrupt(%s), %s, CHANGE);\n", preCodeGen, intlit, id);
+			}else{
+				id = codegen(tree->node.FunctionCall.identifier);
+				result = smprintf("%s(%s)", id, params);
+			}
 			break;
 		case VarDecl:
 			if(tree->node.VarDecl.expression != NULL && tree->node.VarDecl.expression->tag == Spawn){
@@ -307,8 +314,54 @@ char *codegen(AstNode *tree) {
 	free(indicies);
 	free(extraCode);
 	free(preCodeGen);
-	free(postCodeGen);
 
+	return result;
+}
+
+char *setupPreCodeGen(AstNode *tree){
+	char *spawnStructs = mkStructsFromSpawns(tree->node.DefineFunction.statements);
+	char *advancedInputCode = mkAdvancedInputCode(tree->node.DefineFunction.statements);
+	char *result = smprintf("%s\n%s\n", spawnStructs, advancedInputCode);
+	free(spawnStructs);
+	free(advancedInputCode);
+	return result;
+}
+
+char *mkAdvancedInputCode(AstNode *tree){
+	char *structcode = "struct AdvancedInputStruct {runoff_pinid pin; runoff_taskid taskid; runoff_msg msghigh; runoff_msg msglow;};\n";
+	char *structInstances = smprintf("");
+	char *interruptHandlers = smprintf("");
+
+	char *result;
+	while(tree != NULL){
+		AstNode *expr;
+		if(tree->tag != ExprStmt)
+			continue;
+
+		expr = tree->node.ExprStmt.expression;
+		if(expr->tag == FunctionCall && strcmp(expr->node.FunctionCall.identifier->node.Identifier.symbol->name, "advancedInputPin") == 0){
+			char *oldInstances = structInstances;
+			char *oldHandlers = interruptHandlers;
+			structInstances = smprintf("%sstruct AdvancedInputStruct advancedInputStruct_%p;\n", structInstances, (void*)expr);
+			interruptHandlers = smprintf(
+				"%s"
+				"void advancedPinHandler_%p(void) {"
+				"	struct AdvancedInputStruct p = advancedInputStruct_%p;"
+				"	bool state = digitalRead(p.pin);"
+				"	QueueHandle_t queue = Mailbox[p.taskid];"
+				"	if(state)"
+				"		xQueueSend(queue, &(p.msghigh), 0);"
+				"	else"
+				"		xQueueSend(queue, &(p.msglow), 0);"
+				"}",
+				interruptHandlers, (void*)expr, (void*)expr);
+			free(oldHandlers);
+			free(oldInstances);
+		}
+		tree = tree->next;
+	}
+	result = smprintf("%s\n%s\n%s\n", structcode, structInstances, interruptHandlers);
+	free(structInstances);
 	return result;
 }
 

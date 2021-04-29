@@ -23,31 +23,13 @@ task blinkOnPress(pinid led) {
   }
 }
 
-
-task messagesHandler(pinid button, taskid stask) {
-  bool t = false;
-  bool last = t;
-  for(;;){
-    t = readInput(button);
-    if(t != last){
-      if(t){
-        send ButtonPressed{} to stask;
-      } else {
-        send ButtonReleased{} to stask;
-      }
-    }
-    last = t;
-  }
-}
-
-
 function setup() -> void {
     outputPin(12P);
     outputPin(13P);
     outputPin(9P);
-    simpleInputPin(7P);
+    inputPin(7P);
     spawn blinker(13P, 500);
     spawn blinker(12P, 750);
     taskid spawnPressID = spawn blinkOnPress(9P);
-    spawn messagesHandler(7P, spawnPressID);
+    advancedInputPin(7P, spawnPressID, ButtonPressed{}, ButtonReleased{});
 }

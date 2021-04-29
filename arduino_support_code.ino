@@ -18,7 +18,6 @@
 #define runoff_taskid	int8_t
 #define runoff_pinid	int8_t
 
-
 void loop(){}
 // Helper function to create tasks
 void createTask(TaskFunction_t taskFunction, void *args){
@@ -79,4 +78,11 @@ runoff_void runoff_setOutput(runoff_pinid pin, runoff_bool b){
 runoff_void runoff_delay(runoff_uint32 miliSeconds){
   vTaskDelay(pdMS_TO_TICKS(miliSeconds));
 }
+
+runoff_void runoff_setup(runoff_void);
+
+void setup(void) {
+	runoff_setup();
+}
+
 // End of helper file
