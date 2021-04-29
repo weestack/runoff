@@ -7,13 +7,10 @@ void initializeVars(AstNode *tree){
 	if(tree == NULL)
 		return;
 
-	if(tree->tag == ExprStmt && tree->node.ExprStmt.expression->tag == VarDecl){
-		printf("Before insertion %p\n", (void*) tree->chain);
+	if(tree->tag == ExprStmt && tree->node.ExprStmt.expression->tag == VarDecl)
 		insertInitCode(tree);
-		printf("After insertion %p\n", (void*) tree->chain);
-	}else{
+	else
 		initializeVars(tree->children);
-	}
 
 	if(tree->chain != NULL)
 		initializeVars(tree->chain);
@@ -27,10 +24,9 @@ static void insertInitCode(AstNode *exprstmt){
 	if(type->tag == BuiltinTypeTag && !sym->initializedVar)
 		decl->node.VarDecl.expression = getDefaultValue(type);
 
-	if(type->tag == ArrayTypeTag){
+	if(type->tag == ArrayTypeTag && getDefaultValue(type) != NULL){
 		int i;
 		AstNode *list = exprstmt;
-		printf("INIT ARRAY FIELDSS\n");
 		for(i = 0; i < type->tags.typeArray.size; i++){
 			AstNode *index, *loc, *expr, *assign;
 			
