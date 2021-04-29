@@ -95,13 +95,13 @@ char *codegen(AstNode *tree) {
 		case Parameter:
 			type = codegen(tree->node.Parameter.type);
 
-			if (tree->node.Parameter.type->tag == ArrayTypeTag) {
+			if (tree->node.Parameter.type->tag == ArrayType) {
 				preCodeGen = codegen(tree->node.Parameter.identifier);
 				id = smprintf("%s_original",preCodeGen);
 			}else {
 				id = codegen(tree->node.Parameter.identifier);
 			}
-			intlit = tree->node.Parameter.type->tag == ArrayTypeTag ? buildArrayDeclIndices(tree->node.Parameter.type) : smprintf("");
+			intlit = tree->node.Parameter.type->tag == ArrayType ? buildArrayDeclIndices(tree->node.Parameter.type) : smprintf("");
 			result = smprintf("%s %s%s", type, id, intlit);
 			break;
 		case ElseIf:
@@ -258,8 +258,8 @@ char *codegen(AstNode *tree) {
 			}
 			break;
 		case VarDecl:
+			id = codegen(tree->node.VarDecl.identifier);
 			if(tree->node.VarDecl.expression != NULL && tree->node.VarDecl.expression->tag == Spawn){
-				id = codegen(tree->node.VarDecl.identifier);
 				expr = codegen(tree->node.VarDecl.expression);
 				result = smprintf("char %s = %d;%s", id,
 					tree->node.VarDecl.expression->node.Spawn.taskId,
@@ -267,8 +267,8 @@ char *codegen(AstNode *tree) {
 				);
 			} else {
 				type = smprintf("%s%s", tree->node.VarDecl.toplevel == 1 ? "const " : "", codegen(tree->node.VarDecl.type));
-				id = codegen(tree->node.VarDecl.identifier);
-				intlit = tree->node.VarDecl.type->tag == ArrayTypeTag ? buildArrayDeclIndices(tree->node.VarDecl.type) : smprintf("");
+				printf("This is a tag: %d\n", tree->node.VarDecl.type->tag);
+				intlit = tree->node.VarDecl.type->tag == ArrayType ? buildArrayDeclIndices(tree->node.VarDecl.type) : smprintf("");
 				expr = tree->node.VarDecl.expression != NULL ? smprintf(" = %s", codegen(tree->node.VarDecl.expression)) : smprintf("");
 				result = smprintf("%s %s%s%s%s", type, id, intlit, expr, tree->node.VarDecl.toplevel == 1 ? ";" : "");
 			}
@@ -369,7 +369,7 @@ char *mkAdvancedInputCode(AstNode *tree){
 
 char *buildArrayDeclIndices(AstNode *node) {
 	char *buffer = smprintf("[%s]", codegen(node->node.ArrayType.int_literal));
-	while (node->node.ArrayType.type->tag == ArrayTypeTag) {
+	while (node->node.ArrayType.type->tag == ArrayType) {
 		char *tmp = buffer;
 		node = node->node.ArrayType.type;
 		buffer = smprintf("[%s]%s", codegen(node->node.ArrayType.int_literal), buffer);
@@ -601,7 +601,7 @@ char *assignParamsToStruct(AstNode *spawnNode){
 		char *field = codegen(parameter->node.Parameter.identifier);
 		Type *t = typeOf(child);
 		old = result;
-		if(t->tag == ArrayTypeTag){
+		if(t->tag == ArrayType){
 			result = smprintf("%smemcpy(%s.%s_original, %s, sizeof(%s.%s_original));\n",
 				result,
 				structName,
