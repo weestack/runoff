@@ -197,14 +197,16 @@ char *codegen(AstNode *tree) {
 			result = smprintf("%s;", expr);
 			break;
 		case Assignment:
+			id = codegen(tree->node.Assignment.location);
 			if(tree->node.Assignment.expression != NULL && tree->node.Assignment.expression->tag == Spawn){
-				id = codegen(tree->node.Assignment.location);
 				expr = codegen(tree->node.Assignment.expression);
 				result = smprintf("%s = %d; %s", id,
 					tree->node.Assignment.expression->node.Spawn.taskId, expr
 				);
-			} else {
-				id = codegen(tree->node.Assignment.location);
+			} else if(tree->node.Assignment.location->tag == ArrayLocation && tree->node.Assignment.expression->tag == ArrayLocation){
+				expr = processBlock(tree->node.Assignment.expression, "", 0);
+				result = smprintf("memcpy(%s, %s)", id, expr);
+			}else {
 				expr = processBlock(tree->node.Assignment.expression, "", 0);
 				result = smprintf("(%s = %s)", id, expr);
 			}
