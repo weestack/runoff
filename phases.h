@@ -20,5 +20,9 @@ int checkused(AstNode *tree);
    defined in removeNestedDecls.c */
 void removeNestedDecls(AstNode *tree);
 
+/* Initialize all variables that can have a default value, but isn't
+   initialized explicitly. Defined in initializeVars.c */
+void initializeVars(AstNode *tree);
+
 /* Code generation defined ind codegen.c */
 char *codegen(AstNode *tree);

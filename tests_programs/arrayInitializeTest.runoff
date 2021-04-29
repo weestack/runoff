@@ -11,6 +11,7 @@ function setup() -> void {
 	arr[5] = 1;
 	arr[2] = 1;
 	bool[5][6] barr;
-	barr[5][3] = true;
+	bool truth;
+	barr[5][3] = truth;
 	testfn(pin, arr, barr);
 }

@@ -94,6 +94,7 @@ main(int argc, char *argv[])
 
 	/* some code transformations that cannot fail */
 	removeNestedDecls(tree);
+	initializeVars(tree);
 
 	/* generate the code! */
 	code = codegen(tree);

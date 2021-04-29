@@ -14,7 +14,6 @@ static int entireArrayInitialized(Symbol *sym);
 static void checkVarInitialized(AstNode *tree);
 static void checkAllSpawnsInSetup(AstNode *prog, AstNode *stmts);
 static int countSpawns(AstNode *nodes, int recurse);
-static AstNode *getDefaultValue(Type *type);
 static void checkAllAdvancedInputInSetup(AstNode *prog, AstNode *stmts);
 static int countFunctioncall(char *name, AstNode *nodes, int recurse);
 
@@ -188,15 +187,7 @@ static void checkVarInitialized(AstNode *tree){
 	type = sym->type;
 	if(type->tag == BuiltinTypeTag && !sym->initializedVar){
 		AstNode *expr = getDefaultValue(type);
-		if(expr != NULL){
-			/* replace the occurence of variable v with v=e where e is the default value.*/
-			AstNode *loc = malloc(sizeof(AstNode));
-			memcpy(loc, tree, sizeof(AstNode));
-			tree->tag = Assignment;
-			tree->node.Assignment.location = loc;
-			tree->node.Assignment.expression = expr;
-			sym->initializedVar = 1;
-		}else{
+		if(expr == NULL){
 			eprintf(tree->linenum, "Variable '%s' is not initialized when used here\n", sym->name);
 			errors++;
 		}
@@ -218,29 +209,6 @@ static int entireArrayInitialized(Symbol *sym){
 			return 0;
 	}
 	return 1;
-}
-
-static AstNode *getDefaultValue(Type *type){
-	if(type->tag != BuiltinTypeTag)
-		return NULL;
-
-	switch(type->tags.typeBuiltin.builtinType){
-	case BuiltinTypeUint8:
-	case BuiltinTypeUint16:
-	case BuiltinTypeUint32:
-	case BuiltinTypeUint64:
-	case BuiltinTypeInt8:
-	case BuiltinTypeInt16:
-	case BuiltinTypeInt32:
-	case BuiltinTypeInt64:
-		return mkIntLiteralNode(0);
-	case BuiltinTypeFloat:
-		return mkFloatLiteralNode(0);
-	case BuiltinTypeBool:
-		return mkBoolLiteralNode(0);
-	default:
-		return NULL;
-	}
 }
 
 static int countSpawns(AstNode *nodes, int recurse){

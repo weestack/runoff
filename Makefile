@@ -1,5 +1,5 @@
 # Specify what source C files we have
-SOURCES=lexer.c parser.c runoff.c ast.c prettyprint.c symbol.c typechecker.c buildsymboltable.c auxiliary.c codegen.c removeNestedDecls.c constraints.c checkused.c
+SOURCES=lexer.c parser.c runoff.c ast.c prettyprint.c symbol.c typechecker.c buildsymboltable.c auxiliary.c codegen.c removeNestedDecls.c constraints.c checkused.c initializeVars.c
 
 # What headers do we have?
 HEADERS=phases.h data.h auxiliary.h

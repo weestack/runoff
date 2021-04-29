@@ -535,3 +535,4 @@ struct Type {
 		MessageTypeDescriptor typeMessage;
 	} tags;
 };
+AstNode *getDefaultValue(Type *type);
