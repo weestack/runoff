@@ -14,6 +14,8 @@ static void checkVarInitialized(AstNode *tree);
 static void checkAllSpawnsInSetup(AstNode *prog, AstNode *stmts);
 static int countSpawns(AstNode *nodes, int recurse);
 static AstNode *getDefaultValue(Type *type);
+static void checkAllAdvancedInputInSetup(AstNode *prog, AstNode *stmts);
+static int countFunctioncall(char *name, AstNode *nodes, int recurse);
 
 /* The following list of contextual constraints are checked by
    this phase:
@@ -24,6 +26,7 @@ static AstNode *getDefaultValue(Type *type);
    5) Each tree has at most one messages block
    6) All variables are initialized before use, or have a default value
    7) All spawns appear as a statement directly in the setup function
+   8) All calls to advancedInputPin appear as a statement directly in the setup function
  */
 int contextualConstraintsCheck(AstNode *tree){
 	AstNode *children;
@@ -82,6 +85,7 @@ static void checkTreeHasSetup(AstNode *tree){
 			&& t.returnType->tag == BuiltinTypeTag
 			&& t.returnType->tags.typeBuiltin.builtinType == BuiltinTypeVoid){
 			checkAllSpawnsInSetup(tree, node->node.DefineFunction.statements);
+			checkAllAdvancedInputInSetup(tree, node->node.DefineFunction.statements);
 			return;
 		}
 	}
@@ -238,5 +242,26 @@ static void checkAllSpawnsInSetup(AstNode *prog, AstNode *stmts){
 	if(spawncountall > spawncountstmts){
 		errors++;
 		eprintf(1, "It looks like you have spawns located somewhere else than directly in the setup function, which is not allowed.\n");
+	}
+}
+
+static int countFunctioncall(char *name, AstNode *nodes, int recurse){
+	AstNode *n;
+	int count = 0;
+	for(n = nodes; n != NULL; n = n->chain){
+		if(n->tag == FunctionCall && strcmp(n->node.FunctionCall.identifier->node.Identifier.symbol->name, name) == 0)
+			count++;
+		if(recurse || n->tag == ExprStmt)
+			count += countFunctioncall(name, n->children, recurse);
+	}
+	return count;
+}
+
+static void checkAllAdvancedInputInSetup(AstNode *prog, AstNode *stmts){
+	int countall = countFunctioncall("advancedInputPin", prog->node.Prog.toplevels, 1);
+	int countstmts = countFunctioncall("advancedInputPin", stmts, 0);
+	if(countall > countstmts){
+		errors++;
+		eprintf(1, "It looks like you have calls to advancedInputPin located somewhere else than directly in the setup function, which is not allowed.\n");
 	}
 }
