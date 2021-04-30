@@ -607,7 +607,7 @@ char *assignParamsToStruct(AstNode *spawnNode){
 		char *field = codegen(parameter->node.Parameter.identifier);
 		Type *t = typeOf(child);
 		old = result;
-		if(t->tag == ArrayType){
+		if(t->tag == ArrayTypeTag){
 			result = smprintf("%smemcpy(%s.%s_original, %s, sizeof(%s.%s_original));\n",
 				result,
 				structName,
