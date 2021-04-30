@@ -369,7 +369,7 @@ char *mkAdvancedInputCode(AstNode *tree){
 char *buildArrayDeclIndices(AstNode *node) {
 	char *buffer = smprintf("[%s]", codegen(node->node.ArrayType.int_literal));
 	printf("Building indicies at line %d!\n", node->linenum);
-	while (node->node.ArrayType.type->tag == ArrayType) {
+	while (node->tag == ArrayType && node->node.ArrayType.type->tag == ArrayType) {
 		char *tmp = buffer;
 		node = node->node.ArrayType.type;
 		buffer = smprintf("[%s]%s", codegen(node->node.ArrayType.int_literal), buffer);

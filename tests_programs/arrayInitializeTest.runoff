@@ -1,12 +1,12 @@
-#function testfn(pinid p, int[10] a, bool[5][6] b) -> void {
-#	p = p;
-#	a[1] = a[4];
-#	b[0][4] = true;
-#}
-
-function testfn(pinid p) -> void {
+function testfn(pinid p, int[10] a, bool[5][6] b) -> void {
 	p = p;
+	a[1] = a[4];
+	b[0][4] = true;
 }
+
+#function testfn(pinid p) -> void {
+#	p = p;
+#}
 
 function setup() -> void {
 	pinid pin;
@@ -17,6 +17,6 @@ function setup() -> void {
 	bool[5][6] barr;
 	bool truth;
 	barr[5][3] = truth;
-	#testfn(pin, arr, barr);
-	testfn(pin);
+	testfn(pin, arr, barr);
+	#testfn(pin);
 }
