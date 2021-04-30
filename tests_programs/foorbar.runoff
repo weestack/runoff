@@ -5,6 +5,7 @@ messages {
 }
 
 function print(int wack) -> void {
+	wack = wack;
 }
 
 task printer() {
@@ -50,4 +51,6 @@ function calculator(int f, taskid who) -> void {
 }
 
 function setup() -> void {
+	taskid t = spawn printer();
+	calculator(15, t);
 }

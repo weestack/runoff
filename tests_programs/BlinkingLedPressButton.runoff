@@ -22,9 +22,9 @@ task B(taskid other) {
         bool button_status = readInput(BUTTONPIN);
 
         if(button_status){
-            send ButtonClick{} to other; # FIXME who to send to??
+            send ButtonClick{} to other;
         } else{
-            send ButtonRelase{} to other; # FIXME who to send to??
+            send ButtonRelase{} to other;
         }
     }
 }
@@ -39,7 +39,10 @@ task C(){
 }
 
 function setup() -> void {
-    simpleInputPin(BUTTONPIN);
+    inputPin(BUTTONPIN);
     outputPin(BUTTONLEDPIN);
     outputPin(BLINKLEDPIN);
+    taskid atask = spawn A();
+    spawn B(atask);
+    spawn C();
 }

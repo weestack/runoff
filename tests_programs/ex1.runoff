@@ -2,10 +2,6 @@ pinid LED1Pin = 1P;
 pinid LED2Pin = 2P;
 pinid LED3Pin = 15P;
 
-pinid LED4Pin = 3P;
-pinid LED5Pin = 4P;
-pinid LED6Pin = 16P;
-
 messages {
 	Button1Click;
 	Button1Release;
@@ -49,6 +45,7 @@ task B(taskid other) {
 
 function setup() -> void {
 	taskid i = spawn A();
+	spawn B(i);
 	advancedInputPin(LED1Pin, i, Button1Click{}, Button1Release{});
 	outputPin(LED2Pin);
 	outputPin(LED3Pin);

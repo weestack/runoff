@@ -10,6 +10,7 @@ messages {
 
 function blow_away_plastic_at_id(struct placement f) -> void {
     # Should blow a piece of plastic away on a specific placement on the factory mill
+    f = f;
 }
 
 function analyse_factory_mill() -> struct placement {
@@ -37,4 +38,6 @@ task blow_plastic_away() {
 }
 
 function setup() -> void {
+	taskid blower = spawn blow_plastic_away();
+	spawn detect_plastic(blower);
 }
