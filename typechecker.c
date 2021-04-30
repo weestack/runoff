@@ -207,7 +207,6 @@ Type *typeOfArrayLoc(AstNode *loc){
 		eprintf(id->linenum, "Index in array %s too deep\n", id->node.Identifier.identifier);
 		return NULL;
 	}
-	printf("Str1: %s\n", typeString(t));
 	for(; resultdims > 0; resultdims--){
 		int size;
 		int i = resultdims;
@@ -215,7 +214,6 @@ Type *typeOfArrayLoc(AstNode *loc){
 		size = tmp->tags.typeArray.size;
 		result = mkArrayTypeDescriptor(result, size);
 	}
-	printf("Str2: %s\n", typeString(result));
 	return result;
 }
 
