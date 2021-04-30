@@ -203,7 +203,7 @@ char *codegen(AstNode *tree) {
 				result = smprintf("%s = %d; %s", id,
 					tree->node.Assignment.expression->node.Spawn.taskId, expr
 				);
-			} else if(tree->node.Assignment.location->tag == ArrayLocation && tree->node.Assignment.expression->tag == ArrayLocation){
+			} else if(typeOf(tree->node.Assignment.location)->tag == ArrayTypeTag && typeOf(tree->node.Assignment.expression)->tag == ArrayTypeTag){
 				expr = processBlock(tree->node.Assignment.expression, "", 0);
 				result = smprintf("memcpy(&%s, &%s, sizeof(%s))", id, expr, id);
 			}else {

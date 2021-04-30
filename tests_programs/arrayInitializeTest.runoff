@@ -1,6 +1,8 @@
 function testfn(pinid p, int[10] a, bool[5][6] b) -> void {
 	p = p;
 	a[1] = a[4];
+	bool[5] tester;
+	b[1] = tester;
 	b[0][4] = true;
 }
 
