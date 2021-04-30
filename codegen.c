@@ -205,7 +205,7 @@ char *codegen(AstNode *tree) {
 				);
 			} else if(tree->node.Assignment.location->tag == ArrayLocation && tree->node.Assignment.expression->tag == ArrayLocation){
 				expr = processBlock(tree->node.Assignment.expression, "", 0);
-				result = smprintf("memcpy(%s, %s, sizeof(%s))", id, expr, id);
+				result = smprintf("memcpy(&%s, &%s, sizeof(%s))", id, expr, id);
 			}else {
 				expr = processBlock(tree->node.Assignment.expression, "", 0);
 				result = smprintf("(%s = %s)", id, expr);
@@ -368,7 +368,6 @@ char *mkAdvancedInputCode(AstNode *tree){
 
 char *buildArrayDeclIndices(AstNode *node) {
 	char *buffer = smprintf("[%s]", codegen(node->node.ArrayType.int_literal));
-	printf("Building indicies at line %d!\n", node->linenum);
 	while (node->tag == ArrayType && node->node.ArrayType.type->tag == ArrayType) {
 		char *tmp = buffer;
 		node = node->node.ArrayType.type;
@@ -457,9 +456,9 @@ char *generatePassByValue(AstNode *tree) {
 		switch (child->node.Parameter.type->tag) {
 			case ArrayType:
 				childstr = smprintf("%s %s%s; memcpy(%s, %s, sizeof(%s));",
-						codegen(child->node.Parameter.type->node.ArrayType.type),
+						codegen(child->node.Parameter.type),
 						codegen(child->node.Parameter.identifier),
-						buildArrayDeclIndices(tree->node.Parameter.type),
+						buildArrayDeclIndices(child->node.Parameter.type),
 						codegen(child->node.Parameter.identifier),
 						smprintf("%s_original",codegen(child->node.Parameter.identifier)),
 						codegen(child->node.Parameter.identifier)
