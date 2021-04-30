@@ -371,7 +371,7 @@ char *buildArrayDeclIndices(AstNode *node) {
 	while (node->tag == ArrayType && node->node.ArrayType.type->tag == ArrayType) {
 		char *tmp = buffer;
 		node = node->node.ArrayType.type;
-		buffer = smprintf("[%s]%s", codegen(node->node.ArrayType.int_literal), buffer);
+		buffer = smprintf("%s[%s]", buffer, codegen(node->node.ArrayType.int_literal));
 		free(tmp);
 	}
 	return buffer;
