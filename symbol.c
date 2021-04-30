@@ -90,11 +90,47 @@ Symbol *enterSymbol(char *name, Type *type){
 	current->symbols = symbol;
 	
 	if(type != NULL && type->tag == ArrayTypeTag)
-		symbol->initializedArray = malloc(sizeof(int) * type->tags.typeArray.size);
+		symbol->initializedArray = malloc(sizeof(int) * fullArraySize(type));
 	else if(type != NULL)
 		symbol->initializedArray = NULL;
 
 	return symbol;
+}
+
+int fullArraySize(Type *t){
+	int s = t->tags.typeArray.size;
+	t = t->tags.typeArray.elementType;
+	while(t->tag == ArrayTypeTag){
+		s *= t->tags.typeArray.size;
+		t = t->tags.typeArray.elementType;
+	}
+	return s;
+}
+
+int arrayIndex(Type *t, AstNode *indices){
+	int index;
+	if(indices->tag != IntLiteral)
+		return -1;
+	index = indices->node.IntLiteral.value;
+	indices = indices->next;
+	while(t->tag == ArrayTypeTag && indices != NULL){
+		if(indices->tag != IntLiteral)
+			return -1;
+
+		index *= t->tags.typeArray.size;
+		index += indices->node.IntLiteral.value;
+
+		indices = indices->next;
+		t = t->tags.typeArray.elementType;
+	}
+	return index;
+}
+
+Type *arrayBaseType(Type *t){
+	Type *b = NULL;
+	for(; t->tag == ArrayTypeTag; t = b)
+		b = t->tags.typeArray.elementType;
+	return b;
 }
 
 SymbolTable *getCurrentSymbolTable(void){

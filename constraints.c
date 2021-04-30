@@ -16,6 +16,7 @@ static void checkAllSpawnsInSetup(AstNode *prog, AstNode *stmts);
 static int countSpawns(AstNode *nodes, int recurse);
 static void checkAllAdvancedInputInSetup(AstNode *prog, AstNode *stmts);
 static int countFunctioncall(char *name, AstNode *nodes, int recurse);
+static char *arrayIndexStr(Type *t, int index);
 
 /* The following list of contextual constraints are checked by
    this phase:
@@ -193,21 +194,34 @@ static void checkVarInitialized(AstNode *tree){
 		}
 	}else if(type->tag == ArrayTypeTag && !entireArrayInitialized(sym) && tree->parent->tag != Assignment){
 		int i = 0;
-		AstNode *expr = getDefaultValue(type->tags.typeArray.elementType);
+		AstNode *expr = getDefaultValue(arrayBaseType(type));
 		if(expr == NULL){
 			eprintf(tree->linenum, "Warning: Elements of array '%s' might not be initialized at indices: ", sym->name);
-			for(i = 0; i < type->tags.typeArray.size; i++){
+			for(i = 0; i < fullArraySize(type); i++){
 				if(sym->initializedArray[i] == 0)
-					printf("%d ", i);
+					printf("%s ", arrayIndexStr(type, i));
 			}
 			printf("\n");
 		}
 	}
 }
 
+static char *arrayIndexStr(Type *t, int index){
+	char *result = smprintf("");
+	while(t->tag == ArrayTypeTag){
+		char *old = result;
+		int i = index % t->tags.typeArray.size;
+		index = index / t->tags.typeArray.size;
+		result = smprintf("[%d]%s", i, result);
+		free(old);
+		t = t->tags.typeArray.elementType;
+	}
+	return result;
+}
+
 static int entireArrayInitialized(Symbol *sym){
 	int i;
-	for(i = 0; i < sym->type->tags.typeArray.size; i++){
+	for(i = 0; i < fullArraySize(sym->type); i++){
 		if(sym->initializedArray[i] == 0)
 			return 0;
 	}

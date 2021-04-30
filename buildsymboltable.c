@@ -90,7 +90,7 @@ Type *processNode(AstNode *node){
 		sym = retrieveSymbol(node->node.Parameter.identifier);
 		if(vartype->tag == ArrayTypeTag){
 			int i;
-			for(i = 0; i < vartype->tags.typeArray.size; i++)
+			for(i = 0; i < fullArraySize(vartype); i++)
 				sym->initializedArray[i] = 1;
 		}else if(vartype->tag == BuiltinTypeTag)
 			sym->initializedVar = 1;
@@ -394,7 +394,7 @@ void handleReceiveCase(AstNode *node){
 		tmpsym = retrieveSymbol(arg);
 		if(tmpsym->type->tag == ArrayTypeTag){
 			int i;
-			for(i = 0; i < tmpsym->type->tags.typeArray.size; i++)
+			for(i = 0; i < fullArraySize(tmpsym->type); i++)
 				sym->initializedArray[i] = 1;
 		}else if(tmpsym->type->tag == BuiltinTypeTag)
 			sym->initializedVar = 1;
@@ -412,13 +412,13 @@ void handleAssignment(AstNode *node){
 	AstNode *loc = node->node.Assignment.location;
 	AstNode *expr = node->node.Assignment.expression;
 	AstNode *id = NULL;
-	AstNode *ix;
+	int ix;
 	Symbol *sym;
 
 	processNode(expr);
 	processNode(loc);
 
-	/* TODO fix for structs. The array stuff only works for 1D arrays..... */
+	/* TODO fix for structs. For arrays it's OK byt assignment to subarrays doesn't mark the entire subarray as initialized */
 	switch(loc->tag){
 	case VariableLocation:
 		id = loc->node.VariableLocation.identifier;
@@ -428,9 +428,9 @@ void handleAssignment(AstNode *node){
 	case ArrayLocation:
 		id = loc->node.ArrayLocation.identifier;
 		sym = id->node.Identifier.symbol;
-		for(ix = loc->node.ArrayLocation.indicies; ix->next != NULL; ix = ix->next);
-		if(ix->tag == IntLiteral)
-			sym->initializedArray[ix->node.IntLiteral.value] = 1;
+		ix = arrayIndex(sym->type, loc->node.ArrayLocation.indicies);
+		if(ix >= 0)
+			sym->initializedArray[ix] = 1;
 		break;
 	case StructLocation:
 		id = loc->node.StructLocation.identifier;

@@ -6,9 +6,15 @@ function testfn(pinid p, int[10] a, bool[5][6] b) -> void {
 	b[0][4] = true;
 }
 
-#function testfn(pinid p) -> void {
-#	p = p;
-#}
+function outputmode(pinid[2][2][2] pins) -> void {
+	for(int i; i < 2; i++){
+		for(int j; j < 2; j++){
+			for(int k; k < 2; k++){
+				outputPin(pins[i][j][k]);
+			}
+		}
+	}
+}
 
 function setup() -> void {
 	pinid pin;
@@ -17,8 +23,15 @@ function setup() -> void {
 	arr[5] = 1;
 	arr[2] = 1;
 	bool[5][6] barr;
+	bool[5] barr2;
+
 	bool truth;
-	barr[5][3] = truth;
+	barr[4][3] = truth;
+	barr[0] = barr2;
 	testfn(pin, arr, barr);
-	#testfn(pin);
+
+	pinid[2][2][2] pins;
+	pins[1][0][0] = pin;
+	pins[0][1][1] = pin;
+	outputmode(pins);
 }

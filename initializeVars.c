@@ -2,6 +2,7 @@
 #include "data.h"
 
 static void insertInitCode(AstNode *);
+static AstNode *arrayIndexNode(Type *, int);
 
 void initializeVars(AstNode *tree){
 	if(tree == NULL)
@@ -24,20 +25,19 @@ static void insertInitCode(AstNode *exprstmt){
 	if(type->tag == BuiltinTypeTag && !sym->initializedVar)
 		decl->node.VarDecl.expression = getDefaultValue(type);
 
-	if(type->tag == ArrayTypeTag && getDefaultValue(type->tags.typeArray.elementType) != NULL){
+	if(type->tag == ArrayTypeTag && getDefaultValue(arrayBaseType(type)) != NULL){
 		int i;
 		AstNode *list = exprstmt;
-		for(i = 0; i < type->tags.typeArray.size; i++){
+		for(i = 0; i < fullArraySize(type); i++){
 			AstNode *index, *loc, *expr, *assign;
 			
 			if(sym->initializedArray[i] == 1)
 				continue;
 
-			index = mkIntLiteralNode(i);
+			index = arrayIndexNode(type, i);
 			loc = mkArrayLocationNode(decl->node.VarDecl.identifier, index);
-			expr = getDefaultValue(type->tags.typeArray.elementType);
+			expr = getDefaultValue(arrayBaseType(type));
 			assign = mkExprStmtNode(mkAssignmentNode(loc, expr));
-			printf("Made assignment node %d, %p:)\n", sym->initializedArray[i], (void*)assign);
 			assign->next = list->next;
 			assign->chain = list->chain;
 			list->next = assign;
@@ -45,6 +45,20 @@ static void insertInitCode(AstNode *exprstmt){
 			list = list->next;
 		}
 	}
+}
+
+static AstNode *arrayIndexNode(Type *t, int index){
+	AstNode *result = NULL;
+	while(t->tag == ArrayTypeTag){
+		AstNode *new = result;
+		int i = index % t->tags.typeArray.size;
+		index = index / t->tags.typeArray.size;
+		new = mkIntLiteralNode(i);
+		result = append_node(result, new);
+
+		t = t->tags.typeArray.elementType;
+	}
+	return result;
 }
 
 AstNode *getDefaultValue(Type *type){

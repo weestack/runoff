@@ -493,6 +493,9 @@ struct ArrayTypeDescriptor {
 	int size;
 };
 Type *mkArrayTypeDescriptor(Type *, int);
+int fullArraySize(Type *);
+int arrayIndex(Type *, AstNode *);
+Type *arrayBaseType(Type *);
 
 struct FunctionTypeDescriptor {
 	int arity;
