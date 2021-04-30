@@ -1,9 +1,12 @@
 function testfn(pinid p, int[10] a, bool[5][6] b) -> void {
 	p = p;
-	a[1] = a[4];
-	bool[5] tester;
+	a[1] = a[1];
+	bool[6] tester;
 	b[1] = tester;
 	b[0][4] = true;
+
+	bool[4][5][6] bigtest;
+	bigtest[0] = b;
 }
 
 function outputmode(pinid[2][2][2] pins) -> void {
@@ -23,7 +26,7 @@ function setup() -> void {
 	arr[5] = 1;
 	arr[2] = 1;
 	bool[5][6] barr;
-	bool[5] barr2;
+	bool[6] barr2;
 
 	bool truth;
 	barr[4][3] = truth;

@@ -3,6 +3,7 @@
 #include <string.h>
 #include "data.h"
 #include "auxiliary.h"
+#include "phases.h"
 
 void typeCheckNode(AstNode *);
 int buildinTypeMatch(Type *, int);
@@ -186,29 +187,47 @@ void typeCheckNode(AstNode *node){
 		typeCheckNode(children);
 }
 
+Type *typeOfArrayLoc(AstNode *loc){
+	AstNode *id = loc->node.ArrayLocation.identifier;
+	Type *t = id->node.Identifier.symbol->type;
+	int dimensions = 0;
+	int indexdepth;
+	int resultdims;
+	Type *tmp;
+	Type *basetype = arrayBaseType(t);
+	Type *result = basetype;
+
+	for(tmp = t; tmp->tag == ArrayTypeTag; tmp = tmp->tags.typeArray.elementType)
+		dimensions++;
+
+	indexdepth = nodeLength(loc->node.ArrayLocation.indicies);
+	resultdims = dimensions - indexdepth;
+	if(resultdims < 0){
+		errors++;
+		eprintf(id->linenum, "Index in array %s too deep\n", id->node.Identifier.identifier);
+		return NULL;
+	}
+	printf("Str1: %s\n", typeString(t));
+	for(; resultdims > 0; resultdims--){
+		int size;
+		int i = resultdims;
+		for(tmp = t; i > 1; tmp = tmp->tags.typeArray.elementType, i--);
+		size = tmp->tags.typeArray.size;
+		result = mkArrayTypeDescriptor(result, size);
+	}
+	printf("Str2: %s\n", typeString(result));
+	return result;
+}
+
 Type *typeOf(AstNode *node){
 	AstNode *id;
-	Type *tmp;
-	AstNode *index;
 
 	if(node == NULL){
 		return NULL;
 	}
 	switch(node->tag){
 		case ArrayLocation:
-			id = node->node.ArrayLocation.identifier;
-			index = node->node.ArrayLocation.indicies;
-			for(tmp = id->node.Identifier.symbol->type;
-				index != NULL;
-				tmp = tmp->tags.typeArray.elementType, index = index->next){
-
-				if(tmp->tag != ArrayTypeTag){
-					errors++;
-					eprintf(id->linenum, "Index in array %s too deep\n", id->node.Identifier.identifier);
-					return NULL;
-				}
-			}
-			return tmp;
+			return typeOfArrayLoc(node);
 		case StructLocation:
 			return typeOf(node->node.StructLocation.location);
 		case VariableLocation:
@@ -349,10 +368,7 @@ char *typeString(Type *type){
 	switch(type->tag){
 	case ArrayTypeTag:
 		elementtype = typeString(type->tags.typeArray.elementType);
-		if(type->tags.typeArray.size == -1)
-			result = smprintf("%s[]", elementtype);
-		else
-			result = smprintf("%s[%d]", elementtype, type->tags.typeArray.size);
+		result = smprintf("%s[%d]", elementtype, type->tags.typeArray.size);
 		free(elementtype);
 		return result;
 	case FunctionTypeTag:

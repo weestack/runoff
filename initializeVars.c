@@ -54,7 +54,7 @@ static AstNode *arrayIndexNode(Type *t, int index){
 		int i = index % t->tags.typeArray.size;
 		index = index / t->tags.typeArray.size;
 		new = mkIntLiteralNode(i);
-		result = append_node(result, new);
+		result = append_node(new, result);
 
 		t = t->tags.typeArray.elementType;
 	}
