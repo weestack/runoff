@@ -320,9 +320,11 @@ char *codegen(AstNode *tree) {
 }
 
 char *setupPreCodeGen(AstNode *tree){
+	char *msgStruct = constructMessageUnionStruct(NULL); /* Will only generate code if a message struct has not already been made */
 	char *spawnStructs = mkStructsFromSpawns(tree->node.DefineFunction.statements);
 	char *advancedInputCode = mkAdvancedInputCode(tree->node.DefineFunction.statements);
-	char *result = smprintf("%s\n%s\n", spawnStructs, advancedInputCode);
+	char *result = smprintf("%s\n%s\n%s\n", msgStruct, spawnStructs, advancedInputCode);
+	free(msgStruct);
 	free(spawnStructs);
 	free(advancedInputCode);
 	return result;
@@ -538,6 +540,10 @@ char *constructMessageUnionStruct(AstNode *tree){
 	char *structNames = smprintf("");
 	char *old;
 	AstNode *child = tree;
+	static int alreadyGenerated = 0;
+
+	if(alreadyGenerated)
+		return smprintf("");
 
 	while(child != NULL){
 		old = structNames;
@@ -551,6 +557,7 @@ char *constructMessageUnionStruct(AstNode *tree){
 	result = smprintf("runoff_msg { int Tag; union {%s} data;};", structNames);
 
 	free(structNames);
+	alreadyGenerated = 1;
 	return result;
 }
 
