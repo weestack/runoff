@@ -1,8 +1,5 @@
 #!/bin/sh
 
-# Clean and make
-make clean && make
-
 tmpdir=$(mktemp -d)
 
 # Loop over each file

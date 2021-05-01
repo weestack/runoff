@@ -235,6 +235,7 @@ Indexes: Indexes '[' Expression ']' {$$ = append_node($1, $3);}
 int
 yyerror(const char *err) {
 	eprintf(yylineno, "%s\n", err);
+	return 0;
 }
 
 AstNode *parse(char *file){

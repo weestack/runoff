@@ -1,7 +1,5 @@
 #!/bin/sh
 
-# Clean and make
-make clean && make
 ERRORS=0
 PARSED=0
 # Loop over each file
