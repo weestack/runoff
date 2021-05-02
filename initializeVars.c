@@ -62,28 +62,6 @@ static void insertInitCode(AstNode *exprstmt){
 
 	if(type->tag == ArrayTypeTag && getDefaultValue(arrayBaseType(type)) != NULL)
 		insertArrayInitCode(sym->initInfo, type, id, NULL, exprstmt);
-/*
-	if(type->tag == ArrayTypeTag && getDefaultValue(arrayBaseType(type)) != NULL){
-		int i;
-		AstNode *list = exprstmt;
-		for(i = 0; i < fullArraySize(type); i++){
-			AstNode *index, *loc, *expr, *assign;
-			
-			if(sym->initializedArray[i] == 1)
-				continue;
-
-			index = arrayIndexNode(type, i);
-			loc = mkArrayLocationNode(decl->node.VarDecl.identifier, index);
-			expr = getDefaultValue(arrayBaseType(type));
-			assign = mkExprStmtNode(mkAssignmentNode(loc, expr));
-			assign->next = list->next;
-			assign->chain = list->chain;
-			list->next = assign;
-			list->chain = assign;
-			list = list->next;
-		}
-	}
-*/
 }
 
 AstNode *getDefaultValue(Type *type){
