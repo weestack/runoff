@@ -228,8 +228,8 @@ struct StructTypeNode {
 AstNode *mkStructTypeNode(AstNode *);
 
 struct ArrayTypeNode {
-	AstNode *type;
-	AstNode *int_literal;
+	AstNode *elementType;
+	AstNode *dimensions;
 };
 AstNode *mkArrayTypeNode(AstNode *, AstNode *);
 
@@ -493,10 +493,9 @@ Symbol *retrieveSymbolFromTable(AstNode *, SymbolTable *);
 
 struct ArrayTypeDescriptor {
 	Type *elementType;
-	int size;
+	AstNode *dimensions;
 };
-Type *mkArrayTypeDescriptor(Type *, int);
-Type *arrayBaseType(Type *);
+Type *mkArrayTypeDescriptor(Type *, AstNode *);
 
 struct FunctionTypeDescriptor {
 	int arity;

@@ -18,7 +18,7 @@
 }
 
 /* Define all non-terminals as type astNode */
-%type <astNode> Program Toplevel MessageIdentifiers MessageIdentifier StructMembers ParametersList Parameters ArgsList Args Type Statements Statement ElsePart SwitchCases SwitchCase ReceiveCases ReceiveCase MaybeExpression Declaration Literal Expression Location Indexes Identifiers IdentifierList
+%type <astNode> Program Toplevel MessageIdentifiers MessageIdentifier StructMembers ParametersList Parameters ArgsList Args Type Statements Statement ElsePart SwitchCases SwitchCase ReceiveCases ReceiveCase MaybeExpression Declaration Literal Expression Location Indexes Identifiers IdentifierList DataType ArrayDimensions
 
 %token <astNode> identifier builtin_type pin_literal int_literal float_literal bool_literal
 
@@ -124,9 +124,15 @@ Args: Args ',' Expression {$$ = append_node($1, $3);}
 	| Expression {$$ = $1;}
 	;
 
-Type: builtin_type {$$ = $1;}
+ArrayDimensions: '[' int_literal ']' ArrayDimensions {$$ = append_node($2, $4);}
+	| '[' int_literal ']' {$$ = $2;}
+	;
+
+DataType: builtin_type {$$ = $1;}
 	| struct_keyword identifier {$$ = mkStructTypeNode($2);}
-	| Type '[' int_literal ']' {$$ = mkArrayTypeNode($1, $3);}
+
+Type: DataType {$$ = $1;}
+	| DataType ArrayDimensions {$$ = mkArrayTypeNode($1, $2);}
 	;
 
 Statements: Statements Statement {$$ = append_node($1, $2);}

@@ -93,6 +93,21 @@ Symbol *enterSymbol(char *name, Type *type){
 	return symbol;
 }
 
+static InitializeInfo **mkInitInfoArray(Type *type, AstNode *dims){
+	int size = dims->node.IntLiteral.value;
+	InitializeInfo **info = malloc(sizeof(InitializeInfo*) * size);
+	int i;
+	for(i = 0; i < size; i++){
+		if(dims->next == NULL)
+			info[i] = mkInitInfo(type);
+		else{
+			info[i] = malloc(sizeof(InitializeInfo));
+			info[i]->arrayInitialized = mkInitInfoArray(type, dims->next);
+		}
+	}
+	return info;
+}
+
 static InitializeInfo *mkInitInfo(Type *t) {
 	InitializeInfo *info;
 
@@ -101,23 +116,13 @@ static InitializeInfo *mkInitInfo(Type *t) {
 
 	info = malloc(sizeof(InitializeInfo));
 	info->varInitialized = 0;
-	if(t->tag == ArrayTypeTag){
-		int i;
-		info->arrayInitialized = malloc(sizeof(InitializeInfo*) * t->tags.typeArray.size);
-		for(i = 0; i < t->tags.typeArray.size; i++)
-			info->arrayInitialized[i] = mkInitInfo(t->tags.typeArray.elementType);
-	}else
+	if(t->tag == ArrayTypeTag)
+		info->arrayInitialized = mkInitInfoArray(t->tags.typeArray.elementType, t->tags.typeArray.dimensions);
+	else
 		info->arrayInitialized = NULL;
 
 	return info;
 	/* Some case for structs also */
-}
-
-Type *arrayBaseType(Type *t){
-	Type *b = NULL;
-	for(; t->tag == ArrayTypeTag; t = b)
-		b = t->tags.typeArray.elementType;
-	return b;
 }
 
 SymbolTable *getCurrentSymbolTable(void){
@@ -132,11 +137,11 @@ Type* mkBuiltinTypeDescriptor(int type){
 	return t;
 }
 
-Type* mkArrayTypeDescriptor(Type *elementType, int size){
+Type* mkArrayTypeDescriptor(Type *elementType, AstNode *dimensions){
 	Type *t = malloc(sizeof(Type));
 	t->tag = ArrayTypeTag;
 	t->tags.typeArray.elementType = elementType;
-	t->tags.typeArray.size = size;
+	t->tags.typeArray.dimensions = dimensions;
 
 	return t;
 }

@@ -133,9 +133,9 @@ char *prettyprint(AstNode *node)
 		result = smprintf("struct %s", id);
 		break;
 	case ArrayType:
-		type = prettyprint(node->node.ArrayType.type);
-		intlit = prettyprint(node->node.ArrayType.int_literal);
-		result = smprintf("%s[%s]", type, intlit);
+		type = prettyprint(node->node.ArrayType.elementType);
+		indices = prettyprintlist(node->node.ArrayType.dimensions, "][", 0);
+		result = smprintf("%s[%s]", type, indices);
 		break;
 	case While:
 		exprA = prettyprint(node->node.While.expression);

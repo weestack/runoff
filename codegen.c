@@ -153,7 +153,7 @@ char *codegen(AstNode *tree) {
 			result = smprintf("struct %s", id);
 			break;
 		case ArrayType:
-			type = codegen(tree->node.ArrayType.type);
+			type = codegen(tree->node.ArrayType.elementType);
 			result = smprintf("%s", type);
 			break;
 		case While:
@@ -369,12 +369,13 @@ char *mkAdvancedInputCode(AstNode *tree){
 }
 
 char *buildArrayDeclIndices(AstNode *node) {
-	char *buffer = smprintf("[%s]", codegen(node->node.ArrayType.int_literal));
-	while (node->tag == ArrayType && node->node.ArrayType.type->tag == ArrayType) {
-		char *tmp = buffer;
-		node = node->node.ArrayType.type;
-		buffer = smprintf("[%s]%s", codegen(node->node.ArrayType.int_literal), buffer);
-		free(tmp);
+	char *buffer = smprintf("");
+	AstNode *dims = node->node.ArrayType.dimensions;
+	while(dims != NULL){
+		char *old = buffer;
+		buffer = smprintf("%s[%d]", buffer, dims->node.IntLiteral.value);
+		free(old);
+		dims = dims->next;
 	}
 	return buffer;
 }

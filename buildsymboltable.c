@@ -102,8 +102,8 @@ Type *processNode(AstNode *node){
 		}
 		break;
 	case ArrayType:
-		vartype = processNode(node->node.ArrayType.type);
-		return mkArrayTypeDescriptor(vartype, node->node.ArrayType.int_literal->node.IntLiteral.value);
+		vartype = processNode(node->node.ArrayType.elementType);
+		return mkArrayTypeDescriptor(vartype, node->node.ArrayType.dimensions);
 	case While:
 	case For:  /* fallthrough */
 	case Switch:  /* fallthrough */
@@ -403,6 +403,8 @@ void handleAssignment(AstNode *node){
 	AstNode *id = NULL;
 	Symbol *sym;
 	Type *type;
+	Type *elementType;
+	AstNode *dims;
 	InitializeInfo *initInfo;
 
 	processNode(expr);
@@ -420,17 +422,24 @@ void handleAssignment(AstNode *node){
 		sym = id->node.Identifier.symbol;
 		initInfo = sym->initInfo;
 		type = sym->type;
+		elementType = type->tags.typeArray.elementType;
+		dims = type->tags.typeArray.dimensions;
 		loc = loc->node.ArrayLocation.indicies;
 		while(loc != NULL && loc->tag == IntLiteral){
 			initInfo = initInfo->arrayInitialized[loc->node.IntLiteral.value];
-			type = type->tags.typeArray.elementType;
+			type = mkArrayTypeDescriptor(elementType, dims->next);
 			loc = loc->next;
+			dims = dims->next;
 		}
-		if(loc == NULL)
-			setInitialized(initInfo, type);
+		if(loc == NULL){
+			if(dims == NULL)
+				setInitialized(initInfo, elementType);
+			else
+				setInitialized(initInfo, type);
+		}
 		break;
 	case StructLocation:
 		id = loc->node.StructLocation.identifier;
-		break;
+		break; 
 	}
 }

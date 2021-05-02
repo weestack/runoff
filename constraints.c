@@ -194,7 +194,7 @@ static void checkVarInitialized(AstNode *tree){
 	if(!isInitialized(sym->initInfo, type)){
 		AstNode *expr;
 		if(type->tag == ArrayTypeTag)
-			expr = getDefaultValue(arrayBaseType(type));
+			expr = getDefaultValue(type->tags.typeArray.elementType);
 		else
 			expr = getDefaultValue(type);
 

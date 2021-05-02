@@ -190,31 +190,17 @@ void typeCheckNode(AstNode *node){
 Type *typeOfArrayLoc(AstNode *loc){
 	AstNode *id = loc->node.ArrayLocation.identifier;
 	Type *t = id->node.Identifier.symbol->type;
-	int dimensions = 0;
-	int indexdepth;
-	int resultdims;
-	Type *tmp;
-	Type *basetype = arrayBaseType(t);
-	Type *result = basetype;
+	Type *elementType = t->tags.typeArray.elementType;
+	AstNode *dimensions = t->tags.typeArray.dimensions;
+	AstNode *index;
 
-	for(tmp = t; tmp->tag == ArrayTypeTag; tmp = tmp->tags.typeArray.elementType)
-		dimensions++;
+	for(index = loc->node.ArrayLocation.indicies; index != NULL; index = index->next)
+		dimensions = dimensions->next;
 
-	indexdepth = nodeLength(loc->node.ArrayLocation.indicies);
-	resultdims = dimensions - indexdepth;
-	if(resultdims < 0){
-		errors++;
-		eprintf(id->linenum, "Index in array %s too deep\n", id->node.Identifier.identifier);
-		return NULL;
-	}
-	for(; resultdims > 0; resultdims--){
-		int size;
-		int i = resultdims;
-		for(tmp = t; i > 1; tmp = tmp->tags.typeArray.elementType, i--);
-		size = tmp->tags.typeArray.size;
-		result = mkArrayTypeDescriptor(result, size);
-	}
-	return result;
+	if(dimensions == NULL)
+		return elementType;
+	else
+		return mkArrayTypeDescriptor(elementType, dimensions);
 }
 
 Type *typeOf(AstNode *node){
@@ -328,14 +314,19 @@ int typeMatch(Type *a, Type *b){
 
 	if(a->tag == ArrayTypeTag){
 		if (typeMatch(a->tags.typeArray.elementType, b->tags.typeArray.elementType)) {
-			if (a->tags.typeArray.size == b->tags.typeArray.size) {
-				return 1;
+			AstNode *dimA = a->tags.typeArray.dimensions;
+			AstNode *dimB = b->tags.typeArray.dimensions;
+			for(; dimA != NULL && dimB != NULL; dimA = dimA->next, dimB = dimB->next){
+				if(dimA->node.IntLiteral.value != dimB->node.IntLiteral.value){
+					return 0;
+				}
 			}
+			if(dimA == NULL && dimB == NULL)
+				return 1;
 		}
 		return 0;
 	}
 
-	/*mangler at sammenligne alle andre typer end builtin typer hehexd*/
 	return 0;
 }
 
@@ -362,12 +353,17 @@ void printTypeFail(char *fail_message, AstNode *node, Type *type){
 }
 
 char *typeString(Type *type){
-	char *elementtype, *result;
+	char *result;
+	AstNode *dims;
 	switch(type->tag){
 	case ArrayTypeTag:
-		elementtype = typeString(type->tags.typeArray.elementType);
-		result = smprintf("%s[%d]", elementtype, type->tags.typeArray.size);
-		free(elementtype);
+		result = typeString(type->tags.typeArray.elementType);
+		dims = type->tags.typeArray.dimensions;
+		for(; dims != NULL; dims = dims->next){
+			char *old = result;
+			result = smprintf("%s[%d]", result, dims->node.IntLiteral.value);
+			free(old);
+		} 
 		return result;
 	case FunctionTypeTag:
 		return smprintf("Function Type");

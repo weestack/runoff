@@ -3,6 +3,7 @@
 #include "phases.h"
 
 static void insertInitCode(AstNode *);
+static int isInitializedArray(InitializeInfo *, Type *, AstNode *);
 
 void initializeVars(AstNode *tree){
 	if(tree == NULL)
@@ -28,18 +29,19 @@ static AstNode *extendIndices(AstNode *indices, int i){
 	return result;
 }
 
-static void insertArrayInitCode(InitializeInfo *info, Type *type, AstNode *id, AstNode *indices, AstNode *decl){
+static void insertArrayInitCode(InitializeInfo *info, Type *type, AstNode *dims, AstNode *id, AstNode *indices, AstNode *decl){
 	decl = decl;
-	if(type->tag == ArrayTypeTag){
+	if(dims != 0){
 		int i;
-		for(i = 0; i < type->tags.typeArray.size; i++){
-			if(!isInitialized(info->arrayInitialized[i], type->tags.typeArray.elementType)){
+		int size = dims->node.IntLiteral.value;
+		for(i = 0; i < size; i++){
+			if(!isInitializedArray(info->arrayInitialized[i], type, dims->next)){
 				AstNode *indicesNew;
 				indicesNew = extendIndices(indices, i);
-				insertArrayInitCode(info->arrayInitialized[i], type->tags.typeArray.elementType, id, indicesNew, decl);
+				insertArrayInitCode(info->arrayInitialized[i], type, dims->next, id, indicesNew, decl);
 			}
 		}
-	}else if(type->tag == BuiltinTypeTag){
+	}else{
 		AstNode *loc = mkArrayLocationNode(id, indices);
 		AstNode *expr = getDefaultValue(type);
 		AstNode *assign = mkExprStmtNode(mkAssignmentNode(loc, expr));
@@ -60,8 +62,11 @@ static void insertInitCode(AstNode *exprstmt){
 	if(type->tag == BuiltinTypeTag && !isInitialized(sym->initInfo, type))
 		decl->node.VarDecl.expression = getDefaultValue(type);
 
-	if(type->tag == ArrayTypeTag && getDefaultValue(arrayBaseType(type)) != NULL)
-		insertArrayInitCode(sym->initInfo, type, id, NULL, exprstmt);
+	if(type->tag == ArrayTypeTag && getDefaultValue(type->tags.typeArray.elementType) != NULL)
+		insertArrayInitCode(sym->initInfo,
+			type->tags.typeArray.elementType,
+			type->tags.typeArray.dimensions,
+			id, NULL, exprstmt);
 }
 
 AstNode *getDefaultValue(Type *type){
@@ -87,29 +92,47 @@ AstNode *getDefaultValue(Type *type){
 	}
 }
 
-int isInitialized(InitializeInfo *info, Type *t){
-	if(t->tag == BuiltinTypeTag)
-		return info->varInitialized;
-	else if(t->tag == ArrayTypeTag){
+static int isInitializedArray(InitializeInfo *info, Type *t, AstNode *dims){
+	if(dims == NULL)
+		return isInitialized(info, t);
+	else{
+		int size = dims->node.IntLiteral.value;
 		int i;
-		for(i = 0; i < t->tags.typeArray.size; i++){
-			if(!isInitialized(info->arrayInitialized[i], t->tags.typeArray.elementType))
+		for(i = 0; i < size; i++){
+			if(!isInitializedArray(info->arrayInitialized[i], t, dims->next))
 				return 0;
 		}
 		return 1;
-	}else if(t->tag == StructTypeTag)
+	}
+}
+
+int isInitialized(InitializeInfo *info, Type *t){
+	if(t->tag == BuiltinTypeTag)
+		return info->varInitialized;
+	else if(t->tag == ArrayTypeTag)
+		return isInitializedArray(info,
+			t->tags.typeArray.elementType,
+			t->tags.typeArray.dimensions);
+	else if(t->tag == StructTypeTag)
 		return 0; /* haha */
 	else
 		return 0;
 }
 
+void setInitializedArray(InitializeInfo *info, Type *t, AstNode *dims){
+	if(dims == NULL)
+		setInitialized(info, t);
+	else{
+		int size = dims->node.IntLiteral.value;
+		int i;
+		for(i = 0; i < size; i++)
+			setInitializedArray(info->arrayInitialized[i], t, dims->next);
+	}
+}
+
 void setInitialized(InitializeInfo *info, Type *t){
 	if(t->tag == BuiltinTypeTag)
 		info->varInitialized = 1;
-	else if(t->tag == ArrayTypeTag){
-		int i;
-		for(i = 0; i < t->tags.typeArray.size; i++){
-			setInitialized(info->arrayInitialized[i], t->tags.typeArray.elementType);
-		}
-	}
+	else if(t->tag == ArrayTypeTag)
+		setInitializedArray(info, t->tags.typeArray.elementType, t->tags.typeArray.dimensions);
 }

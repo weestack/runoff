@@ -133,10 +133,10 @@ AstNode *mkStructTypeNode(AstNode *identifier){
 	return node;
 }
 
-AstNode *mkArrayTypeNode(AstNode *type, AstNode *int_literal){
-	AstNode *node = mkNode(ArrayType, type);
-	SETCHILD(ArrayType,type);
-	SETCHILD(ArrayType,int_literal);
+AstNode *mkArrayTypeNode(AstNode *elementType, AstNode *dimensions){
+	AstNode *node = mkNode(ArrayType, elementType);
+	SETCHILD(ArrayType,elementType);
+	SETCHILD(ArrayType,dimensions);
 	return node;
 }
 
