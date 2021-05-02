@@ -229,4 +229,5 @@ void insertBuiltinFunctions(void) {
 	enterSymbol("outputPin", mkFunctionTypeDescriptor(1,outputPinParameters,mkBuiltinTypeDescriptor(BuiltinTypeVoid)));
 	enterSymbol("setOutput", mkFunctionTypeDescriptor(2,setOutputParameters,mkBuiltinTypeDescriptor(BuiltinTypeVoid)));
 	enterSymbol("analogWrite", mkFunctionTypeDescriptor(2,analogWriteParameters,mkBuiltinTypeDescriptor(BuiltinTypeVoid)));
+	enterSymbol("self", mkFunctionTypeDescriptor(0, NULL, mkBuiltinTypeDescriptor(BuiltinTypeTaskid)));
 }

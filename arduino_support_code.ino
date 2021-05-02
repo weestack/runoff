@@ -18,6 +18,9 @@
 #define runoff_taskid	int8_t
 #define runoff_pinid	int8_t
 
+TaskHandle_t taskhandles[N_TASKS];
+QueueHandle_t Mailbox[N_TASKS];
+
 void loop(){}
 // Helper function to create tasks
 void createTask(TaskFunction_t taskFunction, void *args){
@@ -85,4 +88,13 @@ void setup(void) {
 	runoff_setup();
 }
 
+runoff_taskid runoff_self(void) {
+	TaskHandle_t h = xTaskGetCurrentTaskHandle();
+	runoff_taskid i;
+	for(i = 0; i < N_TASKS; i++){
+		if(taskhandles[i] == h)
+			return i;
+	}
+	return -1;
+}
 // End of helper file

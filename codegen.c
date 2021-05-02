@@ -38,7 +38,7 @@ char *codegen(AstNode *tree) {
 		case Prog:
 			preCodeGen = readFile("arduino_support_code.ino");
 			params = processBlock(tree->node.Prog.toplevels, "\n", 0);
-			result = smprintf("%s\nQueueHandle_t Mailbox[%d];\n%s\n", preCodeGen, tree->node.Prog.spawnCount,params);
+			result = smprintf("#define N_TASKS %d\n%s\n%s\n",tree->node.Prog.spawnCount, preCodeGen, params);
 			break;
 		case DefineFunction:
 			id = codegen(tree->node.DefineFunction.identifier);
@@ -55,7 +55,7 @@ char *codegen(AstNode *tree) {
 		case DefineTask:
 			id = codegen(tree->node.DefineTask.identifier);
 			params = processBlock(tree->node.DefineTask.parameters, ";\n", 1);
-			intlit = smprintf("char self = struct_args->self;\n");
+			intlit = smprintf("taskhandles[struct_args->self] = xTaskGetCurrentTaskHandle();\n");
 			type = generateParametersFromStructFields(tree->node.DefineTask.parameters);
 			expr = smprintf("%s %s", intlit, type);
 			extraCode = smprintf("struct %s *struct_args = (struct %s *)args;\n%s",
@@ -122,7 +122,7 @@ char *codegen(AstNode *tree) {
 			break;
 		case Receive:
 			stmts = processBlock(tree->node.Receive.cases, ";", 0);
-			result = smprintf("runoff_msg m;\nxQueueReceive(Mailbox[self], &m, portMAX_DELAY);\nswitch(m.Tag){%s}", stmts);
+			result = smprintf("runoff_msg m;\nxQueueReceive(Mailbox[runoff_self()], &m, portMAX_DELAY);\nswitch(m.Tag){%s}", stmts);
 			break;
 		case ReceiveCase:
 			stmts = codegen(tree->node.ReceiveCase.statements);
