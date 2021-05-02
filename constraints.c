@@ -3,6 +3,7 @@
 #include <string.h>
 #include "data.h"
 #include "auxiliary.h"
+#include "phases.h"
 
 static int errors = 0;
 static void checkTreeHasSetup(AstNode *tree);
@@ -10,13 +11,11 @@ static void checkSwitchHasDefault(AstNode *tree);
 static void checkReceiveHasDefault(AstNode *tree);
 static void checkNotGlobalVar(AstNode *tree);
 static void checkHasMaxOneMessageBlock(AstNode *tree);
-static int entireArrayInitialized(Symbol *sym);
 static void checkVarInitialized(AstNode *tree);
 static void checkAllSpawnsInSetup(AstNode *prog, AstNode *stmts);
 static int countSpawns(AstNode *nodes, int recurse);
 static void checkAllAdvancedInputInSetup(AstNode *prog, AstNode *stmts);
 static int countFunctioncall(char *name, AstNode *nodes, int recurse);
-static char *arrayIndexStr(Type *t, int index);
 
 /* The following list of contextual constraints are checked by
    this phase:
@@ -170,6 +169,11 @@ static void checkVarInitialized(AstNode *tree){
 	AstNode *id;
 	Symbol *sym;
 	Type *type;
+
+	/* make sure tree is not the left side of an assignment. */
+	if(tree->parent->tag == Assignment && tree->parent->node.Assignment.location == tree)
+		return;
+
 	switch(tree->tag){
 	case VariableLocation:
 		id = tree->node.VariableLocation.identifier;
@@ -186,46 +190,23 @@ static void checkVarInitialized(AstNode *tree){
 
 	sym = id->node.Identifier.symbol;
 	type = sym->type;
-	if(type->tag == BuiltinTypeTag && !sym->initializedVar){
-		AstNode *expr = getDefaultValue(type);
+
+	if(!isInitialized(sym->initInfo, type)){
+		AstNode *expr;
+		if(type->tag == ArrayTypeTag)
+			expr = getDefaultValue(arrayBaseType(type));
+		else
+			expr = getDefaultValue(type);
+
 		if(expr == NULL){
-			eprintf(tree->linenum, "Variable '%s' is not initialized when used here\n", sym->name);
-			errors++;
-		}
-	}else if(type->tag == ArrayTypeTag && !entireArrayInitialized(sym) && tree->parent->tag != Assignment){
-		int i = 0;
-		AstNode *expr = getDefaultValue(arrayBaseType(type));
-		if(expr == NULL){
-			eprintf(tree->linenum, "Warning: Elements of array '%s' might not be initialized at indices: ", sym->name);
-			for(i = 0; i < fullArraySize(type); i++){
-				if(sym->initializedArray[i] == 0)
-					printf("%s ", arrayIndexStr(type, i));
+			if(type->tag == BuiltinTypeTag){
+				errors++;
+				eprintf(tree->linenum, "Variable '%s' is not initialized when used here\n", sym->name);
+			}else if(type->tag == ArrayTypeTag){
+				eprintf(tree->linenum, "Warning: array '%s' might not be fully initialized here\n", sym->name);
 			}
-			printf("\n");
 		}
 	}
-}
-
-static char *arrayIndexStr(Type *t, int index){
-	char *result = smprintf("");
-	while(t->tag == ArrayTypeTag){
-		char *old = result;
-		int i = index % t->tags.typeArray.size;
-		index = index / t->tags.typeArray.size;
-		result = smprintf("[%d]%s", i, result);
-		free(old);
-		t = t->tags.typeArray.elementType;
-	}
-	return result;
-}
-
-static int entireArrayInitialized(Symbol *sym){
-	int i;
-	for(i = 0; i < fullArraySize(sym->type); i++){
-		if(sym->initializedArray[i] == 0)
-			return 0;
-	}
-	return 1;
 }
 
 static int countSpawns(AstNode *nodes, int recurse){

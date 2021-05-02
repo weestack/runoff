@@ -1,8 +1,8 @@
 #include <stdio.h>
 #include "data.h"
+#include "phases.h"
 
 static void insertInitCode(AstNode *);
-static AstNode *arrayIndexNode(Type *, int);
 
 void initializeVars(AstNode *tree){
 	if(tree == NULL)
@@ -17,14 +17,52 @@ void initializeVars(AstNode *tree){
 		initializeVars(tree->chain);
 }
 
+static AstNode *extendIndices(AstNode *indices, int i){
+	AstNode *result = NULL;
+	AstNode *tmp;
+	for(tmp = indices; tmp != NULL; tmp = tmp->next){
+		AstNode *n = mkIntLiteralNode(tmp->node.IntLiteral.value);
+		result = append_node(result, n);
+	}
+	result = append_node(result, mkIntLiteralNode(i));
+	return result;
+}
+
+static void insertArrayInitCode(InitializeInfo *info, Type *type, AstNode *id, AstNode *indices, AstNode *decl){
+	decl = decl;
+	if(type->tag == ArrayTypeTag){
+		int i;
+		for(i = 0; i < type->tags.typeArray.size; i++){
+			if(!isInitialized(info->arrayInitialized[i], type->tags.typeArray.elementType)){
+				AstNode *indicesNew;
+				indicesNew = extendIndices(indices, i);
+				insertArrayInitCode(info->arrayInitialized[i], type->tags.typeArray.elementType, id, indicesNew, decl);
+			}
+		}
+	}else if(type->tag == BuiltinTypeTag){
+		AstNode *loc = mkArrayLocationNode(id, indices);
+		AstNode *expr = getDefaultValue(type);
+		AstNode *assign = mkExprStmtNode(mkAssignmentNode(loc, expr));
+		assign->next = decl->next;
+		assign->chain = decl->chain;
+		assign->parent = decl->parent;
+		decl->next = assign;
+		decl->chain = assign;
+	}
+}
+
 static void insertInitCode(AstNode *exprstmt){
 	AstNode *decl = exprstmt->node.ExprStmt.expression;
-	Symbol *sym = decl->node.VarDecl.identifier->node.Identifier.symbol;
+	AstNode *id = decl->node.VarDecl.identifier;
+	Symbol *sym = id->node.Identifier.symbol;
 	Type *type = sym->type;
 
-	if(type->tag == BuiltinTypeTag && !sym->initializedVar)
+	if(type->tag == BuiltinTypeTag && !isInitialized(sym->initInfo, type))
 		decl->node.VarDecl.expression = getDefaultValue(type);
 
+	if(type->tag == ArrayTypeTag && getDefaultValue(arrayBaseType(type)) != NULL)
+		insertArrayInitCode(sym->initInfo, type, id, NULL, exprstmt);
+/*
 	if(type->tag == ArrayTypeTag && getDefaultValue(arrayBaseType(type)) != NULL){
 		int i;
 		AstNode *list = exprstmt;
@@ -45,20 +83,7 @@ static void insertInitCode(AstNode *exprstmt){
 			list = list->next;
 		}
 	}
-}
-
-static AstNode *arrayIndexNode(Type *t, int index){
-	AstNode *result = NULL;
-	while(t->tag == ArrayTypeTag){
-		AstNode *new = result;
-		int i = index % t->tags.typeArray.size;
-		index = index / t->tags.typeArray.size;
-		new = mkIntLiteralNode(i);
-		result = append_node(new, result);
-
-		t = t->tags.typeArray.elementType;
-	}
-	return result;
+*/
 }
 
 AstNode *getDefaultValue(Type *type){
@@ -81,5 +106,32 @@ AstNode *getDefaultValue(Type *type){
 		return mkBoolLiteralNode(0);
 	default:
 		return NULL;
+	}
+}
+
+int isInitialized(InitializeInfo *info, Type *t){
+	if(t->tag == BuiltinTypeTag)
+		return info->varInitialized;
+	else if(t->tag == ArrayTypeTag){
+		int i;
+		for(i = 0; i < t->tags.typeArray.size; i++){
+			if(!isInitialized(info->arrayInitialized[i], t->tags.typeArray.elementType))
+				return 0;
+		}
+		return 1;
+	}else if(t->tag == StructTypeTag)
+		return 0; /* haha */
+	else
+		return 0;
+}
+
+void setInitialized(InitializeInfo *info, Type *t){
+	if(t->tag == BuiltinTypeTag)
+		info->varInitialized = 1;
+	else if(t->tag == ArrayTypeTag){
+		int i;
+		for(i = 0; i < t->tags.typeArray.size; i++){
+			setInitialized(info->arrayInitialized[i], t->tags.typeArray.elementType);
+		}
 	}
 }

@@ -9,6 +9,7 @@ static SymbolTable* current;
 static Symbol *enterSymbol(char *, Type*);
 static Symbol *declaredLocally(char *);
 static void insertBuiltinFunctions(void);
+static InitializeInfo *mkInitInfo(Type *);
 
 int insertSymbol(AstNode *node, Type *type) {
 	Symbol *symbol;
@@ -84,46 +85,32 @@ Symbol *enterSymbol(char *name, Type *type){
 	symbol->name = name;
 	symbol->type = type;
 	symbol->globalvar = 0;
-	symbol->initializedVar = 0;
+	symbol->initInfo = mkInitInfo(type);
 	symbol->used = 0;
 	symbol->next = current->symbols;
 	current->symbols = symbol;
-	
-	if(type != NULL && type->tag == ArrayTypeTag)
-		symbol->initializedArray = malloc(sizeof(int) * fullArraySize(type));
-	else if(type != NULL)
-		symbol->initializedArray = NULL;
 
 	return symbol;
 }
 
-int fullArraySize(Type *t){
-	int s = t->tags.typeArray.size;
-	t = t->tags.typeArray.elementType;
-	while(t->tag == ArrayTypeTag){
-		s *= t->tags.typeArray.size;
-		t = t->tags.typeArray.elementType;
-	}
-	return s;
-}
+static InitializeInfo *mkInitInfo(Type *t) {
+	InitializeInfo *info;
 
-int arrayIndex(Type *t, AstNode *indices){
-	int index;
-	if(indices->tag != IntLiteral)
-		return -1;
-	index = indices->node.IntLiteral.value;
-	indices = indices->next;
-	while(t->tag == ArrayTypeTag && indices != NULL){
-		if(indices->tag != IntLiteral)
-			return -1;
+	if(t == NULL || !(t->tag == BuiltinTypeTag || t->tag == ArrayTypeTag || t->tag == StructTypeTag))
+		return NULL;
 
-		index *= t->tags.typeArray.size;
-		index += indices->node.IntLiteral.value;
+	info = malloc(sizeof(InitializeInfo));
+	info->varInitialized = 0;
+	if(t->tag == ArrayTypeTag){
+		int i;
+		info->arrayInitialized = malloc(sizeof(InitializeInfo*) * t->tags.typeArray.size);
+		for(i = 0; i < t->tags.typeArray.size; i++)
+			info->arrayInitialized[i] = mkInitInfo(t->tags.typeArray.elementType);
+	}else
+		info->arrayInitialized = NULL;
 
-		indices = indices->next;
-		t = t->tags.typeArray.elementType;
-	}
-	return index;
+	return info;
+	/* Some case for structs also */
 }
 
 Type *arrayBaseType(Type *t){

@@ -163,6 +163,7 @@ typedef struct BuiltinTypeDescriptor BuiltinTypeDescriptor;
 typedef struct StructTypeDescriptor StructTypeDescriptor;
 typedef struct TaskTypeDescriptor TaskTypeDescriptor;
 typedef struct MessageTypeDescriptor MessageTypeDescriptor;
+typedef struct InitializeInfo InitializeInfo;
 
 /* Then comes the actual structs, and prototypes for important
    functions related to each of them. */
@@ -467,13 +468,15 @@ struct Symbol {
 	char* name;
 	Type *type;
 	int globalvar;
-	int initializedVar;
-	int *initializedArray;
 	int used;
 	int linenum; /* the line number where the symbol first appeared */
 	Symbol* next;
+
 	/* This is where the symbol is first found. */
 	struct AstNode *first;
+
+	/* Info about initialization of this symbol if it is a variable */
+	InitializeInfo *initInfo;
 };
 
 struct SymbolTable {
@@ -493,8 +496,6 @@ struct ArrayTypeDescriptor {
 	int size;
 };
 Type *mkArrayTypeDescriptor(Type *, int);
-int fullArraySize(Type *);
-int arrayIndex(Type *, AstNode *);
 Type *arrayBaseType(Type *);
 
 struct FunctionTypeDescriptor {
@@ -539,3 +540,11 @@ struct Type {
 	} tags;
 };
 AstNode *getDefaultValue(Type *type);
+
+struct InitializeInfo {
+	int varInitialized;
+	InitializeInfo **arrayInitialized;
+	/* Noget for structs også lol */
+};
+int isInitialized(InitializeInfo *, Type *);
+void setInitialized(InitializeInfo *, Type *);
