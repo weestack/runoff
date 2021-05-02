@@ -5,6 +5,7 @@
 
 static void insertInitCode(AstNode *);
 static int isInitializedArray(InitializeInfo *, Type *, AstNode *);
+static AstNode *getDefaultValue(Type *);
 
 void initializeVars(AstNode *tree){
 	if(tree == NULL)
@@ -70,7 +71,7 @@ static void insertInitCode(AstNode *exprstmt){
 			id, NULL, exprstmt);
 }
 
-AstNode *getDefaultValue(Type *type){
+static AstNode *getDefaultValue(Type *type){
 	if(type->tag != BuiltinTypeTag)
 		return NULL;
 
@@ -154,4 +155,25 @@ void setInitialized(InitializeInfo *info, Type *t){
 		for(field = t->tags.typeStruct.fields->symbols; field != NULL; field = field->next)
 			setInitializedStructField(info, field->name);
 	}
+}
+
+int canGetDefaultValue(InitializeInfo *info, Type *t){
+	/* check if there exists a default value for type *t.
+	   If *t is a struct type, only check the uninitialized fields. */
+	if(t->tag == BuiltinTypeTag && getDefaultValue(t) != NULL)
+		return 1;
+	else if(t->tag == ArrayTypeTag && getDefaultValue(t->tags.typeArray.elementType) != NULL)
+		return 1;
+	else if(t->tag == StructTypeTag){
+		StructInitializeInfo *sinfo = info->structInitialized;
+		for(; sinfo != NULL; sinfo = sinfo->next){
+			InitializeInfo *fieldinfo = sinfo->info;
+			Type *fieldtype = sinfo->fieldtype;
+			if(!isInitialized(fieldinfo, fieldtype) && !canGetDefaultValue(fieldinfo, fieldtype)){
+				return 0;
+			}
+		}
+		return 1;
+	}else
+		return 0;
 }

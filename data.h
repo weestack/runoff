@@ -539,7 +539,7 @@ struct Type {
 		MessageTypeDescriptor typeMessage;
 	} tags;
 };
-AstNode *getDefaultValue(Type *type);
+int canGetDefaultValue(InitializeInfo *, Type *);
 
 struct StructInitializeInfo {
 	char *fieldname;

@@ -191,29 +191,21 @@ static void checkVarInitialized(AstNode *tree){
 	sym = id->node.Identifier.symbol;
 	type = sym->type;
 
-	if(!isInitialized(sym->initInfo, type)){
-		AstNode *expr;
-		if(type->tag == ArrayTypeTag)
-			expr = getDefaultValue(type->tags.typeArray.elementType);
-		else
-			expr = getDefaultValue(type);
-
-		if(expr == NULL){
-			if(type->tag == BuiltinTypeTag){
-				errors++;
-				eprintf(tree->linenum, "Variable '%s' is not initialized when used here\n", sym->name);
-			}else if(type->tag == ArrayTypeTag){
-				eprintf(tree->linenum, "Warning: array '%s' might not be fully initialized here\n", sym->name);
-			}else if(type->tag == StructTypeTag){
-				StructInitializeInfo *sinfo;
-				errors++;
-				eprintf(tree->linenum, "Struct instance '%s' have some uninitialized fields when used here: ", sym->name);
-				for(sinfo = sym->initInfo->structInitialized; sinfo != NULL; sinfo = sinfo->next){
-					if(!isInitialized(sinfo->info, sinfo->fieldtype))
-						printf("%s ", sinfo->fieldname);
-				}
-				printf("\n");
+	if(!isInitialized(sym->initInfo, type) && !canGetDefaultValue(sym->initInfo, type)){
+		if(type->tag == BuiltinTypeTag){
+			errors++;
+			eprintf(tree->linenum, "Variable '%s' is not initialized when used here\n", sym->name);
+		}else if(type->tag == ArrayTypeTag){
+			eprintf(tree->linenum, "Warning: array '%s' might not be fully initialized here\n", sym->name);
+		}else if(type->tag == StructTypeTag){
+			StructInitializeInfo *sinfo;
+			errors++;
+			eprintf(tree->linenum, "Struct instance '%s' have some uninitialized fields when used here: ", sym->name);
+			for(sinfo = sym->initInfo->structInitialized; sinfo != NULL; sinfo = sinfo->next){
+				if(!isInitialized(sinfo->info, sinfo->fieldtype) && !canGetDefaultValue(sinfo->info, sinfo->fieldtype))
+					printf("%s ", sinfo->fieldname);
 			}
+			printf("\n");
 		}
 	}
 }

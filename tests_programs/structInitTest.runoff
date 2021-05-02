@@ -3,6 +3,7 @@ struct Data {
 	int b;
 	int c;
 	int d;
+	pinid p;
 }
 
 function sum(struct Data nums) -> int {
