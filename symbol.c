@@ -121,6 +121,19 @@ static InitializeInfo *mkInitInfo(Type *t) {
 	else
 		info->arrayInitialized = NULL;
 
+	info->structInitialized = NULL;
+	if(t->tag == StructTypeTag){
+		Symbol *field;
+		for(field = t->tags.typeStruct.fields->symbols; field != NULL; field = field->next){
+			StructInitializeInfo *sinfo = malloc(sizeof(StructInitializeInfo));
+			sinfo->fieldname = field->name;
+			sinfo->fieldtype = field->type;
+			sinfo->info = mkInitInfo(field->type);
+			sinfo->next = info->structInitialized;
+			info->structInitialized = sinfo;
+		}
+	}
+
 	return info;
 	/* Some case for structs also */
 }

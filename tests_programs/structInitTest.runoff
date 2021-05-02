@@ -1,0 +1,21 @@
+struct Data {
+	int a;
+	int b;
+	int c;
+	int d;
+}
+
+function sum(struct Data nums) -> int {
+	int sum = 0;
+	sum = sum + nums.a;
+	sum = sum + nums.b;
+	sum = sum + nums.c;
+	sum = sum + nums.d;
+	return sum;
+}
+
+function setup() -> void {
+	struct Data d;
+	d.c = 123;
+	sum(d);
+}

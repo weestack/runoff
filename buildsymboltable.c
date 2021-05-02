@@ -410,7 +410,6 @@ void handleAssignment(AstNode *node){
 	processNode(expr);
 	processNode(loc);
 
-	/* TODO fix for structs. */
 	switch(loc->tag){
 	case VariableLocation:
 		id = loc->node.VariableLocation.identifier;
@@ -439,7 +438,19 @@ void handleAssignment(AstNode *node){
 		}
 		break;
 	case StructLocation:
-		id = loc->node.StructLocation.identifier;
-		break; 
+		while(loc->tag == StructLocation){
+			id = loc->node.StructLocation.identifier;
+			sym = id->node.Identifier.symbol;
+			initInfo = sym->initInfo;
+			loc = loc->node.StructLocation.location;
+		}
+
+		if(loc->tag == VariableLocation)
+			id = loc->node.VariableLocation.identifier;
+		else if(loc->tag == ArrayLocation)
+			id = loc->node.ArrayLocation.identifier;
+		
+		setInitializedStructField(initInfo, id->node.Identifier.symbol->name);
+		break;
 	}
 }

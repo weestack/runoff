@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <string.h>
 #include "data.h"
 #include "phases.h"
 
@@ -113,9 +114,14 @@ int isInitialized(InitializeInfo *info, Type *t){
 		return isInitializedArray(info,
 			t->tags.typeArray.elementType,
 			t->tags.typeArray.dimensions);
-	else if(t->tag == StructTypeTag)
-		return 0; /* haha */
-	else
+	else if(t->tag == StructTypeTag){
+		StructInitializeInfo *sinfo = info->structInitialized;
+		for(; sinfo != NULL; sinfo = sinfo->next){
+			if(!isInitialized(sinfo->info, sinfo->fieldtype))
+				return 0;
+		}
+		return 1;
+	}else
 		return 0;
 }
 
@@ -130,9 +136,22 @@ void setInitializedArray(InitializeInfo *info, Type *t, AstNode *dims){
 	}
 }
 
+void setInitializedStructField(InitializeInfo *info, char *name){
+	StructInitializeInfo *sinfo;
+	for(sinfo = info->structInitialized; sinfo != NULL; sinfo = sinfo->next){
+		if(strcmp(sinfo->fieldname, name) == 0)
+			setInitialized(sinfo->info, sinfo->fieldtype);
+	}
+}
+
 void setInitialized(InitializeInfo *info, Type *t){
 	if(t->tag == BuiltinTypeTag)
 		info->varInitialized = 1;
 	else if(t->tag == ArrayTypeTag)
 		setInitializedArray(info, t->tags.typeArray.elementType, t->tags.typeArray.dimensions);
+	else if(t->tag == StructTypeTag){
+		Symbol *field;
+		for(field = t->tags.typeStruct.fields->symbols; field != NULL; field = field->next)
+			setInitializedStructField(info, field->name);
+	}
 }

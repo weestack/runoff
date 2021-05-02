@@ -204,6 +204,15 @@ static void checkVarInitialized(AstNode *tree){
 				eprintf(tree->linenum, "Variable '%s' is not initialized when used here\n", sym->name);
 			}else if(type->tag == ArrayTypeTag){
 				eprintf(tree->linenum, "Warning: array '%s' might not be fully initialized here\n", sym->name);
+			}else if(type->tag == StructTypeTag){
+				StructInitializeInfo *sinfo;
+				errors++;
+				eprintf(tree->linenum, "Struct instance '%s' have some uninitialized fields when used here: ", sym->name);
+				for(sinfo = sym->initInfo->structInitialized; sinfo != NULL; sinfo = sinfo->next){
+					if(!isInitialized(sinfo->info, sinfo->fieldtype))
+						printf("%s ", sinfo->fieldname);
+				}
+				printf("\n");
 			}
 		}
 	}

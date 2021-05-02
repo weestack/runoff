@@ -164,6 +164,7 @@ typedef struct StructTypeDescriptor StructTypeDescriptor;
 typedef struct TaskTypeDescriptor TaskTypeDescriptor;
 typedef struct MessageTypeDescriptor MessageTypeDescriptor;
 typedef struct InitializeInfo InitializeInfo;
+typedef struct StructInitializeInfo StructInitializeInfo;
 
 /* Then comes the actual structs, and prototypes for important
    functions related to each of them. */
@@ -540,10 +541,18 @@ struct Type {
 };
 AstNode *getDefaultValue(Type *type);
 
+struct StructInitializeInfo {
+	char *fieldname;
+	Type *fieldtype;
+	InitializeInfo *info;
+	StructInitializeInfo *next;
+};
+
 struct InitializeInfo {
 	int varInitialized;
 	InitializeInfo **arrayInitialized;
-	/* Noget for structs også lol */
+	StructInitializeInfo *structInitialized;
 };
 int isInitialized(InitializeInfo *, Type *);
 void setInitialized(InitializeInfo *, Type *);
+void setInitializedStructField(InitializeInfo *, char *);
