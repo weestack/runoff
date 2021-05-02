@@ -6,17 +6,25 @@ struct Data {
 	pinid p;
 }
 
-function sum(struct Data nums) -> int {
+struct Data2 {
+	int k;
+}
+
+function sum(struct Data nums, struct Data2 random) -> int {
 	int sum = 0;
 	sum = sum + nums.a;
 	sum = sum + nums.b;
 	sum = sum + nums.c;
 	sum = sum + nums.d;
+	sum = sum + random.k;
 	return sum;
 }
 
 function setup() -> void {
-	struct Data d;
-	d.c = 123;
-	sum(d);
+	struct Data d1;
+	struct Data2 d2;
+
+	d1.p = 9P;
+
+	sum(d1, d2);
 }

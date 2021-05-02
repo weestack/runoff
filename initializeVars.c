@@ -69,6 +69,9 @@ static void insertInitCode(AstNode *exprstmt){
 			type->tags.typeArray.elementType,
 			type->tags.typeArray.dimensions,
 			id, NULL, exprstmt);
+
+	if(type->tag == StructTypeTag && canGetDefaultValue(sym->initInfo, type))
+		printf("HE HE HEEEYYY en eller anden skal lige skrive koden som giver struct felter deres default værdier :))\n");
 }
 
 static AstNode *getDefaultValue(Type *type){
@@ -169,9 +172,8 @@ int canGetDefaultValue(InitializeInfo *info, Type *t){
 		for(; sinfo != NULL; sinfo = sinfo->next){
 			InitializeInfo *fieldinfo = sinfo->info;
 			Type *fieldtype = sinfo->fieldtype;
-			if(!isInitialized(fieldinfo, fieldtype) && !canGetDefaultValue(fieldinfo, fieldtype)){
+			if(!isInitialized(fieldinfo, fieldtype) && !canGetDefaultValue(fieldinfo, fieldtype))
 				return 0;
-			}
 		}
 		return 1;
 	}else
