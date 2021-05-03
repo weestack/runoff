@@ -32,4 +32,9 @@ do
 	cd $basedir
 done
 
-echo "Test results: total=$testcount pass=$passcount fail=$failcount"
+passrate=$((echo "scale=2" ; echo "100 * $passcount / $testcount") | bc)
+echo "Test results:"
+echo "	total:  $testcount"
+echo "	passed: $passcount"
+echo "	failed: $failcount"
+echo "	pass rate: $passrate%"
