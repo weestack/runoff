@@ -15,6 +15,8 @@ function blow_away_plastic_at_id(struct placement f) -> void {
 
 function analyse_factory_mill() -> struct placement {
     # Should return a placement, with aprpriate values.
+    struct placement p;
+    return p;
 }
 
 task detect_plastic(taskid blower) {
