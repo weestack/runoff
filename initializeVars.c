@@ -6,19 +6,22 @@
 static void insertInitCode(AstNode *);
 static int isInitializedArray(InitializeInfo *, Type *, AstNode *);
 static AstNode *getDefaultValue(Type *);
-void initializeStructFields(AstNode *, Type *, InitializeInfo *, AstNode *);
+void initializeStructFields(AstNode *, InitializeInfo *, AstNode *);
 
 void initializeVars(AstNode *tree){
+	AstNode *chain = tree->chain;
 	if(tree == NULL)
 		return;
 
-	if(tree->tag == ExprStmt && tree->node.ExprStmt.expression->tag == VarDecl)
+	if(tree->tag == ExprStmt && tree->node.ExprStmt.expression->tag == VarDecl){
+		AstNode *oldchain = tree->chain;
 		insertInitCode(tree);
-	else
+		chain = oldchain;
+	}else if(tree->children != NULL)
 		initializeVars(tree->children);
 
-	if(tree->chain != NULL)
-		initializeVars(tree->chain);
+	if(chain != NULL)
+		initializeVars(chain);
 }
 
 static AstNode *extendIndices(AstNode *indices, int i){
@@ -71,32 +74,58 @@ static void insertInitCode(AstNode *exprstmt){
 			type->tags.typeArray.dimensions,
 			id, NULL, exprstmt);
 
-	if(type->tag == StructTypeTag && canGetDefaultValue(sym->initInfo, type))
-		initializeStructFields(exprstmt, type, sym->initInfo, id);
+	if(type->tag == StructTypeTag && canGetDefaultValue(sym->initInfo, type)){
+		AstNode *newid = mkIdentifierNode(id->node.Identifier.identifier);
+		newid->node.Identifier.symbol = sym;
+		initializeStructFields(exprstmt, sym->initInfo, newid);
+	}
 }
 
-void initializeStructFields(AstNode *decl, Type *type, InitializeInfo *info, AstNode *id){
+AstNode *copyIds(AstNode *ids){
+	AstNode *newids = NULL;
+	AstNode *tmp;
+	for(tmp = ids; tmp != NULL; tmp = tmp->next){
+		AstNode *newid = mkIdentifierNode(tmp->node.Identifier.identifier);
+		newid->node.Identifier.symbol = tmp->node.Identifier .symbol;
+		newids = append_node(newids, newid);
+	}
+	return newids;
+}
+
+AstNode *makeStructLocation(AstNode *ids, AstNode *fieldloc){
+	ids = copyIds(ids);
+	if(ids == NULL)
+		return fieldloc;
+	else
+		return mkStructLocationNode(ids, makeStructLocation(ids->next, fieldloc));
+}
+
+void initializeStructFields(AstNode *decl, InitializeInfo *info, AstNode *ids){
 	StructInitializeInfo *sinfo;
 
 	for(sinfo=info->structInitialized; sinfo != NULL; sinfo=sinfo->next){
 		if(!isInitialized(sinfo->info, sinfo->symbol->type)){
 			AstNode *fieldId = mkIdentifierNode(sinfo->symbol->name);
 			AstNode *fieldLoc = mkVariableLocationNode(fieldId);
-			AstNode *loc = mkStructLocationNode(id, fieldLoc);
+			AstNode *loc = makeStructLocation(ids, fieldLoc);
 			AstNode *expr = getDefaultValue(sinfo->symbol->type);
 			AstNode *assign = mkExprStmtNode(mkAssignmentNode(loc, expr));
-			
+
 			fieldId->node.Identifier.symbol = sinfo->symbol;
 
-			assign->next = decl->next;
-			assign->chain = decl->chain;
-			assign->parent = decl->parent;
-			decl->next = assign;
-			decl->chain = assign;
+			if(sinfo->symbol->type->tag == StructTypeTag){
+				AstNode *newids = copyIds(ids);
+				newids = append_node(newids, fieldId);
+				initializeStructFields(decl, sinfo->info, newids);
+			}else{
+				assign->next = decl->next;
+				assign->chain = decl->chain;
+				assign->parent = decl->parent;
+				decl->next = assign;
+				decl->chain = assign;
+			}
 		}
 	}
-	decl = decl;
-	type = type;
 }
 
 static AstNode *getDefaultValue(Type *type){

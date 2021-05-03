@@ -3,6 +3,7 @@
 #include <string.h>
 #include "data.h"
 #include "auxiliary.h"
+#include "phases.h"
 
 char *processBlock(AstNode *, char *, int);
 char *setupPreCodeGen(AstNode *);
@@ -581,6 +582,14 @@ char *mkStructsFromSpawns(AstNode *tree){
 		} else {
 			AstNode *children = child->children;
 			old = result;
+			if(tree == children){
+				int *i = NULL;
+				int j;
+				printf("Child = children :( %s\n", prettyprint(tree));
+				j = *i;
+				j = j;
+			}
+			
 			result = smprintf("%s %s",mkStructsFromSpawns(children), result);
 			/* Renember to free the children! */
 		}
