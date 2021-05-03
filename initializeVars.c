@@ -6,6 +6,7 @@
 static void insertInitCode(AstNode *);
 static int isInitializedArray(InitializeInfo *, Type *, AstNode *);
 static AstNode *getDefaultValue(Type *);
+void initializeStructFields(AstNode *, Type *, InitializeInfo *, AstNode *);
 
 void initializeVars(AstNode *tree){
 	if(tree == NULL)
@@ -71,7 +72,31 @@ static void insertInitCode(AstNode *exprstmt){
 			id, NULL, exprstmt);
 
 	if(type->tag == StructTypeTag && canGetDefaultValue(sym->initInfo, type))
-		printf("HE HE HEEEYYY en eller anden skal lige skrive koden som giver struct felter deres default værdier :))\n");
+		initializeStructFields(exprstmt, type, sym->initInfo, id);
+}
+
+void initializeStructFields(AstNode *decl, Type *type, InitializeInfo *info, AstNode *id){
+	StructInitializeInfo *sinfo;
+
+	for(sinfo=info->structInitialized; sinfo != NULL; sinfo=sinfo->next){
+		if(!isInitialized(sinfo->info, sinfo->symbol->type)){
+			AstNode *fieldId = mkIdentifierNode(sinfo->symbol->name);
+			AstNode *fieldLoc = mkVariableLocationNode(fieldId);
+			AstNode *loc = mkStructLocationNode(id, fieldLoc);
+			AstNode *expr = getDefaultValue(sinfo->symbol->type);
+			AstNode *assign = mkExprStmtNode(mkAssignmentNode(loc, expr));
+			
+			fieldId->node.Identifier.symbol = sinfo->symbol;
+
+			assign->next = decl->next;
+			assign->chain = decl->chain;
+			assign->parent = decl->parent;
+			decl->next = assign;
+			decl->chain = assign;
+		}
+	}
+	decl = decl;
+	type = type;
 }
 
 static AstNode *getDefaultValue(Type *type){
@@ -121,7 +146,7 @@ int isInitialized(InitializeInfo *info, Type *t){
 	else if(t->tag == StructTypeTag){
 		StructInitializeInfo *sinfo = info->structInitialized;
 		for(; sinfo != NULL; sinfo = sinfo->next){
-			if(!isInitialized(sinfo->info, sinfo->fieldtype))
+			if(!isInitialized(sinfo->info, sinfo->symbol->type))
 				return 0;
 		}
 		return 1;
@@ -143,8 +168,8 @@ void setInitializedArray(InitializeInfo *info, Type *t, AstNode *dims){
 void setInitializedStructField(InitializeInfo *info, char *name){
 	StructInitializeInfo *sinfo;
 	for(sinfo = info->structInitialized; sinfo != NULL; sinfo = sinfo->next){
-		if(strcmp(sinfo->fieldname, name) == 0)
-			setInitialized(sinfo->info, sinfo->fieldtype);
+		if(strcmp(sinfo->symbol->name, name) == 0)
+			setInitialized(sinfo->info, sinfo->symbol->type);
 	}
 }
 
@@ -171,7 +196,7 @@ int canGetDefaultValue(InitializeInfo *info, Type *t){
 		StructInitializeInfo *sinfo = info->structInitialized;
 		for(; sinfo != NULL; sinfo = sinfo->next){
 			InitializeInfo *fieldinfo = sinfo->info;
-			Type *fieldtype = sinfo->fieldtype;
+			Type *fieldtype = sinfo->symbol->type;
 			if(!isInitialized(fieldinfo, fieldtype) && !canGetDefaultValue(fieldinfo, fieldtype))
 				return 0;
 		}

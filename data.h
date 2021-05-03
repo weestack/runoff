@@ -542,8 +542,7 @@ struct Type {
 int canGetDefaultValue(InitializeInfo *, Type *);
 
 struct StructInitializeInfo {
-	char *fieldname;
-	Type *fieldtype;
+	Symbol *symbol;
 	InitializeInfo *info;
 	StructInitializeInfo *next;
 };

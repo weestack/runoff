@@ -202,8 +202,8 @@ static void checkVarInitialized(AstNode *tree){
 			errors++;
 			eprintf(tree->linenum, "Struct instance '%s' have some uninitialized fields when used here: ", sym->name);
 			for(sinfo = sym->initInfo->structInitialized; sinfo != NULL; sinfo = sinfo->next){
-				if(!isInitialized(sinfo->info, sinfo->fieldtype) && !canGetDefaultValue(sinfo->info, sinfo->fieldtype))
-					printf("%s ", sinfo->fieldname);
+				if(!isInitialized(sinfo->info, sinfo->symbol->type) && !canGetDefaultValue(sinfo->info, sinfo->symbol->type))
+					printf("%s ", sinfo->symbol->name);
 			}
 			printf("\n");
 		}

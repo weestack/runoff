@@ -27,9 +27,9 @@ function setup() -> void {
     outputPin(12P);
     outputPin(13P);
     outputPin(9P);
-    inputPin(7P);
+    inputPin(2P);
     spawn blinker(13P, 500);
-    spawn blinker(12P, 750);
+    spawn blinker(12P, 1000);
     taskid spawnPressID = spawn blinkOnPress(9P);
-    advancedInputPin(7P, spawnPressID, ButtonPressed{}, ButtonReleased{});
+    advancedInputPin(2P, spawnPressID, ButtonPressed{}, ButtonReleased{});
 }

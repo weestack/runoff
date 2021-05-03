@@ -10,21 +10,29 @@ struct Data2 {
 	int k;
 }
 
-function sum(struct Data nums, struct Data2 random) -> int {
+struct Data3 {
+	struct Data g;
+	int f;
+}
+
+function sum(struct Data nums, struct Data2 random, struct Data3 woow) -> int {
 	int sum = 0;
 	sum = sum + nums.a;
 	sum = sum + nums.b;
 	sum = sum + nums.c;
 	sum = sum + nums.d;
 	sum = sum + random.k;
+	sum = sum + woow.f;
 	return sum;
 }
 
 function setup() -> void {
 	struct Data d1;
 	struct Data2 d2;
+	struct Data3 d3;
 
 	d1.p = 9P;
-
-	sum(d1, d2);
+	d3.g.p = 8P;
+	
+	sum(d1, d2, d3);
 }
