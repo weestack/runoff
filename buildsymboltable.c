@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <string.h>
 #include <stdlib.h>
 #include "data.h"
 #include "auxiliary.h"
@@ -438,10 +439,21 @@ void handleAssignment(AstNode *node){
 		}
 		break;
 	case StructLocation:
+		id = loc->node.StructLocation.identifier;
+		initInfo = id->node.Identifier.symbol->initInfo;
+		loc = loc->node.StructLocation.location;
+
 		while(loc->tag == StructLocation){
+			StructInitializeInfo *sinfo;
 			id = loc->node.StructLocation.identifier;
-			sym = id->node.Identifier.symbol;
-			initInfo = sym->initInfo;
+			for(sinfo = initInfo->structInitialized; sinfo != NULL; sinfo = sinfo->next){
+				char *fieldname = sinfo->symbol->name;
+				char *idname = id->node.Identifier.symbol->name;
+				if(strcmp(fieldname, idname) == 0){
+					initInfo = sinfo->info;
+					break;
+				}
+			}
 			loc = loc->node.StructLocation.location;
 		}
 
