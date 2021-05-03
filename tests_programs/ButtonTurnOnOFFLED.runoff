@@ -13,13 +13,17 @@ task blinker(pinid pin, uint32 adelay) {
 }
 
 
-task blinkOnPress(pinid led) {
-  for(;;) {
+function getState() -> bool {
     receive {
-      case ButtonPressed{}: turnOn(led);
-      case ButtonReleased{}: turnOff(led);
+      case ButtonPressed{}: return true;
+      case ButtonReleased{}: return false;
       default:
     }
+}
+
+task blinkOnPress(pinid led) {
+  for(;;) {
+	setOutput(led, getState());
   }
 }
 
