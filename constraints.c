@@ -16,6 +16,7 @@ static void checkAllSpawnsInSetup(AstNode *prog, AstNode *stmts);
 static int countSpawns(AstNode *nodes, int recurse);
 static void checkAllAdvancedInputInSetup(AstNode *prog, AstNode *stmts);
 static int countFunctioncall(char *name, AstNode *nodes, int recurse);
+static int checkHasReturn(AstNode *tree);
 
 /* The following list of contextual constraints are checked by
    this phase:
@@ -27,6 +28,7 @@ static int countFunctioncall(char *name, AstNode *nodes, int recurse);
    6) All variables are initialized before use, or have a default value
    7) All spawns appear as a statement directly in the setup function
    8) All calls to advancedInputPin appear as a statement directly in the setup function
+   9) Check that all functions with return type != void actually returns.
  */
 int contextualConstraintsCheck(AstNode *tree){
 	AstNode *children;
@@ -54,12 +56,44 @@ int contextualConstraintsCheck(AstNode *tree){
 	case ArrayLocation:
 		checkVarInitialized(tree);
 		return errors;
+	case DefineFunction:
+		if(tree->node.DefineFunction.type->tag == BuiltinType &&
+			tree->node.DefineFunction.type->node.BuiltinType.type == BuiltinTypeVoid)
+			break;
+		else{
+			int hasRet = checkHasReturn(tree->node.DefineFunction.statements);
+			if(!hasRet){
+				errors++;
+				eprintf(tree->linenum, "Function '%s' doesn't have a return statement for all code paths.\n", prettyprint(tree->node.DefineFunction.identifier));
+			}
+		}
 	}
 
 	children = tree->children;
 	for(; children != NULL; children = children->chain)
 		contextualConstraintsCheck(children);
 	return errors;
+}
+
+static int checkHasReturn(AstNode *tree){
+	AstNode *child;
+	for(child = tree; child != NULL; child = child->chain){
+		switch(child->tag){
+		case Return:
+			return 1;
+		case If: /* we can't be sure with loops. In if switch and receive, we could check that all cases has a return, but we don't right now.*/
+		case Switch:
+		case Receive:
+		case For:
+		case While:
+			break;
+		default:
+			if(checkHasReturn(child->children))
+				return 1;
+			break;
+		}
+	}
+	return 0;
 }
 
 /* Look at all the toplevel declarations and see if a function

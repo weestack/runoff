@@ -19,6 +19,7 @@ function getState() -> bool {
       case ButtonReleased{}: return false;
       default:
     }
+    return false;
 }
 
 task blinkOnPress(pinid led) {
