@@ -62,3 +62,6 @@ parser.o: parser.c parser.h
 clean:
 	@rm -rf $(GENFILES) $(OBJECTS) $(PROG)
 	@echo [RM] $(GENFILES) $(OBJECTS) $(PROG)
+
+test:
+	@./tests/runner.sh
