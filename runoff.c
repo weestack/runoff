@@ -100,14 +100,17 @@ main(int argc, char *argv[])
 	code = codegen(tree);
 
 	if(indentflag)
+		/* Run indentation helper for output file */
 		code = indent(code);
 
 	if(outfile != NULL)
+		/* Save output code to file */
 		writeFile(code, outfile);
 	else
 		printf("%s\n", code);
 
 	if(verifyflag)
+		/* Run code checker */
 		verifycode(code);
 
 	return 0;
@@ -119,6 +122,7 @@ void usage(void){
 }
 
 void verifycode(char *code){
+	/* wrapper for using arduino c++ to verify output code */
 	char *tmpdirname = tmpnam(NULL);
 	char *tmpname = smprintf("%s/code.cpp", tmpdirname);
 	char *cmd1 = smprintf("mkdir %s", tmpdirname);
@@ -129,6 +133,7 @@ void verifycode(char *code){
 }
 
 char *indent(char *code){
+	/* Wrapper for running indent library */
 	char *tmpname = tmpnam(NULL);
 	char *cmd = smprintf("indent %s", tmpname);
 	writeFile(code, tmpname);

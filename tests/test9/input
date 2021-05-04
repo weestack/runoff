@@ -1,0 +1,50 @@
+struct Data {
+	int a;
+	float b;
+	pinid c;
+}
+
+function setup() -> void {
+	# The following have default values 
+	uint8 data1;
+	uint16 data2;
+	uint32 data3;
+	uint64 data4;
+	int8 data5;
+	int16 data6;
+	int32 data7;
+	int64 data8;
+	int data9;
+	bool data10;
+	float data11;
+
+	# The following does not have default values
+	pinid p;
+	taskid t;
+
+	# Funny trick to avoid "var x unused"
+	data1=data1;
+	data2=data2;
+	data3=data3;
+	data4=data4;
+	data5=data5;
+	data6=data6;
+	data7=data7;
+	data8=data8;
+	data9=data9;
+	data10=data10;
+	data11=data11;
+	p=p;
+	t=t;
+
+	# arrays works
+	int[20][10] array1;
+	
+	pinid[5] array2;
+
+	struct Data struct1;
+	
+	array1 = array1;
+	array2 = array2;
+	struct1 = struct1;
+}

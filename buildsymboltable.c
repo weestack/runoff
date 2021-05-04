@@ -402,6 +402,18 @@ void handleReceiveCase(AstNode *node){
 	closeScope();
 }
 
+/* Check if a symbol appears inside the tree */
+static int containsSymbol(AstNode *tree, Symbol *sym){
+	AstNode *n;
+	for(n = tree; n != NULL; n = n->chain){
+		if(n->tag == Identifier && n->node.Identifier.symbol == sym)
+			return 1;
+		if(containsSymbol(n->children, sym))
+			return 1;
+	}
+	return 0;
+}
+
 void handleAssignment(AstNode *node){
 	AstNode *loc = node->node.Assignment.location;
 	AstNode *expr = node->node.Assignment.expression;
@@ -419,11 +431,15 @@ void handleAssignment(AstNode *node){
 	case VariableLocation:
 		id = loc->node.VariableLocation.identifier;
 		sym = id->node.Identifier.symbol;
+		if(containsSymbol(expr, sym))
+			return;
 		setInitialized(sym->initInfo, sym->type);
 		break;
 	case ArrayLocation:
 		id = loc->node.ArrayLocation.identifier;
 		sym = id->node.Identifier.symbol;
+		if(containsSymbol(expr, sym))
+			return;
 		initInfo = sym->initInfo;
 		type = sym->type;
 		elementType = type->tags.typeArray.elementType;
@@ -465,6 +481,9 @@ void handleAssignment(AstNode *node){
 			id = loc->node.VariableLocation.identifier;
 		else if(loc->tag == ArrayLocation)
 			id = loc->node.ArrayLocation.identifier;
+		
+		if(containsSymbol(expr, id->node.Identifier.symbol))
+			return;
 
 		setInitializedStructField(initInfo, id->node.Identifier.symbol->name);
 		break;

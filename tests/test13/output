@@ -1,0 +1,1 @@
+input:1: It looks like you have calls to advancedInputPin located somewhere else than directly in the setup function, which is not allowed.

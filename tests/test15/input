@@ -1,0 +1,14 @@
+messages{
+	One;
+	Two;
+}
+
+task A(){
+}
+
+function setup() -> void {
+	taskid hehe = spawn A();
+	if(true){
+		advancedInputPin(2P, hehe, One{}, Two{});
+	}
+}

@@ -36,7 +36,6 @@ static AstNode *extendIndices(AstNode *indices, int i){
 }
 
 static void insertArrayInitCode(InitializeInfo *info, Type *type, AstNode *dims, AstNode *id, AstNode *indices, AstNode *decl){
-	decl = decl;
 	if(dims != 0){
 		int i;
 		int size = dims->node.IntLiteral.value;
