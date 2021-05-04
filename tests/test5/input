@@ -1,0 +1,18 @@
+function test() -> void {
+	int a = 5;
+	switch(a) {
+		case 3:
+		default:
+	}
+	switch(a) {
+		case 3:
+	}
+	switch(a) {
+		case 3:
+		default:
+		default:
+	}
+}
+
+function setup() -> void {
+}
