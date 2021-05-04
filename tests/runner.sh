@@ -3,7 +3,7 @@
 basedir=$(pwd)
 export RUNOFF=$basedir/runoff
 
-tests=$(find tests/ -maxdepth 1 -path "tests/test*" -type d)
+tests=$(find tests/ -maxdepth 1 -path "tests/test*" -type d | sort)
 
 testcount=$(echo $tests | wc -w)
 passcount=0
