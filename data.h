@@ -243,7 +243,7 @@ AstNode *mkWhileNode(AstNode *, AstNode *);
 struct ForNode {
 	AstNode *expressionInit;
 	AstNode *expressionTest;
-	AstNode *expressionUpdate; /* hehe */
+	AstNode *expressionUpdate;
 	AstNode *statements;
 };
 AstNode *mkForNode(AstNode *, AstNode *, AstNode *, AstNode *);
@@ -255,7 +255,7 @@ struct SwitchNode {
 AstNode *mkSwitchNode(AstNode *, AstNode *);
 
 struct SwitchCaseNode {
-	/* int eller bool, if null then default case hehe */
+	/* int or bool, if null then default case */
 	AstNode *literal;
 	AstNode *statements;
 };
@@ -363,7 +363,6 @@ struct IdentifierNode {
 AstNode *mkIdentifierNode(char *);
 
 struct IntLiteralNode {
-	/* store its size here as well i think */
 	long int value;
 };
 AstNode *mkPinLiteralNode(long int);
@@ -487,8 +486,8 @@ struct SymbolTable {
 void initializeSymbolTables(void);
 void openScope(void);
 void closeScope(void);
-SymbolTable *getCurrentSymbolTable(void);
 int insertSymbol(AstNode *, Type *);
+SymbolTable *getCurrentSymbolTable(void);
 Symbol* retrieveSymbol(AstNode *);
 Symbol *retrieveSymbolFromTable(AstNode *, SymbolTable *);
 
