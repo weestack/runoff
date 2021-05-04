@@ -9,6 +9,7 @@ extern char *filename;
 /* printf but it returns a string allocated by malloc */
 char *smprintf(char *fmt, ...){
 	va_list args;
+	/* Maybe too small with only 1MB */
 	char *str = malloc(1000000);
 	va_start(args, fmt);
 	vsprintf(str, fmt, args);
@@ -33,8 +34,7 @@ void writeFile(char *buf, char *filename){
 		fputs(buf, fp);
 		fflush(fp);
 		fclose(fp);
-	}
-	else
+	} else
 		printf("Could not open file %s: %s\n", filename, strerror(errno));
 }
 
