@@ -1,0 +1,7 @@
+int a = 100;
+
+function setup() -> void {
+	a = a + 1;
+	a++;
+	a--;
+}
