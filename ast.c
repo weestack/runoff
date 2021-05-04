@@ -38,6 +38,7 @@ static AstNode *mkNode(int type, AstNode *firstChild) {
 }
 
 
+/* Adds AstNode to end of chain. */
 static AstNode *chain(AstNode *a, AstNode *b){
 	AstNode *tmp;
 
