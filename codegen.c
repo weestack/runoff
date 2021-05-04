@@ -30,6 +30,24 @@ char *codegen(AstNode *tree) {
 	char *indicies = NULL;
 	char *extraCode = NULL;
 	char *preCodeGen = NULL;
+	char *children = NULL;
+	char *constString = NULL;
+	char *localVariables = NULL;
+	char *structFields = NULL;
+	char *msgStruct = NULL;
+	char *msgEnum = NULL;
+	char *msgUnion = NULL;
+	char *arrayIndices = NULL;
+	char *caseStmts = NULL;
+	char *LoopInit = NULL;
+	char *LoopEval = NULL;
+	char *LoopUpdate = NULL;
+	char *ternaryCheck = NULL;
+	char *ternaryTrue = NULL;
+	char *ternaryFalse = NULL;
+	char *funcArgs = NULL;
+	char *exprRight = NULL;
+	char *exprLeft = NULL;
 
 	char *result = NULL;
 
@@ -38,8 +56,8 @@ char *codegen(AstNode *tree) {
 	switch (tree->tag) {
 		case Prog:
 			preCodeGen = readFile("arduino_support_code.ino");
-			params = processBlock(tree->node.Prog.toplevels, "\n", 0);
-			result = smprintf("#define N_TASKS %d\n%s\n%s\n",tree->node.Prog.spawnCount, preCodeGen, params);
+			children = processBlock(tree->node.Prog.toplevels, "\n", 0);
+			result = smprintf("#define N_TASKS %d\n%s\n%s\n",tree->node.Prog.spawnCount, preCodeGen, children);
 			break;
 		case DefineFunction:
 			id = codegen(tree->node.DefineFunction.identifier);
@@ -56,9 +74,17 @@ char *codegen(AstNode *tree) {
 		case DefineTask:
 			id = codegen(tree->node.DefineTask.identifier);
 			params = processBlock(tree->node.DefineTask.parameters, ";\n", 1);
-			intlit = smprintf("taskhandles[struct_args->self] = xTaskGetCurrentTaskHandle();\n");
-			type = generateParametersFromStructFields(tree->node.DefineTask.parameters);
-			expr = smprintf("%s %s", intlit, type);
+
+			/* Sets the index of the taskid of taskhandles to point to the taskHandler which is relevant
+				for the current task. This alowes us to always be able to get the task id. */
+			constString = smprintf("taskhandles[struct_args->self] = xTaskGetCurrentTaskHandle();\n");
+			
+			/* This retrive the parameters for the function from the struct it has been 
+				given through a void pointer */
+			localVariables = generateParametersFromStructFields(tree->node.DefineTask.parameters);
+			expr = smprintf("%s %s", constString, localVariables);
+
+			/* Type cast and use code generated above. */
 			extraCode = smprintf("struct %s *struct_args = (struct %s *)args;\n%s",
 				id, id, expr
 			);
@@ -68,30 +94,20 @@ char *codegen(AstNode *tree) {
 			);
 			break;
 		case DefineStruct:
-			result = smprintf(
-				"struct %s {%s};",
-				codegen(tree->node.DefineStruct.identifier),
-				processBlock(tree->node.DefineStruct.fields, "", 0)
-			);
+			id = codegen(tree->node.DefineStruct.identifier);
+			structFields = processBlock(tree->node.DefineStruct.fields, "", 0);
+			result = smprintf("struct %s {%s};", id, structFields);
 			break;
 		case DefineMessage:
-			extraCode = constructMessageEnum(tree->node.DefineMessage.messagesIdentifiers);
-			preCodeGen = constructMessageStruct(tree->node.DefineMessage.messagesIdentifiers);
-			intlit = constructMessageUnionStruct(tree->node.DefineMessage.messagesIdentifiers);
-			result = smprintf("enum messages{%s};\n%s\n%s",
-							extraCode,
-							preCodeGen,
-							intlit
-							);
+			msgEnum = constructMessageEnum(tree->node.DefineMessage.messagesIdentifiers);
+			msgStruct = constructMessageStruct(tree->node.DefineMessage.messagesIdentifiers);
+			msgUnion = constructMessageUnionStruct(tree->node.DefineMessage.messagesIdentifiers);
+			result = smprintf("enum messages{%s};\n%s\n%s", msgEnum, msgStruct, msgUnion);
 			break;
 		case StructMember:
 			type = codegen(tree->node.StructMember.type);
 			id = codegen(tree->node.StructMember.identifier);
-			result = smprintf(
-				"%s %s;",
-				type,
-				id
-			);
+			result = smprintf("%s %s;", type, id);
 			break;
 		case Parameter:
 			type = codegen(tree->node.Parameter.type);
@@ -99,11 +115,12 @@ char *codegen(AstNode *tree) {
 			if (tree->node.Parameter.type->tag == ArrayType) {
 				preCodeGen = codegen(tree->node.Parameter.identifier);
 				id = smprintf("%s_original",preCodeGen);
+				arrayIndices = buildArrayDeclIndices(tree->node.Parameter.type);
+				result = smprintf("%s %s%s", type, id, arrayIndices);
 			}else {
 				id = codegen(tree->node.Parameter.identifier);
+				result = smprintf("%s %s", type, id);
 			}
-			intlit = tree->node.Parameter.type->tag == ArrayType ? buildArrayDeclIndices(tree->node.Parameter.type) : smprintf("");
-			result = smprintf("%s %s%s", type, id, intlit);
 			break;
 		case ElseIf:
 			expr = codegen(tree->node.ElseIf.expression);
@@ -122,25 +139,32 @@ char *codegen(AstNode *tree) {
 			result = smprintf("else {%s}", stmts);
 			break;
 		case Receive:
-			stmts = processBlock(tree->node.Receive.cases, ";", 0);
-			result = smprintf("runoff_msg m;\nxQueueReceive(Mailbox[runoff_self()], &m, portMAX_DELAY);\nswitch(m.Tag){%s}", stmts);
+			caseStmts = processBlock(tree->node.Receive.cases, ";", 0);
+			constString = smprintf("runoff_msg m;\nxQueueReceive(Mailbox[runoff_self()], &m, portMAX_DELAY);\n");
+			result = smprintf("%sswitch(m.Tag){%s}", constString, caseStmts);
 			break;
 		case ReceiveCase:
 			stmts = codegen(tree->node.ReceiveCase.statements);
 			id = codegen(tree->node.ReceiveCase.messageName);
+
+			/* Default case */
 			if(tree->node.ReceiveCase.messageName == NULL){
 				result = smprintf("default: if(1){%s}\nbreak;", stmts);
 			} else {
+
+				/* Recieve case without parameters */
 				if(tree->node.ReceiveCase.dataNames == NULL){
 					result = smprintf("case %s: if(1){%s}\nbreak;", id, stmts);
 				} else {
-					extraCode = generateReceiveCaseData(tree);
-					result = smprintf("case %s: if(1){%s%s}\nbreak;", id, extraCode, stmts);
+					/* Extract parameters from the struct. */
+					params = generateReceiveCaseData(tree);
+					result = smprintf("case %s: if(1){%s%s}\nbreak;", id, params, stmts);
 				}
 			}
 			break;
 		case Spawn:
 			id = codegen(tree->node.Spawn.identifier);
+			/* wrap the parameters in a struct. */
 			params = assignParamsToStruct(tree);
 			result = smprintf("%s\ncreateTask(%s, (void *)&%s_%d)",
 				params,	id, id, tree->node.Spawn.taskId
@@ -158,34 +182,27 @@ char *codegen(AstNode *tree) {
 			result = smprintf("%s", type);
 			break;
 		case While:
-			expr = codegen(tree->node.While.expression);
+			LoopEval = codegen(tree->node.While.expression);
 			stmts = processBlock(tree->node.While.statements, "", 0);
-			result = smprintf("while(%s) {%s}", expr, stmts);
+			result = smprintf("while(%s) {%s}", LoopEval, stmts);
 		 	break;
 		case For:
-			type = codegen(tree->node.For.expressionInit);
-			id = codegen(tree->node.For.expressionTest);
-			expr = codegen(tree->node.For.expressionUpdate);
-			preCodeGen = processBlock(tree->node.For.statements, "", 0);
-			result = smprintf(
-				"for(%s;%s;%s){%s}",
-				type, id, expr, preCodeGen
-			);
+			LoopInit = codegen(tree->node.For.expressionInit);
+			LoopEval = codegen(tree->node.For.expressionTest);
+			LoopUpdate = codegen(tree->node.For.expressionUpdate);
+			stmts = processBlock(tree->node.For.statements, "", 0);
+			result = smprintf("for(%s;%s;%s){%s}", LoopInit, LoopEval, LoopUpdate, stmts);
 			break;
 		case Switch:
 			expr = codegen(tree->node.Switch.expression);
-			stmts = processBlock(tree->node.Switch.cases, "", 0);
-			result = smprintf("switch(%s){%s}",
-				expr, stmts
-			);
+			caseStmts = processBlock(tree->node.Switch.cases, "", 0);
+			result = smprintf("switch(%s){%s}", expr, caseStmts);
 			break;
 		case SwitchCase:
 			stmts = processBlock(tree->node.SwitchCase.statements, "", 0);
 			intlit = codegen(tree->node.SwitchCase.literal);
 			if (tree->node.SwitchCase.literal != NULL) {
-				result = smprintf("case %s: if(1){%s} break;",
-					intlit, stmts
-				);
+				result = smprintf("case %s: if(1){%s} break;", intlit, stmts);
 			}else {
 				result = smprintf("default: if(1){%s} break;", stmts);
 			}
@@ -213,12 +230,10 @@ char *codegen(AstNode *tree) {
 			}
 			break;
 		case TernaryOperator:
-			expr = codegen(tree->node.TernaryOperator.expressionTest);
-			stmts = codegen(tree->node.TernaryOperator.expressionTrue);
-			elsepart = codegen(tree->node.TernaryOperator.expressionFalse);
-			result = smprintf("(%s) ? %s: %s",
-				expr, stmts, elsepart
-			);
+			ternaryCheck = codegen(tree->node.TernaryOperator.expressionTest);
+			ternaryTrue = codegen(tree->node.TernaryOperator.expressionTrue);
+			ternaryFalse = codegen(tree->node.TernaryOperator.expressionFalse);
+			result = smprintf("(%s) ? %s: %s", ternaryCheck, ternaryTrue, ternaryFalse);
 			break;
 		case VariableLocation:
 			result = codegen(tree->node.VariableLocation.identifier);
@@ -251,8 +266,8 @@ char *codegen(AstNode *tree) {
 				id = smprintf("advancedPinHandler_%p", (void*)tree);
 				preCodeGen = smprintf("advancedInputStruct_%p = (struct AdvancedInputStruct){%s};",
 					(void*)tree, params);
-				intlit = codegen(tree->node.FunctionCall.arguments);
-				result = smprintf("%s\nattachInterrupt(digitalPinToInterrupt(%s), %s, CHANGE);\n", preCodeGen, intlit, id);
+				funcArgs = codegen(tree->node.FunctionCall.arguments);
+				result = smprintf("%s\nattachInterrupt(digitalPinToInterrupt(%s), %s, CHANGE);\n", preCodeGen, funcArgs, id);
 			}else{
 				id = codegen(tree->node.FunctionCall.identifier);
 				result = smprintf("%s(%s)", id, params);
@@ -260,29 +275,32 @@ char *codegen(AstNode *tree) {
 			break;
 		case VarDecl:
 			id = codegen(tree->node.VarDecl.identifier);
+			expr = codegen(tree->node.VarDecl.expression);
 			if(tree->node.VarDecl.expression != NULL && tree->node.VarDecl.expression->tag == Spawn){
-				expr = codegen(tree->node.VarDecl.expression);
-				result = smprintf("char %s = %d;%s", id,
-					tree->node.VarDecl.expression->node.Spawn.taskId,
-					expr
-				);
+				result = smprintf("char %s = %d;%s", id, tree->node.VarDecl.expression->node.Spawn.taskId, expr);
 			} else {
-				type = smprintf("%s%s", tree->node.VarDecl.toplevel == 1 ? "const " : "", codegen(tree->node.VarDecl.type));
-				intlit = tree->node.VarDecl.type->tag == ArrayType ? buildArrayDeclIndices(tree->node.VarDecl.type) : smprintf("");
-				expr = tree->node.VarDecl.expression != NULL ? smprintf(" = %s", codegen(tree->node.VarDecl.expression)) : smprintf("");
-				result = smprintf("%s %s%s%s%s", type, id, intlit, expr, tree->node.VarDecl.toplevel == 1 ? ";" : "");
+				constString = tree->node.VarDecl.toplevel == 1 ? "const " : "";
+				/* Actual type */
+				preCodeGen = codegen(tree->node.VarDecl.type)
+				/* full type with or without const. */
+				type = smprintf("%s%s", constString, preCodeGen);
+				indicies = tree->node.VarDecl.type->tag == ArrayType ? buildArrayDeclIndices(tree->node.VarDecl.type) : smprintf("");
+				expr = tree->node.VarDecl.expression != NULL ? smprintf(" = %s", expr) : smprintf("");
+				result = smprintf("%s %s%s%s%s", type, id, indicies, expr, tree->node.VarDecl.toplevel == 1 ? ";" : "");
 			}
 			break;
 		case Send:
+			/* id is the index for the mailbox. */
 			id = codegen(tree->node.Send.receiver);
-			expr = codegen(tree->node.Send.message);
-			result = smprintf("{runoff_msg m = %s; xQueueSend(Mailbox[%s],(void *)&m,INCLUDE_vTaskSuspend);}", expr, id);
+			/* Message to be send. */
+			msgStruct = codegen(tree->node.Send.message);
+			result = smprintf("{runoff_msg m = %s; xQueueSend(Mailbox[%s],(void *)&m,INCLUDE_vTaskSuspend);}", msgStruct, id);
 			break;
 		case BinaryOperation:
-			expr = codegen(tree->node.BinaryOperation.expression_left);
-			type = codegen(tree->node.BinaryOperation.expression_right);
+			exprLeft = codegen(tree->node.BinaryOperation.expression_left);
+			exprRight = codegen(tree->node.BinaryOperation.expression_right);
 			result = smprintf("(%s %s %s)",
-			expr, operatorNames[tree->node.BinaryOperation.operator],type);
+			exprLeft, operatorNames[tree->node.BinaryOperation.operator],exprRight);
 			break;
 		case IntLiteral:
 			result = smprintf("%d", tree->node.IntLiteral.value);
@@ -305,6 +323,24 @@ char *codegen(AstNode *tree) {
 			result = smprintf("");
 	}
 
+	free(children);
+	free(constString);
+	free(localVariables);
+	free(structFields);
+	free(msgStruct);
+	free(msgEnum);
+	free(msgUnion);
+	free(arrayIndices);
+	free(caseStmts);
+	free(LoopInit);
+	free(LoopEval);
+	free(LoopUpdate);
+	free(ternaryCheck);
+	free(ternaryTrue);
+	free(ternaryFalse);
+	free(funcArgs);
+	free(exprRight);
+	free(exprLeft);
 	free(id);
 	free(type);
 	free(params);
