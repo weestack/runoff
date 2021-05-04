@@ -64,6 +64,9 @@ Type *processNode(AstNode *node){
 	if(node == NULL)
 		return NULL;
 
+	/* Normally each node is handled by a case, and it's children are then handled after the switch by recursive calls to processNode.
+	   Some cases are special, since they handle their children on their own, and therefore returns before the
+	   recursive call. */
 	switch(node->tag){
 	case DefineFunction:
 		handleDefineFunction(node);
