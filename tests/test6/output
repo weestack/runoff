@@ -1,0 +1,2 @@
+input:13: Receive statements must have exactly one default case. This one has 0
+input:18: Receive statements must have exactly one default case. This one has 2

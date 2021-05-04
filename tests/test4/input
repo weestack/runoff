@@ -1,0 +1,3 @@
+function setup(int a) -> void {
+	a = a;
+}

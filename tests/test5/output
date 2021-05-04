@@ -1,0 +1,2 @@
+input:9: Switch statements must have exactly one default case. This one has 0
+input:14: Switch statements must have exactly one default case. This one has 2

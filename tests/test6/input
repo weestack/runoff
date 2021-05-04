@@ -1,0 +1,22 @@
+messages {
+	testMsg;
+}
+
+function test() -> void {
+	int a = 5;
+	receive {
+		case testMsg{}:
+		default:
+	}
+	receive {
+		case testMsg{}:
+	}
+	receive {
+		case testMsg{}:
+		default:
+		default:
+	}
+}
+
+function setup() -> void {
+}
