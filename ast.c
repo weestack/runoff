@@ -56,6 +56,7 @@ static AstNode *chain(AstNode *a, AstNode *b){
 }
 
 
+/* Copy paste code, to set a node as a child to another node. */
 #define SETCHILD(Tag, A) \
 	do{ \
 		AstNode *tmp; \
