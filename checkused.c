@@ -8,6 +8,7 @@ static int errors;
 static void mark(AstNode *tree){
 	AstNode *n;
 	AstNode *children;
+	/*Loop through the entire chain of children*/
 	for(n = tree; n != NULL; n = n->chain){
 		children = n->children;
 		if(n->tag == VarDecl)
@@ -19,6 +20,7 @@ static void mark(AstNode *tree){
 		else if(n->tag == DefineTask)
 			children = n->children->chain; /* skip the identifier */
 		else if(n->tag == Identifier)
+			/*If a variable is used, mark it as used*/
 			n->node.Identifier.symbol->used++;
 
 		mark(children);
@@ -27,7 +29,9 @@ static void mark(AstNode *tree){
 
 static void check(AstNode *tree){
 	AstNode *n;
+	/*Loop through the entire chain of children*/
 	for(n = tree; n != NULL; n = n->chain){
+		/*If one of the variables are not marked as used, switch over their type and return an error*/
 		if(n->tag == Identifier && n->node.Identifier.symbol->used == 0){
 			char *kind;
 			Symbol *sym = n->node.Identifier.symbol;
@@ -45,7 +49,7 @@ static void check(AstNode *tree){
 			eprintf(n->linenum, "Unused %s: %s\n", kind, sym->name);
 			errors++;
 		}
-
+		/*Special case*/
 		if(n->tag != MessageIdentifier)
 			check(n->children);
 	}
