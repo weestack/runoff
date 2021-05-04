@@ -1,0 +1,4 @@
+input:37: Variable 'p' is not initialized when used here
+input:38: Variable 't' is not initialized when used here
+input:48: Warning: array 'array2' might not be fully initialized here
+input:49: Struct instance 'struct1' have some uninitialized fields when used here: c 
