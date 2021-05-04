@@ -3,18 +3,17 @@
 basedir=$(pwd)
 export RUNOFF=$basedir/runoff
 
-tests=$(find tests/ -maxdepth 1 -path "tests/test*" -type d | sort)
+tests=$(find tests/ -maxdepth 1 -path "tests/test*" -type d | sed 's,tests/test,,' | sort -g)
 
 testcount=$(echo $tests | wc -w)
 passcount=0
 failcount=0
 
-for tdir in $tests
+for testnum in $tests
 do
-	number=$(echo $tdir | sed 's,tests/test,,')
-	echo -n "Running test $number... "
+	echo -n "Running test $testnum... "
 
-	cd $tdir
+	cd tests/test$testnum
 	outfile=$(mktemp)
 	sh run > $outfile
 	if [ -n "$(diff $outfile output)" ]
