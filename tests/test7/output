@@ -1,0 +1,2 @@
+input:4: Cannot modify the global variable 'a'
+input:5: Cannot modify the global variable 'a'
