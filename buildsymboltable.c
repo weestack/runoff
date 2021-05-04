@@ -33,6 +33,7 @@ int buildSymbolTable(AstNode *tree){
 }
 
 void checkIdentifierTypes(AstNode *tree){
+	/* Checks all identifier types, and check if both symbol and type is not null */
 	if(tree->tag == Identifier){
 		Symbol *sym = tree->node.Identifier.symbol;
 		if(sym == NULL){
@@ -41,10 +42,6 @@ void checkIdentifierTypes(AstNode *tree){
 		} else if(sym->type == NULL){
 			errors++;
 			printf("Symbol type for %s is NULL on line %d\n", tree->node.Identifier.identifier, tree->linenum);
-		} else {
-			/*
-			printf("Symbol for %s is %d on line %d\n", tree->node.Identifier.identifier, sym->type->tag, tree->linenum);
-			*/
 		}
 	} else {
 		AstNode *children = tree->children;
@@ -61,6 +58,7 @@ Type *processNode(AstNode *node){
 	Type *type = NULL; /* the return value of this function */
 	Type *vartype;
 
+	/* Break recursion */
 	if(node == NULL)
 		return NULL;
 
@@ -157,7 +155,6 @@ Type *processNode(AstNode *node){
 			updateSymbolId(node->node.VariableLocation.identifier, sym);
 		break;
 	case StructLocation:
-		/* This is special, so move it to a function */
 		handleStructLocation(node);
 		return NULL;
 	case ArrayLocation:
@@ -181,7 +178,7 @@ Type *processNode(AstNode *node){
 		else
 			updateSymbolId(node, sym);
 		break;
-	case MessageLiteral: 
+	case MessageLiteral:
 		sym = retrieveSymbol(node->node.MessageLiteral.identifier);
 		if(sym == NULL)
 			undeclaredError(node->node.MessageLiteral.identifier);
@@ -212,6 +209,9 @@ Type *processNode(AstNode *node){
 }
 
 void processNodes(AstNode *nodes, int usechain){
+	/* Next is used for lists and
+	chains are used to chain the next sibling such as
+	Chain = function -> identifier -> int a -> int b -> void -> code */
 	AstNode *child = nodes;
 	while(child != NULL){
 		processNode(child);
@@ -235,7 +235,8 @@ void updateSymbolId(AstNode *node, Symbol *s){
 void handleStructLocation(AstNode *node){
 	AstNode *n = node;
 	AstNode *next = n;
-	SymbolTable *table = NULL; /* default is the current table */
+	/* default is the current table */
+	SymbolTable *table = NULL;
 	while(next != NULL){
 		AstNode *identifier;
 		Symbol *sym;
@@ -295,7 +296,7 @@ void handleDefineFunction(AstNode *function){
 		para_types[i] = identifier->node.Identifier.symbol->type;
 		i++;
 	}
-	
+
 	sym->type = mkFunctionTypeDescriptor(parameter_length, para_types, processNode(function->node.DefineFunction.type));;
 
 	closeScope();
@@ -464,7 +465,7 @@ void handleAssignment(AstNode *node){
 			id = loc->node.VariableLocation.identifier;
 		else if(loc->tag == ArrayLocation)
 			id = loc->node.ArrayLocation.identifier;
-		
+
 		setInitializedStructField(initInfo, id->node.Identifier.symbol->name);
 		break;
 	}
