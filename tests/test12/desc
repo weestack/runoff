@@ -1,0 +1,1 @@
+Test that a spawn statement cannot appear inside if-statement in setup.

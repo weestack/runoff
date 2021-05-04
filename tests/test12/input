@@ -1,0 +1,10 @@
+task A(){
+	while(true){
+	}
+}
+
+function setup() -> void {
+	if(true){
+		spawn A();
+	}
+}

@@ -1,0 +1,15 @@
+pinid ONE = 4P;
+
+task A(){
+	while(true){
+	}
+}
+
+task B(){
+	while(true){
+		spawn B();
+	}
+}
+
+function setup() -> void {
+}

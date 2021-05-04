@@ -1,0 +1,1 @@
+input:1: It looks like you have spawns located somewhere else than directly in the setup function, which is not allowed.

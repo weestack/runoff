@@ -1,0 +1,12 @@
+task A(){
+	while(true){
+	}
+}
+
+function callSpawn() -> void {
+	spawn A();
+}
+
+function setup() -> void {
+	callSpawn();
+}
