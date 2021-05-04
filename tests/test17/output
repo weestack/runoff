@@ -1,0 +1,1 @@
+input:4: Function 'noReturn' doesn't have a return statement for all code paths.

@@ -1,0 +1,7 @@
+function noReturn() -> int {
+	int a = 5;
+	int b = 10;
+}
+
+function setup() -> void {
+}
