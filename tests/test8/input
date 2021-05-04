@@ -1,0 +1,10 @@
+messages {
+	testMsg;
+}
+
+messages {
+	extraMsg;
+}
+
+function setup() -> void {
+}
