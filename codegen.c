@@ -281,7 +281,7 @@ char *codegen(AstNode *tree) {
 			} else {
 				constString = tree->node.VarDecl.toplevel == 1 ? "const " : "";
 				/* Actual type */
-				preCodeGen = codegen(tree->node.VarDecl.type)
+				preCodeGen = codegen(tree->node.VarDecl.type);
 				/* full type with or without const. */
 				type = smprintf("%s%s", constString, preCodeGen);
 				indicies = tree->node.VarDecl.type->tag == ArrayType ? buildArrayDeclIndices(tree->node.VarDecl.type) : smprintf("");
