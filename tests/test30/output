@@ -1,0 +1,3 @@
+input:9: incompatible types expected int32. Actual type: float 
+input:10: incompatible types expected int32. Actual type: bool 
+input:11: incompatible types expected int32. Actual type: pinid 

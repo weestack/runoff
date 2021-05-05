@@ -1,0 +1,13 @@
+function setup() -> void {
+	int x = 10;
+
+	int i = 20;
+	float f = 100.0;
+	bool b = true;
+	pinid p = 8P;
+
+	x = f;
+	x = b;
+	x = p;
+	x = i;
+}
