@@ -17,7 +17,7 @@ static void handleAssignment(AstNode *node);
 static int errors;
 static Symbol *currentfunc; /* the symbol of the current function */
 
-static int buildSymbolTable(AstNode *tree){
+int buildSymbolTable(AstNode *tree){
 	initializeSymbolTables();
 	processNode(tree);
 
