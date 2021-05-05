@@ -1,0 +1,29 @@
+function setup() -> void {
+	int i1 = 10;
+	int i2 = 5;
+	float f = 1.0;
+
+	#OK
+	i1 % i2;
+	i1 << i2;
+	i1 >> i2;
+	i1 | i2;
+	i1 & i2;
+	i1 ^ i2;
+
+	#Not OK, left hand side
+	f % i2;
+	f << i2;
+	f >> i2;
+	f | i2;
+	f & i2;
+	f ^ i2;
+
+	#Not OK, right hand side
+	i1 % f;
+	i1 << f;
+	i1 >> f;
+	i1 | f;
+	i1 & f;
+	i1 ^ f;
+}
