@@ -1,0 +1,24 @@
+input:15: binary operator % Expected integer types.
+	Actual type for left: float
+	Actual type for right: int32 
+input:16: binary operator << Expected integer types.
+	Actual type for left: float
+	Actual type for right: int32 
+input:17: binary operator >> Expected integer types.
+	Actual type for left: float
+	Actual type for right: int32 
+input:18: binary operator | Expected integer types.
+	Actual type for left: float
+	Actual type for right: int32 
+input:19: binary operator & Expected integer types.
+	Actual type for left: float
+	Actual type for right: int32 
+input:20: binary operator ^ Expected integer types.
+	Actual type for left: float
+	Actual type for right: int32 
+input:23: right hand side of % expected type int32. Actual type: float 
+input:24: right hand side of << expected type int32. Actual type: float 
+input:25: right hand side of >> expected type int32. Actual type: float 
+input:26: right hand side of | expected type int32. Actual type: float 
+input:27: right hand side of & expected type int32. Actual type: float 
+input:28: right hand side of ^ expected type int32. Actual type: float 
