@@ -1,0 +1,8 @@
+function wrongReturn() -> int {
+	float a = 5.0;
+	float b = 10.0;
+	return a + b;
+}
+
+function setup() -> void {
+}

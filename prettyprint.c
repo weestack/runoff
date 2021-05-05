@@ -80,6 +80,7 @@ char *prettyprint(AstNode *node)
 	if(node == NULL)
 		return smprintf("");
 
+	/*Pretty print things based on their tag*/
 	switch(node->tag){
 	case Prog:
 		result = prettyprintlist(node->node.Prog.toplevels, "\n\n", 0);

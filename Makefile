@@ -58,10 +58,11 @@ parser.o: parser.c parser.h
 	@cc $(CFLAGS) -c $<
 	@echo [CC] $<
 
+.PHONY: clean test
 # Clean just removes the generated filed, the objects, and the binary
 clean:
 	@rm -rf $(GENFILES) $(OBJECTS) $(PROG)
 	@echo [RM] $(GENFILES) $(OBJECTS) $(PROG)
 
-test:
+test: $(PROG)
 	@./tests/runner.sh
