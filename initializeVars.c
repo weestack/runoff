@@ -6,7 +6,7 @@
 static void insertInitCode(AstNode *);
 static int isInitializedArray(InitializeInfo *, Type *, AstNode *);
 static AstNode *getDefaultValue(Type *);
-void initializeStructFields(AstNode *, InitializeInfo *, AstNode *);
+static void initializeStructFields(AstNode *, InitializeInfo *, AstNode *);
 
 void initializeVars(AstNode *tree){
 	AstNode *chain = tree->chain;
