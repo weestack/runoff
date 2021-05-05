@@ -4,17 +4,16 @@
 #include "data.h"
 #include "auxiliary.h"
 
-Type *processNode(AstNode*);
-void processNodes(AstNode *, int);
-void undeclaredError(AstNode *);
-void updateSymbolId(AstNode *, Symbol *);
-void handleStructLocation(AstNode *);
-void handleDefineFunction(AstNode *function);
-void handleDefineTask(AstNode *function);
-void handleMessageIdentifier(AstNode *function);
-void handleReceiveCase(AstNode *node);
-void handleAssignment(AstNode *node);
-void checkIdentifierTypes(AstNode *tree);
+static Type *processNode(AstNode*);
+static void processNodes(AstNode *, int);
+static void undeclaredError(AstNode *);
+static void updateSymbolId(AstNode *, Symbol *);
+static void handleStructLocation(AstNode *);
+static void handleDefineFunction(AstNode *function);
+static void handleDefineTask(AstNode *function);
+static void handleMessageIdentifier(AstNode *function);
+static void handleReceiveCase(AstNode *node);
+static void handleAssignment(AstNode *node);
 static int errors;
 static Symbol *currentfunc; /* the symbol of the current function */
 
@@ -22,33 +21,10 @@ int buildSymbolTable(AstNode *tree){
 	initializeSymbolTables();
 	processNode(tree);
 
-	/* this next is mostly usefull for debugging and is thus disabled
-	checkIdentifierTypes(tree);
-	*/
-
 	if(errors)
 		printf("BuildSymbolTable failed with %d errors\n", errors);
 
 	return errors;
-}
-
-void checkIdentifierTypes(AstNode *tree){
-	/* Checks all identifier types, and check if both symbol and type is not null */
-	if(tree->tag == Identifier){
-		Symbol *sym = tree->node.Identifier.symbol;
-		if(sym == NULL){
-			errors++;
-			printf("Symbol for %s is NULL on line %d\n", tree->node.Identifier.identifier, tree->linenum);
-		} else if(sym->type == NULL){
-			errors++;
-			printf("Symbol type for %s is NULL on line %d\n", tree->node.Identifier.identifier, tree->linenum);
-		}
-	} else {
-		AstNode *children = tree->children;
-		for(;children!=NULL;children=children->chain){
-			checkIdentifierTypes(children);
-		}
-	}
 }
 
 /* process node CAN return a type if it makes sense */
