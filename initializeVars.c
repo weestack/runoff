@@ -17,8 +17,9 @@ static AstNode *copyIds(AstNode *);
 static void setInitializedArray(InitializeInfo *, Type *, AstNode *);
 void setInitializedStructField(InitializeInfo *, char *);
 
-/* Tree one */
-
+/* InitializeVars goes through the entire tree, and finds all ExprStmts which contains a VarDecl.
+	It then generates a default value for them.
+ */
 void initializeVars(AstNode *tree){
 	AstNode *chain = tree->chain;
 	if(tree == NULL)
@@ -36,20 +37,28 @@ void initializeVars(AstNode *tree){
 }
 
 static void insertInitCode(AstNode *exprstmt){
+	/* We know this is always going to be a VarDecl, 
+		because it get's tested before function call. */
 	AstNode *decl = exprstmt->node.ExprStmt.expression;
 	AstNode *id = decl->node.VarDecl.identifier;
 	Symbol *sym = id->node.Identifier.symbol;
 	Type *type = sym->type;
 
+	/* Code looks like this: type var = 
+		So we just assign value on the right*/
 	if(type->tag == BuiltinTypeTag && !isInitialized(sym->initInfo, type))
 		decl->node.VarDecl.expression = getDefaultValue(type);
 
+	/* Checks that it is an Array, and it is a builtintype. 
+		This means our code doens't innitializes an array of struts. */
 	if(type->tag == ArrayTypeTag && getDefaultValue(type->tags.typeArray.elementType) != NULL)
 		insertArrayInitCode(sym->initInfo,
 			type->tags.typeArray.elementType,
 			type->tags.typeArray.dimensions,
 			id, NULL, exprstmt);
 
+	/* Goes recursive through struct to find a default field. aka one that isn't a struct.
+		If all fields, can be assigned default value returns true. And does the deed. */
 	if(type->tag == StructTypeTag && canGetDefaultValue(sym->initInfo, type)){
 		AstNode *newid = mkIdentifierNode(id->node.Identifier.identifier);
 		newid->node.Identifier.symbol = sym;
