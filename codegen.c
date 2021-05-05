@@ -5,18 +5,18 @@
 #include "auxiliary.h"
 #include "phases.h"
 
-char *processBlock(AstNode *, char *, int);
-char *setupPreCodeGen(AstNode *);
-char *buildArrayDeclIndices(AstNode *);
-char *generateParametersFromStructFields(AstNode *);
-char *generatePassByValue(AstNode *);
-char *constructMessageEnum(AstNode *);
-char *constructMessageStruct(AstNode *);
-char *constructMessageUnionStruct(AstNode *);
-char *mkStructsFromSpawns(AstNode *);
-char *assignParamsToStruct(AstNode *);
-char *generateReceiveCaseData(AstNode *);
-char *mkAdvancedInputCode(AstNode *);
+static char *processBlock(AstNode *, char *, int);
+static char *setupPreCodeGen(AstNode *);
+static char *buildArrayDeclIndices(AstNode *);
+static char *generateParametersFromStructFields(AstNode *);
+static char *generatePassByValue(AstNode *);
+static char *constructMessageEnum(AstNode *);
+static char *constructMessageStruct(AstNode *);
+static char *constructMessageUnionStruct(AstNode *);
+static char *mkStructsFromSpawns(AstNode *);
+static char *assignParamsToStruct(AstNode *);
+static char *generateReceiveCaseData(AstNode *);
+static char *mkAdvancedInputCode(AstNode *);
 
 char *codegen(AstNode *tree) {
 	char *id = NULL;
