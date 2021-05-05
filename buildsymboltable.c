@@ -252,9 +252,9 @@ static void handleStructLocation(AstNode *node){
 
 static void handleDefineFunction(AstNode *function){
 	AstNode *tmp;
-	Type **para_types;
+	Type **ParaTypes;
 	Symbol *sym;
-	int i = 0, parameter_length;
+	int i = 0, parameterLength;
 
 	errors += insertSymbol(function->node.DefineFunction.identifier, NULL);
 	sym = retrieveSymbol(function->node.DefineFunction.identifier);
@@ -264,82 +264,82 @@ static void handleDefineFunction(AstNode *function){
 	processNodes(function->node.DefineFunction.parameters, 0);
 	processNodes(function->node.DefineFunction.statements, 0);
 
-	parameter_length = nodeLength(function->node.DefineFunction.parameters);
+	parameterLength = nodeLength(function->node.DefineFunction.parameters);
 
-	para_types = malloc(sizeof(Type*)*parameter_length);
+	ParaTypes = malloc(sizeof(Type*)*parameterLength);
 	for(tmp = function->node.DefineFunction.parameters; tmp != NULL; tmp=tmp->next){
 		AstNode *identifier = tmp->node.Parameter.identifier;
-		para_types[i] = identifier->node.Identifier.symbol->type;
+		ParaTypes[i] = identifier->node.Identifier.symbol->type;
 		i++;
 	}
 
-	sym->type = mkFunctionTypeDescriptor(parameter_length, para_types, processNode(function->node.DefineFunction.type));;
+	sym->type = mkFunctionTypeDescriptor(parameterLength, ParaTypes, processNode(function->node.DefineFunction.type));;
 
 	closeScope();
 	currentfunc = NULL;
 }
 
-static void handleDefineTask(AstNode *function){
+static void handleDefineTask(AstNode *task){
 	/* Copy pasted from handleDefineFunction. */
 	AstNode *tmp;
-	Type **para_types;
-	Type *t;
+	Type **ParaTypes;
+	Type *typeDescriptor;
 	Symbol *sym;
-	int i = 0, parameter_length;
+	int i = 0, parameterLength;
 
-	errors += insertSymbol(function->node.DefineTask.identifier, NULL);
+	errors += insertSymbol(task->node.DefineTask.identifier, NULL);
 
 	openScope();
-	processNodes(function->node.DefineTask.parameters, 0);
-	processNodes(function->node.DefineTask.statements, 0);
+	processNodes(task->node.DefineTask.parameters, 0);
+	processNodes(task->node.DefineTask.statements, 0);
 
-	parameter_length = nodeLength(function->node.DefineTask.parameters);
+	parameterLength = nodeLength(task->node.DefineTask.parameters);
 
-	para_types = malloc(sizeof(Type*)*parameter_length);
-	for(tmp = function->node.DefineTask.parameters; tmp != NULL; tmp=tmp->next){
+	ParaTypes = malloc(sizeof(Type*)*parameterLength);
+	for(tmp = task->node.DefineTask.parameters; tmp != NULL; tmp=tmp->next){
 		AstNode *identifier = tmp->node.Parameter.identifier;
-		para_types[i] = identifier->node.Identifier.symbol->type;
+		ParaTypes[i] = identifier->node.Identifier.symbol->type;
 		i++;
 	}
 
-	t = mkTaskTypeDescriptor(parameter_length, para_types);
+	typeDescriptor = mkTaskTypeDescriptor(parameterLength, ParaTypes);
 
 	closeScope();
 
-	sym = retrieveSymbol(function->node.DefineTask.identifier);
-	sym->type = t;
-	sym->first = function;
+	sym = retrieveSymbol(task->node.DefineTask.identifier);
+	sym->type = typeDescriptor;
+	sym->first = task;
 }
 
-static void handleMessageIdentifier(AstNode *function){
+static void handleMessageIdentifier(AstNode *messageIdentifier){
 	/* Copy pasted from handleDefineTask. */
 	AstNode *tmp;
-	Type **para_types;
-	Type *t;
+	Type **ParaTypes;
+	Type *typeDescriptor;
 	Symbol *sym;
-	int i = 0, parameter_length;
+	int i = 0, parameterLength;
 
-	errors += insertSymbol(function->node.MessageIdentifier.identifier, NULL);
+	errors += insertSymbol(messageIdentifier->node.MessageIdentifier.identifier, NULL);
 
 	openScope();
-	processNodes(function->node.MessageIdentifier.parameters, 0);
+	processNodes(messageIdentifier->node.MessageIdentifier.parameters, 0);
 
-	parameter_length = nodeLength(function->node.MessageIdentifier.parameters);
+	parameterLength = nodeLength(messageIdentifier->node.MessageIdentifier.parameters);
 
-	para_types = malloc(sizeof(Type*)*parameter_length);
-	for(tmp = function->node.MessageIdentifier.parameters; tmp != NULL; tmp=tmp->next){
+	ParaTypes = malloc(sizeof(Type*)*parameterLength);
+	for(tmp = messageIdentifier->node.MessageIdentifier.parameters; tmp != NULL; tmp=tmp->next){
 		AstNode *identifier = tmp->node.Parameter.identifier;
-		para_types[i] = identifier->node.Identifier.symbol->type;
+		ParaTypes[i] = identifier->node.Identifier.symbol->type;
 		i++;
 	}
 
-	t = mkMessageTypeDescriptor(parameter_length, para_types);
+	typeDescriptor = mkMessageTypeDescriptor(parameterLength, ParaTypes);
 
 	closeScope();
 
-	sym = retrieveSymbol(function->node.MessageIdentifier.identifier);
-	sym->type = t;
-	sym->first = function;
+	sym = retrieveSymbol(messageIdentifier->node.MessageIdentifier.identifier);
+	sym->type = typeDescriptor;
+	sym->first = messageIdentifier;
 }
 
 static void handleReceiveCase(AstNode *node){
@@ -457,7 +457,7 @@ static void handleAssignment(AstNode *node){
 			id = loc->node.VariableLocation.identifier;
 		else if(loc->tag == ArrayLocation)
 			id = loc->node.ArrayLocation.identifier;
-		
+
 		if(containsSymbol(expr, id->node.Identifier.symbol))
 			return;
 
