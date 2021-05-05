@@ -17,7 +17,7 @@ static void handleAssignment(AstNode *node);
 static int errors;
 static Symbol *currentfunc; /* the symbol of the current function */
 
-int buildSymbolTable(AstNode *tree){
+static int buildSymbolTable(AstNode *tree){
 	initializeSymbolTables();
 	processNode(tree);
 
@@ -28,7 +28,7 @@ int buildSymbolTable(AstNode *tree){
 }
 
 /* process node CAN return a type if it makes sense */
-Type *processNode(AstNode *node){
+static Type *processNode(AstNode *node){
 	int scopeopened = 0;
 	Symbol *sym;
 	Type *type = NULL; /* the return value of this function */
@@ -184,7 +184,7 @@ Type *processNode(AstNode *node){
 	return type;
 }
 
-void processNodes(AstNode *nodes, int usechain){
+static void processNodes(AstNode *nodes, int usechain){
 	/* Next is used for lists and
 	chains are used to chain the next sibling such as
 	Chain = function -> identifier -> int a -> int b -> void -> code */
@@ -198,17 +198,17 @@ void processNodes(AstNode *nodes, int usechain){
 	}
 }
 
-void undeclaredError(AstNode *node){
+static void undeclaredError(AstNode *node){
 	char *name = node->node.Identifier.identifier;
 	errors++;
 	eprintf(node->linenum, "Undeclared symbol \"%s\"\n", name);
 }
 
-void updateSymbolId(AstNode *node, Symbol *s){
+static void updateSymbolId(AstNode *node, Symbol *s){
 	node->node.Identifier.symbol = s;
 }
 
-void handleStructLocation(AstNode *node){
+static void handleStructLocation(AstNode *node){
 	AstNode *n = node;
 	AstNode *next = n;
 	/* default is the current table */
@@ -250,7 +250,7 @@ void handleStructLocation(AstNode *node){
 	}
 }
 
-void handleDefineFunction(AstNode *function){
+static void handleDefineFunction(AstNode *function){
 	AstNode *tmp;
 	Type **para_types;
 	Symbol *sym;
@@ -279,7 +279,7 @@ void handleDefineFunction(AstNode *function){
 	currentfunc = NULL;
 }
 
-void handleDefineTask(AstNode *function){
+static void handleDefineTask(AstNode *function){
 	/* Copy pasted from handleDefineFunction. */
 	AstNode *tmp;
 	Type **para_types;
@@ -311,7 +311,7 @@ void handleDefineTask(AstNode *function){
 	sym->first = function;
 }
 
-void handleMessageIdentifier(AstNode *function){
+static void handleMessageIdentifier(AstNode *function){
 	/* Copy pasted from handleDefineTask. */
 	AstNode *tmp;
 	Type **para_types;
@@ -342,7 +342,7 @@ void handleMessageIdentifier(AstNode *function){
 	sym->first = function;
 }
 
-void handleReceiveCase(AstNode *node){
+static void handleReceiveCase(AstNode *node){
 	Symbol *sym = retrieveSymbol(node->node.ReceiveCase.messageName);
 	AstNode *arg;
 	Type **params = NULL;
@@ -390,7 +390,7 @@ static int containsSymbol(AstNode *tree, Symbol *sym){
 	return 0;
 }
 
-void handleAssignment(AstNode *node){
+static void handleAssignment(AstNode *node){
 	AstNode *loc = node->node.Assignment.location;
 	AstNode *expr = node->node.Assignment.expression;
 	AstNode *id = NULL;
