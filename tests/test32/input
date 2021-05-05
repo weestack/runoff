@@ -1,0 +1,14 @@
+function setup() -> void {
+	int index = 5;
+	int[10] array;
+
+	int i = 20;
+	float f = 20.0;
+	pinid p = 2P;
+	bool b = true;
+
+	array[index] = i;
+	array[index] = f;
+	array[index] = p;
+	array[index] = b;
+}

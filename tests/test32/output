@@ -1,0 +1,3 @@
+input:11: incompatible types expected int32. Actual type: float 
+input:12: incompatible types expected int32. Actual type: pinid 
+input:13: incompatible types expected int32. Actual type: bool 
