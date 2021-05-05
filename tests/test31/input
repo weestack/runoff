@@ -1,0 +1,16 @@
+struct Var {
+	int x;
+}
+
+function setup() -> void {
+	struct Var var;
+	int i = 20;
+	float f = 100.0;
+	bool b = true;
+	pinid p = 8P;
+
+	var.x = f;
+	var.x = b;
+	var.x = p;
+	var.x = i;
+}
