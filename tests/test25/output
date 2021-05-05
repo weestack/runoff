@@ -1,0 +1,2 @@
+input:12: right hand side of || expected type bool. Actual type: int32 
+input:13: left hand side of && expected type bool. Actual type: int32 
