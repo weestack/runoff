@@ -357,7 +357,8 @@ char *codegen(AstNode *tree) {
 }
 
 char *setupPreCodeGen(AstNode *tree){
-	char *msgStruct = constructMessageUnionStruct(NULL); /* Will only generate code if a message struct has not already been made */
+	/* Will only generate code if a message struct has not already been made */
+	char *msgStruct = constructMessageUnionStruct(NULL); 
 	char *spawnStructs = mkStructsFromSpawns(tree->node.DefineFunction.statements);
 	char *advancedInputCode = mkAdvancedInputCode(tree->node.DefineFunction.statements);
 	char *result = smprintf("%s\n%s\n%s\n", msgStruct, spawnStructs, advancedInputCode);
@@ -366,6 +367,7 @@ char *setupPreCodeGen(AstNode *tree){
 	free(advancedInputCode);
 	return result;
 }
+/* I've reached this far in cleanup. */
 
 char *mkAdvancedInputCode(AstNode *tree){
 	char *structcode = "struct AdvancedInputStruct {runoff_pinid pin; runoff_taskid taskid; runoff_msg msghigh; runoff_msg msglow;};\n";
