@@ -1,0 +1,105 @@
+messages {
+	message1;
+	message2{int a, bool b};
+}
+
+struct datastruct {
+	int a;
+	int8 b;
+	int16 c;
+	int32 d;
+	int64 e;
+	uint8 f;
+	uint16 g;
+	uint32 h;
+	uint64 i;
+	float j;
+	bool k;
+	msg l;
+	taskid m;
+	pinid n;
+}
+
+struct resultstruct {
+	struct datastruct[10] data;
+}
+
+int number = 1234;
+int hexnumber = 0x1234;
+pinid globalpin = 12P;
+
+function functest(int a, struct datastruct b, int[40][20] c) -> struct resultstruct {
+	for(int i = 0; i < 10; i++) {
+		doThis();
+	}
+
+	while(false){
+		doThat();
+	}
+
+	struct resultstruct result;
+	return result;
+}
+
+task tasktest(bool b, struct datastruct b, int[10][20][30][5] c) {
+	int[40][20] array;
+	functest(1, b, array);	
+	if(true) {
+		doThis();
+	} elseif (true) {
+		doThat();
+	} else {
+		doLastThing();
+	}
+}
+
+function exprtest() -> void {
+	1 + 2;
+	1 - 2;
+	1 * 2;
+	1 / 2;
+	1 % 2;
+	true && true;
+	false || false;
+	4 == 5;
+	3 >= 4;
+	3 <= 3;
+	2 < 3;
+	2 > 2;
+	!false;
+	~123;
+	3&4;
+	4 | 5;
+	2 << 1;
+	2 >> 3;
+	(2 + 3);
+	a = 123;
+	a.b.c = 123;
+	a[1][2] = 123;
+	a++;
+	a--;
+	true ? 1 : 2;
+}
+
+function setup() -> void {
+	int a;
+	switch(a){
+	case 1:
+		# empty case
+	default:
+		hello();
+	}
+
+	receive {
+	case message1{}:
+		#empty case
+	case message2{d1, d2}:
+		hello(d1);
+		hello(d2);
+	default:
+		#empty default
+	}
+
+	taskid taskone = spawn tasktest(1,2,3); # the types don't add up, but this is only a parse test.
+	send message2{1, true} to taskone;
+}
