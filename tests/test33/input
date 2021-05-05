@@ -1,0 +1,30 @@
+function setup() -> void {
+	int i1 = 1;
+	int i2 = 2;
+	float f1 = 1.0;
+	float f2 = 2.0;
+
+	#OK, Type = int
+	i1 + i2;
+	i1 - i2;
+	i1 * i2;
+	i1 / i2;
+
+	#OK, Type = float
+	f1 + f2;
+	f1 - f2;
+	f1 * f2;
+	f1 / f2;
+
+	#Not OK, mixed types
+	i1 + f2;
+	i1 - f2;
+	i1 * f2;
+	i1 / f2;	
+
+	#Not OK, mixed types
+	f1 + i2;
+	f1 - i2;
+	f1 * i2;
+	f1 / i2;	
+}
