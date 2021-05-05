@@ -89,7 +89,7 @@ Program: Toplevel {$$ = mkProgNode($1); parseresult = $$;}
 	}
 	;
 
-Toplevel: function identifier '(' ParametersList ')' right_arrow Type '{' Statements '}' { $$=mkDefineFunctionNode($2, $4, $7, $9); }
+Toplevel: function identifier '(' ParametersList ')' right_arrow DataType '{' Statements '}' { $$=mkDefineFunctionNode($2, $4, $7, $9); }
 	| task identifier '(' ParametersList ')' '{' Statements '}' {$$ = mkDefineTaskNode($2, $4, $7);}
 	| struct_keyword identifier '{' StructMembers '}' {$$=mkDefineStructNode($2, $4);}
 	| messages '{' MessageIdentifiers '}' {$$ = mkDefineMessageNode($3);}
