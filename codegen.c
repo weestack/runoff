@@ -55,7 +55,7 @@ char *codegen(AstNode *tree) {
 
 	switch (tree->tag) {
 		case Prog:
-			preCodeGen = readFile("arduino_support_code.ino");
+			preCodeGen = readFile(COMPILEDIR "/arduino_support_code.ino");
 			children = processBlock(tree->node.Prog.toplevels, "\n", 0);
 			result = smprintf("#define N_TASKS %d\n%s\n%s\n",tree->node.Prog.spawnCount, preCodeGen, children);
 			break;

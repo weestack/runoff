@@ -14,17 +14,20 @@ GENFILES=parser.c parser.h lexer.c
 # What is the name of our binary?
 PROG=runoff
 
+# What folder are we compiling from?
+COMPILEDIR=$(shell pwd)
+
 # Specify the C flags and linker flags.
 # We want ansi c with all warnings
 # We want debug info
-CFLAGS=-std=c89 -pedantic -Wall -Wextra -Werror -g
+CFLAGS=-std=c89 -pedantic -Wall -Wextra -Werror -g -DCOMPILEDIR="\"$(COMPILEDIR)\""
 
 # We want to link with the flex library
 LDFLAGS=-lfl
 
 # Rule for combining all the objects into our binary
 $(PROG): $(OBJECTS)
-	@cc $(CFLAGS) $(OBJECTS) $(LDFLAGS) -o $(PROG)
+	cc $(CFLAGS) $(OBJECTS) $(LDFLAGS) -o $(PROG)
 	@echo [CC] $(OBJECTS)
 	@echo "There you go $(shell whoami), I have compiled $(PROG) for you :)"
 
