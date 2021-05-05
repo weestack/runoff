@@ -279,7 +279,7 @@ char *codegen(AstNode *tree) {
 			if(tree->node.VarDecl.expression != NULL && tree->node.VarDecl.expression->tag == Spawn){
 				result = smprintf("char %s = %d;%s", id, tree->node.VarDecl.expression->node.Spawn.taskId, expr);
 			} else {
-				constString = tree->node.VarDecl.toplevel == 1 ? "const " : "";
+				constString = tree->node.VarDecl.toplevel == 1 ? smprintf("const ") : smprintf("");
 				/* Actual type */
 				preCodeGen = codegen(tree->node.VarDecl.type);
 				/* full type with or without const. */
