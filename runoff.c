@@ -59,7 +59,7 @@ main(int argc, char *argv[])
 		indentflag = 1;
 		break;
 	case 'P':
-		parseonlyflag = 0;
+		parseonlyflag = 1;
 		break;
 	default:
 		usage();
@@ -74,6 +74,7 @@ main(int argc, char *argv[])
 	tree = parse(filename);
 	if(tree == NULL)
 		return -1;
+
 	if(parseonlyflag)
 		return 0;
 
