@@ -42,6 +42,7 @@ main(int argc, char *argv[])
 	int ppflag = 0;
 	int verifyflag = 0;
 	int indentflag = 0;
+	int parseonlyflag = 0;
 	char *outfile = NULL;
 
 	ARGBEGIN{
@@ -57,6 +58,9 @@ main(int argc, char *argv[])
 	case 'i':
 		indentflag = 1;
 		break;
+	case 'P':
+		parseonlyflag = 0;
+		break;
 	default:
 		usage();
 	}ARGEND
@@ -70,6 +74,8 @@ main(int argc, char *argv[])
 	tree = parse(filename);
 	if(tree == NULL)
 		return -1;
+	if(parseonlyflag)
+		return 0;
 
 	if(ppflag){
 		printf("%s\n", prettyprint(tree));
@@ -117,7 +123,12 @@ main(int argc, char *argv[])
 }
 
 void usage(void){
-	printf("Usage: runoff [-p] [-o outfile] filename\n");
+	printf("Usage: runoff [-pivP] [-o outfile] filename\n");
+	printf("\t-p: prettyprint the code, then exit.\n");
+	printf("\t-i: run the generated code through the indent command.\n");
+	printf("\t-v: run arduino --verify on the generated code.\n");
+	printf("\t-P: stop after parsing.\n");
+	printf("\t-o outfile: put the generated code in outfile instead of stdout.\n");
 	exit(EXIT_FAILURE);
 }
 
