@@ -1,0 +1,6 @@
+input:21: right hand side of == expected type int32. Actual type: float 
+input:22: right hand side of == expected type int32. Actual type: pinid 
+input:23: right hand side of == expected type float. Actual type: int32 
+input:25: right hand side of != expected type int32. Actual type: float 
+input:26: right hand side of != expected type int32. Actual type: pinid 
+input:27: right hand side of != expected type float. Actual type: int32 
