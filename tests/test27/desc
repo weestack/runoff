@@ -1,0 +1,1 @@
+Test type rules for binary operators that expect 2 expression of the same type and return bool

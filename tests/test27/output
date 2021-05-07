@@ -1,0 +1,6 @@
+input:16: right hand side of < expected type int32. Actual type: float 
+input:17: right hand side of > expected type int32. Actual type: float 
+input:18: right hand side of >= expected type float. Actual type: int32 
+input:20: right hand side of < expected type int32. Actual type: float 
+input:21: right hand side of < expected type int32. Actual type: float 
+input:22: right hand side of > expected type float. Actual type: int32 

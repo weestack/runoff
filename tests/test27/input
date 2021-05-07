@@ -1,0 +1,23 @@
+function setup() -> void {
+	int i1 = 10;
+	int i2 = 10;
+
+	float f1 = 10.0;
+	float f2 = 10.0;
+
+	#OK
+	i1 < i2;
+	f1 < f2;
+
+	i1 > i2;
+	f1 > f2;
+
+	#Not OK, mixed types
+	i1 < f2;
+	i1 > f1;
+	f1 >= i2;
+	
+	i1 <= f2;
+	i1 < f1;
+	f1 > i2;
+}
