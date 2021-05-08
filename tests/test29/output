@@ -1,0 +1,2 @@
+input:10: For loop test expected bool. Actual type: unknownInt 
+input:11: For loop test expected bool. Actual type: float 
