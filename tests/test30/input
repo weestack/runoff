@@ -1,0 +1,10 @@
+function setup() -> void {
+	#OK
+	if (true) {}
+	if (false) {}
+	if (1==1) {}
+	if (false || true) {}
+	#Not OK, wrong types
+	if (1) {}
+	if (1.0) {}
+}

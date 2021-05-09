@@ -1,0 +1,2 @@
+input:8: if statement expected bool. Actual type: unknownInt 
+input:9: if statement expected bool. Actual type: float 
