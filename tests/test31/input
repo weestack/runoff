@@ -1,0 +1,33 @@
+messages {
+	message1;
+	message2{int i};
+}
+
+# OK typed receive
+task testTask1() {
+	int a = 0;
+	while (true) {
+		receive {
+			case message1{}: a = a + 1;
+			case message2{i}: a = a + i;
+			default:
+		}
+	}
+}
+
+# not OK typed receive
+task testTask2() {
+	int a = 0;
+	while (true) {
+		receive {
+			# not a message
+			case a{}: a = a + 1;
+			default:
+		}
+	}
+}
+
+function setup() -> void {
+	taskid t1 = spawn testTask1();
+	taskid t2 = spawn testTask2();
+}

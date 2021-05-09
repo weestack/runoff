@@ -1,0 +1,1 @@
+input:25: Name in receive case should be a message type.. Actual type: int32 

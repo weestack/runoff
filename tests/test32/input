@@ -1,0 +1,20 @@
+messages {
+	message1;
+	message2{int i};
+}
+
+# not OK typed receive
+task testTask() {
+	int a = 0;
+	while (true) {
+		receive {
+			# missing parameter
+			case message2{}: a = a + 1;
+			default:
+		}
+	}
+}
+
+function setup() -> void {
+	taskid t = spawn testTask();
+}

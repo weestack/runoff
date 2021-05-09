@@ -1,0 +1,2 @@
+input:13: Arity of message in receive case does not match message prototype for message2 (should be 1 but is 0)
+BuildSymbolTable failed with 1 errors
