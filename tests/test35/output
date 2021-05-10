@@ -1,0 +1,13 @@
+input:9: right hand side of + expected type int32. Actual type: float 
+input:9: incompatible types expected int32. Actual type: undefined 
+input:9: right hand side of + expected type int32. Actual type: float 
+input:10: right hand side of + expected type float. Actual type: int32 
+input:10: binary operator + Expected numeric types.
+	Actual type for left: undefined
+	Actual type for right: int32 
+input:10: incompatible types expected int32. Actual type: undefined 
+input:10: right hand side of + expected type float. Actual type: int32 
+input:10: binary operator + Expected numeric types.
+	Actual type for left: undefined
+	Actual type for right: int32 
+input:10: right hand side of + expected type float. Actual type: int32 

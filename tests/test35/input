@@ -1,0 +1,11 @@
+function setup() -> void {
+
+	int a = 2;
+	int b = 5;
+	float f = 4.0;
+
+	int result1 = (a+b) + b;
+	int result2 = ((a) + (b)) + b;
+	int error1 = (a + b) + f;
+	int error2 = (f) + a + b;
+}
