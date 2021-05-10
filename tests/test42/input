@@ -1,0 +1,21 @@
+# setup messages and tasks
+messages {
+	message1;
+}
+
+task a() {
+	return;
+}
+
+function setup() -> void {
+	taskid t = spawn a();
+	msg message = message1{};
+	int i = 0;
+	# OK sending
+	send message to t;
+	# BAD sending
+	send i to t;
+	send message to i;
+	send 1 to t;
+	send 1.0 to t;
+}
