@@ -1,0 +1,12 @@
+function setup() -> void {
+	bool b = false;
+	int i = 0;
+
+	if(!b){
+		# the ! operator expects type bool
+	}
+
+	if(!i){
+		# does not work with any other type
+	}
+}
