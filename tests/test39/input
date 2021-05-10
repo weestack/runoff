@@ -1,0 +1,34 @@
+# Message declaration
+messages{
+	One;
+	Two;
+}
+
+#Struct declaration
+struct structDecl {
+	int a;
+}
+
+# Task declarations
+task TaskDecl(int a, int b){
+	a++;
+	b++;
+}
+
+# Function declaration
+function setup() -> void {
+
+	# Variable declarations
+	int VarEmpty;
+	int VarInit = 10;
+
+	# Prog declaration & setup
+	spawn TaskDecl(VarEmpty, VarInit);
+	spawn NonexistingTask();
+}
+
+# function declaration Errors
+function e(int b, float a) -> void {
+	int a = 10;
+	float b = 10.0;
+}

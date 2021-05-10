@@ -1,0 +1,5 @@
+input:27: Undeclared symbol "NonexistingTask"
+input:27: Undeclared symbol "NonexistingTask"
+input:32: Name "a" is already declared on line 31
+input:33: Name "b" is already declared on line 31
+BuildSymbolTable failed with 4 errors
