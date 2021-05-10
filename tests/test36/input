@@ -1,0 +1,7 @@
+function setup() -> void {
+	bool b = true;
+	int i = 1;
+
+	b ? i++ : i--;
+	i ? i++ : i--;
+}

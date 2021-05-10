@@ -1,0 +1,1 @@
+input:6: ternary operator test must be boolean. Actual type: int32 
