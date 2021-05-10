@@ -1,0 +1,2 @@
+input:12: Number of argument in function-call "f" incorrect. Expected 0, got 1
+input:13: Expected argument 1 of function-call "h" to have type int32. Actual type: pinid 
