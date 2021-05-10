@@ -1,0 +1,14 @@
+function f() -> void {
+}
+
+function h(int x) -> void {
+	x++;
+}
+
+
+function setup() -> void {
+	f();
+	h(10);
+	f(10);
+	h(2P);
+}
