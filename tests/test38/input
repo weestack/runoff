@@ -1,33 +1,9 @@
-# Message declaration
-messages{
-	One;
-	Two;
-}
+cafunction setup() -> void {
 
-#Struct declaration
-struct structDecl {
-	int a;
-}
-
-# Task declarations
-task TaskDecl1(taskid tid){
-	advancedInputPin(2P, hehe, One{}, Two{});
-}
-task TaskDecl2(){
-}
-
-# Function declaration
-function funDecl(int x, float y) -> void{
-	x++;
-	y + 1.0;
-}
-
-function setup() -> void {
 	# Variable declarations
 	int VarEmpty;
 	int VarInit = 10;
 
-	# Prog declaration & setup
-	taskid hehe = spawn TaskDecl2();
-	spawn TaskDecl1(hehe);
+	# VarDecl Errors
+	int newerVariable = bool;
 }
