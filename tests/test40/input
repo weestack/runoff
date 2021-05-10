@@ -1,0 +1,27 @@
+# OK typed returns
+function a() -> void {
+	return;
+}
+function b() -> void {
+}
+function c() -> int {
+	return 1;
+}
+function d() -> int {
+	int i = 0;
+	return i;
+}
+
+# not OK typed returns
+function e() -> void {
+	return 1;
+}
+function f() -> int {
+	return 1.0;
+}
+function g() -> int {
+	return;
+}
+
+function setup() -> void {
+}

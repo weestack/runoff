@@ -1,0 +1,3 @@
+input:17: incompatible types in return. Expected: void. Actual type: unknownInt 
+input:20: incompatible types in return. Expected: int32. Actual type: float 
+input:23: Missing expression of type int32 in return statement
