@@ -355,6 +355,10 @@ void printTypeFail(char *fail_message, AstNode *node, Type *type){
 char *typeString(Type *type){
 	char *result;
 	AstNode *dims;
+
+	if(type == NULL)
+		return smprintf("undefined");
+
 	switch(type->tag){
 	case ArrayTypeTag:
 		result = typeString(type->tags.typeArray.elementType);
