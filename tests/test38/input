@@ -1,4 +1,4 @@
-cafunction setup() -> void {
+function setup() -> void {
 
 	# Variable declarations
 	int VarEmpty;
