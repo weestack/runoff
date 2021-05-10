@@ -1,0 +1,4 @@
+input:7: ++ Expected integer type. Actual type: float 
+input:8: ++ Expected integer type. Actual type: pinid 
+input:10: -- Expected integer type. Actual type: float 
+input:11: -- Expected integer type. Actual type: pinid 

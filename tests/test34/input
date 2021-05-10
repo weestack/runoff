@@ -1,0 +1,12 @@
+function setup() -> void {
+	int i1 = 1;
+	float f1 = 1.0;
+	pinid p1 = 2P;
+
+	i1++;
+	f1++;
+	p1++;
+	i1--;
+	f1--;
+	p1--;
+}
