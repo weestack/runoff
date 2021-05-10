@@ -1,0 +1,3 @@
+input:9: ! expected operand of type bool. Actual type: int32 
+input:9: if statement expected bool. Actual type: undefined 
+input:9: ! expected operand of type bool. Actual type: int32 
