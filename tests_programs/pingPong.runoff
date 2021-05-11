@@ -9,9 +9,9 @@ task ping(taskid pongid){
   while(true){
     receive {
       case pingmsg{}: 
-		send pongmsg{self()} to pongid;
-		turnOff(LED);
+	  	turnOff(LED);
 		delay(500);
+		send pongmsg{self()} to pongid;
       default:
     }
   }
@@ -21,9 +21,9 @@ task pong(){
   while(true){
     receive {
       case pongmsg{t}: 
-	  	send pingmsg{} to t;
 		turnOn(LED);
 		delay(500);
+	  	send pingmsg{} to t;
       default:
     }
   }
