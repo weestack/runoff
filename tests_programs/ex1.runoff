@@ -1,4 +1,3 @@
-pinid LED1Pin = 1P;
 pinid LED2Pin = 2P;
 pinid LED3Pin = 15P;
 
@@ -17,8 +16,7 @@ function setPartyLight(bool state) -> void {
 }
 
 task A() {
-	int i = 0;
-	int j;
+
 	while(true) {
 		receive {
 		case Button1Click{}: turnOn(LED2Pin);
@@ -27,26 +25,12 @@ task A() {
 		default:
 		}
 	}
-	j = 123;
-	i >= j;
-	i + j;
 
 }
 
-task B(taskid other) {
-	bool party = false;
-	while(true) {
-		delay(500);
-		party = !party;
-		send PartyTime{party} to other;
-		send Button1Click{} to other;
-	}
-}
 
 function setup() -> void {
-	taskid i = spawn A();
-	spawn B(i);
-	advancedInputPin(LED1Pin, i, Button1Click{}, Button1Release{});
-	outputPin(LED2Pin);
-	outputPin(LED3Pin);
+	taskid IdToA = spawn A();
+	send PartyTime{false} to IdToA;
+	send Button1Release{} to IdToA;
 }
