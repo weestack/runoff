@@ -358,7 +358,7 @@ char *codegen(AstNode *tree) {
 
 char *setupPreCodeGen(AstNode *tree){
 	/* Will only generate code if a message struct has not already been made */
-	char *msgStruct = constructMessageUnionStruct(NULL); 
+	char *msgStruct = constructMessageUnionStruct(NULL);
 	char *spawnStructs = mkStructsFromSpawns(tree->node.DefineFunction.statements);
 	char *advancedInputCode = mkAdvancedInputCode(tree->node.DefineFunction.statements);
 	char *result = smprintf("%s\n%s\n%s\n", msgStruct, spawnStructs, advancedInputCode);
@@ -375,7 +375,7 @@ char *mkAdvancedInputCode(AstNode *tree){
 	char *interruptHandlers = smprintf("");
 
 	char *result;
-	while(tree != NULL){
+	for(; tree != NULL; tree = tree->next){
 		AstNode *expr;
 		if(tree->tag != ExprStmt)
 			continue;
@@ -400,7 +400,6 @@ char *mkAdvancedInputCode(AstNode *tree){
 			free(oldHandlers);
 			free(oldInstances);
 		}
-		tree = tree->next;
 	}
 	result = smprintf("%s\n%s\n%s\n", structcode, structInstances, interruptHandlers);
 	free(structInstances);
