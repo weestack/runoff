@@ -1,0 +1,36 @@
+pinid LED = 13P;
+
+messages {
+  pingmsg;
+  pongmsg{taskid pingid};
+}
+
+task ping(taskid pongid){
+  while(true){
+    receive {
+      case pingmsg{}: 
+		send pongmsg{self()} to pongid;
+		turnOff(LED);
+		delay(500);
+      default:
+    }
+  }
+}
+
+task pong(){
+  while(true){
+    receive {
+      case pongmsg{t}: 
+	  	send pingmsg{} to t;
+		turnOn(LED);
+		delay(500);
+      default:
+    }
+  }
+}
+
+function setup() -> void {
+  taskid pongTask = spawn pong();
+  taskid pingTask = spawn ping(pongTask);
+  send pingmsg{} to pingTask;
+}
