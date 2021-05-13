@@ -144,7 +144,7 @@ char *codegen(AstNode *tree) {
 			result = smprintf("%sswitch(m.Tag){%s}", constString, caseStmts);
 			break;
 		case ReceiveCase:
-			stmts = codegen(tree->node.ReceiveCase.statements);
+			stmts = processBlock(tree->node.ReceiveCase.statements, "", 0);
 			id = codegen(tree->node.ReceiveCase.messageName);
 
 			/* Default case */
