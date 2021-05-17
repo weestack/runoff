@@ -30,6 +30,7 @@ task pong(){
 }
 
 function setup() -> void {
+  outputPin(LED);
   taskid pongTask = spawn pong();
   taskid pingTask = spawn ping(pongTask);
   send pingmsg{} to pingTask;
